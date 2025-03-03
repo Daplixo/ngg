@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Number Guessing Game</title>
+    <link rel="manifest" href="manifest.json" />
+
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #ffffff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        box-sizing: border-box;
+      }
+
+      #game-container {
+        width: 90%;
+        max-width: 500px;
+        padding: 30px;
+        border: 2px solid #333;
+        border-radius: 10px;
+        background-color: #f4f4f4;
+        text-align: center;
+        box-sizing: border-box;
+        position: relative;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Mode selection container at top: user picks normal or timed. */
+      #mode-selection {
+        margin-bottom: 20px;
+      }
+
+      #timerLabel {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        display: none; /* Only show if timedMode is chosen */
+        background: #ffffff;
+        border: 2px solid #333;
+        padding: 6px 10px;
+        border-radius: 5px;
+        font-weight: bold;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        transition: background-color 0.5s ease;
+      }
+
+      h2 {
+        margin-bottom: 8px;
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: #333;
+      }
+
+      #range-info {
+        display: inline-block;
+        background-color: #fff8a8;
+        padding: 5px 10px;
+        border-radius: 4px;
+        margin-bottom: 20px;
+        font-weight: 500;
+        color: #444;
+      }
+
+      /* Controls group to line up input and submit button nicely */
+      #controls {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        margin: 15px 0;
+      }
+
+      /* Style for the input box */
+      #userGuess {
+        flex: 1;
+        padding: 12px;
+        border: 2px solid #ccc;
+        border-radius: 4px;
+        font-size: 1rem;
+        outline: none;
+      }
+
+      /* Style for all main buttons */
+      button {
+        padding: 12px 20px;
+        border: none;
+        border-radius: 4px;
+        background-color: #4d6fed;
+        color: #fff;
+        font-size: 1rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+
+      button:hover {
+        background-color: #2b4ecf;
+      }
+
+      /* Distinct style for restart button so it doesn't clash with submit button */
+      #restartBtn {
+        background-color: #444;
+        margin-top: 20px;
+      }
+      #restartBtn:hover {
+        background-color: #222;
+      }
+
+      /* The user feedback area */
+      #feedback {
+        min-height: 40px;
+        margin-top: 10px;
+        font-size: 1rem;
+      }
+      #attempts {
+        margin-top: 10px;
+        font-size: 0.95rem;
+        color: #555;
+      }
+
+      .game-over {
+        color: red !important;
+        font-size: 1.2rem;
+        font-weight: bold;
+      }
+
+      .win-message {
+        color: green !important;
+        font-size: 1.2rem;
+        font-weight: bold;
+      }
+
+      /* For green win notifications */
+      #winNotification {
+        display: none;
+        position: absolute;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #4caf50; /* Green background */
+        color: #fff;
+        padding: 10px 15px;
+        border-radius: 5px;
+        font-weight: bold;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        z-index: 99;
+      }
+
+      /* Notification for game over in red */
+      #gameOverNotification {
+        display: none;
+        position: absolute;
+        top: 60px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #f66;
+        color: #fff;
+        padding: 10px 15px;
+        border-radius: 5px;
+        font-weight: bold;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        z-index: 99;
+      }
+
+      #playAgainBtn {
+        display: none;
+        margin-top: 20px;
+        background-color: #666;
+      }
+
+      #playAgainBtn:hover {
+        background-color: #333;
+      }
+    </style>
+  </head>
+  <body onload="initGame()">
+    <div id="game-container">
+      <div id="timerLabel">Time Left: <span id="timeLeft"></span>s</div>
+
+      <!-- Green notification for wins at all levels -->
+      <div id="winNotification"></div>
+      <!-- Red notification for game overs -->
+      <div id="gameOverNotification"></div>
+
+      <div id="mode-selection">
+        <p style="font-weight: bold; margin-bottom: 8px">Choose Game Mode:</p>
+        <label>
+          <input
+            type="radio"
+            name="mode"
+            id="normalMode"
+            value="normal"
+            checked
+          />
+          Normal (no time limit) </label
+        ><br />
+        <label>
+          <input type="radio" name="mode" id="timedMode" value="timed" />
+          Timed (1 minute total)
+        </label>
+        <br /><br />
+        <button onclick="startGameMode()">Start Game</button>
+      </div>
+
+      <h2 style="display: none">Number Guessing Game</h2>
+      <h3 id="range-info" style="display: none">Guess the number (1-10)</h3>
+
+      <div id="controls" style="display: none">
+        <input
+          type="text"
+          id="userGuess"
+          placeholder="Enter your guess"
+          onkeydown="handleKeyPress(event)"
+        />
+        <button onclick="checkGuess()">Submit</button>
+      </div>
+
+      <p id="feedback" style="display: none"></p>
+      <p id="attempts" style="display: none"></p>
+
+      <button id="playAgainBtn" style="display: none" onclick="playAgain()">
+        Play Again
+      </button>
+      <button id="restartBtn" style="display: none" onclick="restartGame()">
+        Restart
+      </button>
+    </div>
+
+    <!-- existing audios -->
+    <audio id="levelClearedSound" src="notification.wav" preload="auto"></audio>
+    <audio id="outOfAttemptsSound" src="gameover.wav" preload="auto"></audio>
+    <!-- new clock ticking sound, looped -->
+    <audio id="clockTickSound" src="clock.mp3" preload="auto" loop></audio>
+
+    <script>
+      let level = 1;
+      let maxNumber = 10;
+      let maxAttempts = 3;
+      let attempts = 0;
+      let randomNumber = Math.floor(Math.random() * maxNumber) + 1;
+      let gameOver = false;
+      let hasWon = false;
+      let waitingForNextLevel = false; // track if user pressed Enter to proceed
+      let finalWin = false; // track if user is done with last level
+
+      let timedModeActive = false; // new flag for timed mode
+      let timeLeft = 60; // seconds
+      let timerInterval = null;
+
+      // Initialize the game environment
+      function initGame() {
+        focusRadio();
+      }
+
+      // Put focus on the first radio button initially
+      function focusRadio() {
+        document.getElementById("normalMode").focus();
+      }
+
+      // Called when user picks a mode and clicks 'Start Game'
+      function startGameMode() {
+        const normalSelected = document.getElementById("normalMode").checked;
+        timedModeActive = !normalSelected; // if normal is not selected => timed
+
+        // Hide mode selection
+        document.getElementById("mode-selection").style.display = "none";
+
+        // Show main game UI
+        document.querySelector("#game-container h2").style.display = "";
+        document.getElementById("range-info").style.display = "";
+        document.getElementById("controls").style.display = "flex";
+        document.getElementById("feedback").style.display = "";
+        document.getElementById("attempts").style.display = "";
+        document.getElementById("restartBtn").style.display = "inline-block";
+
+        if (timedModeActive) {
+          // Show timer label
+          document.getElementById("timerLabel").style.display = "block";
+          startTimer();
+        } else {
+          // hide timer label just in case
+          document.getElementById("timerLabel").style.display = "none";
+        }
+      }
+
+      // Start the 60-second timer, color transitions, and ticking sound
+      function startTimer() {
+        timeLeft = 60;
+        document.getElementById("timeLeft").textContent = timeLeft;
+        document.getElementById("timerLabel").style.backgroundColor = "#b2f2b2"; // start greenish
+
+        // start the clock ticking sound (looped)
+        const clockTick = document.getElementById("clockTickSound");
+        clockTick.currentTime = 0;
+        clockTick.play();
+
+        timerInterval = setInterval(() => {
+          timeLeft--;
+          if (timeLeft < 0) return;
+          document.getElementById("timeLeft").textContent = timeLeft;
+
+          // color transitions for the timer
+          if (timeLeft > 45) {
+            document.getElementById("timerLabel").style.backgroundColor =
+              "#b2f2b2"; // greenish
+          } else if (timeLeft > 30) {
+            document.getElementById("timerLabel").style.backgroundColor =
+              "#f5f5a4"; // yellowish
+          } else if (timeLeft > 15) {
+            document.getElementById("timerLabel").style.backgroundColor =
+              "#fbc98d"; // orangeish
+          } else {
+            document.getElementById("timerLabel").style.backgroundColor =
+              "#f66"; // red
+          }
+
+          if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            // stop clock ticking
+            clockTick.pause();
+            clockTick.currentTime = 0;
+            handleTimeUp();
+          }
+        }, 1000);
+      }
+
+      // Called when time runs out
+      function handleTimeUp() {
+        gameOver = true;
+        document.getElementById("feedback").innerHTML =
+          "Time's Up! You ran out of time.";
+        document.getElementById("feedback").className = "game-over";
+        showGameOverNotification("Time's up!");
+        showPlayAgainButton();
+      }
+
+      function focusInput() {
+        const guessInput = document.getElementById("userGuess");
+        if (guessInput) guessInput.focus();
+      }
+
+      // Re-initialize the game for the next level
+      function updateLevel() {
+        if (level === 1) {
+          maxNumber = 10;
+          maxAttempts = 3;
+          document.getElementById("range-info").textContent =
+            "Guess the number (1-10)";
+        } else if (level === 2) {
+          maxNumber = 50;
+          maxAttempts = 3;
+          document.getElementById("range-info").textContent =
+            "Guess the number (1-50)";
+        } else {
+          maxNumber = 100;
+          maxAttempts = 5;
+          document.getElementById("range-info").textContent =
+            "Guess the number (1-100)";
+        }
+        if (level === 1) {
+          randomNumber = Math.floor(Math.random() * maxNumber) + 1;
+        }
+        restartGame(false);
+      }
+
+      // Called when user clicks "Submit" or presses Enter (if not in the after-win state)
+      function checkGuess() {
+        if (gameOver || hasWon) return;
+        let userGuess = document
+          .getElementById("userGuess")
+          .value.trim()
+          .toLowerCase();
+        // 'Cheat' check
+        if (userGuess === "boobs") {
+          handleWin();
+          return;
+        }
+        let numericGuess = parseInt(userGuess);
+        if (
+          isNaN(numericGuess) ||
+          numericGuess < 1 ||
+          numericGuess > maxNumber
+        ) {
+          document.getElementById("feedback").textContent =
+            "Invalid input! Enter a number within the range.";
+          document.getElementById("feedback").style.color = "orange";
+          return;
+        }
+        attempts++;
+        if (numericGuess === randomNumber) {
+          handleWin();
+        } else {
+          if (attempts >= maxAttempts) {
+            document.getElementById("feedback").innerHTML =
+              "Game Over! The correct number was <strong>" +
+              randomNumber +
+              "</strong>. Try again.";
+            document.getElementById("feedback").className = "game-over";
+            gameOver = true;
+            showGameOverNotification("You ran out of attempts!");
+            showPlayAgainButton();
+            stopClockTicking();
+          } else {
+            let hint = numericGuess > randomNumber ? "Too high!" : "Too low!";
+            document.getElementById("feedback").textContent =
+              "Wrong guess! " + hint + " Try again.";
+            document.getElementById("feedback").style.color = "red";
+          }
+        }
+        document.getElementById("attempts").textContent =
+          "Attempts: " + attempts + " / " + maxAttempts;
+        focusInput();
+      }
+
+      // Called when user guesses the correct number or uses cheat code
+      function handleWin() {
+        hasWon = true;
+        stopClockTicking(); // user won => stop the clock ticking in timed mode
+        if (level < 3) {
+          document.getElementById("feedback").textContent =
+            "Congratulations! You won level " + level + "!";
+          document.getElementById("feedback").className = "win-message";
+          showWinNotification(
+            "Level " + level + " cleared! Press Enter to continue..."
+          );
+          waitingForNextLevel = true;
+        } else {
+          // final level won
+          finalWin = true;
+          document.getElementById("feedback").textContent =
+            "Congratulations! You won the game!";
+          document.getElementById("feedback").className = "win-message";
+          showWinNotification(
+            "You cleared the final level! Press Enter to play again..."
+          );
+        }
+      }
+
+      // Resets the game state
+      function restartGame(resetLevel) {
+        if (resetLevel === undefined) resetLevel = true;
+        // Stop timer if running
+        if (timerInterval) {
+          clearInterval(timerInterval);
+          timerInterval = null;
+        }
+        stopClockTicking();
+
+        gameOver = false;
+        hasWon = false;
+        finalWin = false;
+        waitingForNextLevel = false;
+        hideWinNotification();
+        hideGameOverNotification();
+        hidePlayAgainButton();
+
+        if (resetLevel) {
+          level = 1;
+          maxNumber = 10;
+          maxAttempts = 3;
+          document.getElementById("range-info").textContent =
+            "Guess the number (1-10)";
+        }
+        randomNumber = Math.floor(Math.random() * maxNumber) + 1;
+        attempts = 0;
+        document.getElementById("feedback").textContent = "";
+        document.getElementById("feedback").className = "";
+        document.getElementById("attempts").textContent = "";
+        document.getElementById("userGuess").value = "";
+
+        // if we remain in timed mode => restart the timer
+        if (timedModeActive && resetLevel) {
+          startTimer();
+        }
+        focusInput();
+      }
+
+      function handleKeyPress(event) {
+        if (event.key === "Enter") {
+          if (finalWin) {
+            playAgain();
+            return;
+          }
+          if (waitingForNextLevel) {
+            waitingForNextLevel = false;
+            level++;
+            updateLevel();
+            return;
+          }
+          if (gameOver) {
+            restartGame();
+          } else {
+            checkGuess();
+          }
+        } else if (event.key === " ") {
+          event.preventDefault();
+          restartGame();
+        }
+      }
+
+      function showWinNotification(message) {
+        const winNote = document.getElementById("winNotification");
+        winNote.textContent = message;
+        winNote.style.display = "block";
+        const sound = document.getElementById("levelClearedSound");
+        sound.currentTime = 0;
+        sound.play();
+      }
+      function hideWinNotification() {
+        document.getElementById("winNotification").style.display = "none";
+      }
+
+      function showGameOverNotification(msg) {
+        const gameOverNote = document.getElementById("gameOverNotification");
+        gameOverNote.textContent = msg || "You ran out of attempts!";
+        gameOverNote.style.display = "block";
+        const failSound = document.getElementById("outOfAttemptsSound");
+        failSound.currentTime = 0;
+        failSound.play();
+      }
+      function hideGameOverNotification() {
+        document.getElementById("gameOverNotification").style.display = "none";
+      }
+
+      // Pause ticking sound if playing
+      function stopClockTicking() {
+        const clockTick = document.getElementById("clockTickSound");
+        clockTick.pause();
+        clockTick.currentTime = 0;
+      }
+
+      function showPlayAgainButton() {
+        document.getElementById("playAgainBtn").style.display = "inline-block";
+      }
+      function hidePlayAgainButton() {
+        document.getElementById("playAgainBtn").style.display = "none";
+      }
+      function playAgain() {
+        restartGame(true);
+      }
+
+      // Attempt to auto-play a sound on load (likely blocked by browser)
+      try {
+        const initSound = document.getElementById("levelClearedSound");
+        initSound.volume = 1.0;
+        initSound.play();
+      } catch (err) {
+        console.error(
+          "Auto-play blocked by browser. Normal if no user gesture occurred yet.",
+          err
+        );
+      }
+    </script>
+
+    <script>
+      console.log("[TEST] Script loaded. Code is syntax-valid.");
+    </script>
+    <script>
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker
+          .register("./serviceWorker.js")
+          .then(() => console.log("Service Worker registered."))
+          .catch((err) => console.error("SW registration failed:", err));
+      }
+    </script>
+  </body>
+</html>

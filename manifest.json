@@ -1,0 +1,21 @@
+{
+  "short_name": "NumberGuess",
+  "name": "Number Guessing Game",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#FFFFFF",
+  "theme_color": "#4d6fed",
+  "description": "A fun number guessing game with timed and normal modes.",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
