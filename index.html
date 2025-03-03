@@ -178,6 +178,16 @@
       #playAgainBtn:hover {
         background-color: #333;
       }
+
+      /* New: a Continue button for mobile (no Enter key) */
+      #continueBtn {
+        display: none;
+        margin-top: 20px;
+        background-color: #2eb82e;
+      }
+      #continueBtn:hover {
+        background-color: #248f24;
+      }
     </style>
   </head>
   <body onload="initGame()">
@@ -225,6 +235,9 @@
       <p id="feedback" style="display: none"></p>
       <p id="attempts" style="display: none"></p>
 
+      <!-- Step: Add a continue button for mobile -->
+      <button id="continueBtn" onclick="continueNextLevel()">Continue</button>
+
       <button id="playAgainBtn" style="display: none" onclick="playAgain()">
         Play Again
       </button>
@@ -247,7 +260,7 @@
       let randomNumber = Math.floor(Math.random() * maxNumber) + 1;
       let gameOver = false;
       let hasWon = false;
-      let waitingForNextLevel = false; // track if user pressed Enter to proceed
+      let waitingForNextLevel = false; // track if user pressed Enter or Continue to proceed
       let finalWin = false; // track if user is done with last level
 
       let timedModeActive = false; // new flag for timed mode
@@ -429,9 +442,10 @@
             "Congratulations! You won level " + level + "!";
           document.getElementById("feedback").className = "win-message";
           showWinNotification(
-            "Level " + level + " cleared! Press Enter to continue..."
+            "Level " + level + " cleared! Press Enter or tap Continue..."
           );
           waitingForNextLevel = true;
+          document.getElementById("continueBtn").style.display = "inline-block"; // show continue button on mobile
         } else {
           // final level won
           finalWin = true;
@@ -439,9 +453,25 @@
             "Congratulations! You won the game!";
           document.getElementById("feedback").className = "win-message";
           showWinNotification(
-            "You cleared the final level! Press Enter to play again..."
+            "You cleared the final level! Press Enter or tap Continue..."
           );
+          document.getElementById("continueBtn").style.display = "inline-block";
         }
+      }
+
+      // function to proceed to next level if user is stuck on mobile with no enter key
+      function continueNextLevel() {
+        if (finalWin) {
+          // if final level is done => treat it like pressing Enter on final level
+          playAgain();
+          return;
+        }
+        if (waitingForNextLevel) {
+          waitingForNextLevel = false;
+          level++;
+          updateLevel();
+        }
+        document.getElementById("continueBtn").style.display = "none";
       }
 
       // Resets the game state
@@ -461,6 +491,8 @@
         hideWinNotification();
         hideGameOverNotification();
         hidePlayAgainButton();
+
+        document.getElementById("continueBtn").style.display = "none";
 
         if (resetLevel) {
           level = 1;
@@ -493,6 +525,7 @@
             waitingForNextLevel = false;
             level++;
             updateLevel();
+            document.getElementById("continueBtn").style.display = "none";
             return;
           }
           if (gameOver) {
