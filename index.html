@@ -433,7 +433,7 @@
             "Guess the number (1-10)";
         } else if (level === 2) {
           maxNumber = 50;
-          maxAttempts = 3;
+          maxAttempts = 4;
           document.getElementById("range-info").textContent =
             "Guess the number (1-50)";
         } else {
@@ -458,8 +458,12 @@
 
         // unpause the timer & clock ticking.
         timerPaused = false;
-        const clockTick = document.getElementById("clockTickSound");
-        clockTick.play();
+
+        // Only play clock if timedMode is active
+        if (timedModeActive) {
+          const clockTick = document.getElementById("clockTickSound");
+          clockTick.play();
+        }
 
         focusInput();
       }
