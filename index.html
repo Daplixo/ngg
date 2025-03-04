@@ -181,6 +181,19 @@
       #playAgainBtn:hover {
         background-color: #333;
       }
+      @media (max-width: 480px) {
+        /* On smaller screens, stack input & button vertically */
+        #controls {
+          flex-direction: column;
+          gap: 8px;
+        }
+
+        /* Make input & button expand full width */
+        #userGuess,
+        #controls button {
+          width: 100%;
+        }
+      }
     </style>
   </head>
 
