@@ -388,7 +388,10 @@
             showPlayAgainButton();
             stopClockTicking();
           } else {
-            const hint = numericGuess > randomNumber ? "Too high!" : "Too low!";
+            const hint =
+              numericGuess > randomNumber
+                ? "Your guess is high!"
+                : "Your guess is low!";
             document.getElementById(
               "feedback"
             ).textContent = `Wrong guess! ${hint} Try again.`;
