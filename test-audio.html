@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Audio Test</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 500px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      button {
+        padding: 10px 15px;
+        margin: 10px;
+        background-color: #4d6fed;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      button:hover {
+        background-color: #3a5bd9;
+      }
+      .audio-container {
+        margin-top: 20px;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Audio Test Page</h1>
+    <p>Use the buttons below to test if audio is working correctly.</p>
+
+    <div class="audio-container">
+      <h2>Direct Audio Controls</h2>
+      <p>These audio elements have direct controls:</p>
+
+      <audio id="audio1" controls>
+        <source src="assets/notification.wav" type="audio/wav" />
+        Your browser does not support the audio element.
+      </audio>
+      <p>Level Cleared Sound (notification.wav)</p>
+
+      <audio id="audio2" controls>
+        <source src="assets/gameover.wav" type="audio/wav" />
+        Your browser does not support the audio element.
+      </audio>
+      <p>Game Over Sound (gameover.wav)</p>
+    </div>
+
+    <div class="audio-container">
+      <h2>JavaScript Play Controls</h2>
+      <p>Click buttons to play sounds via JavaScript:</p>
+
+      <button onclick="document.getElementById('audio1').play()">
+        Play Level Cleared Sound
+      </button>
+
+      <button onclick="document.getElementById('audio2').play()">
+        Play Game Over Sound
+      </button>
+    </div>
+
+    <div class="audio-container">
+      <h2>New Audio() Test</h2>
+      <p>Test creating new Audio objects:</p>
+
+      <button onclick="playSound('assets/notification.wav')">
+        Play New Audio - Level Cleared
+      </button>
+
+      <button onclick="playSound('assets/gameover.wav')">
+        Play New Audio - Game Over
+      </button>
+    </div>
+
+    <script>
+      function playSound(url) {
+        try {
+          console.log("Attempting to play:", url);
+          const audio = new Audio(url);
+          audio.volume = 1.0;
+
+          const playPromise = audio.play();
+
+          if (playPromise !== undefined) {
+            playPromise
+              .then(() => console.log("Successfully playing", url))
+              .catch((error) => console.error("Error playing sound:", error));
+          }
+        } catch (error) {
+          console.error("Failed to create or play Audio object:", error);
+        }
+      }
+
+      // Log information about audio support
+      document.addEventListener("DOMContentLoaded", () => {
+        console.log("Audio elements support check:");
+        console.log(
+          "Audio constructor available:",
+          typeof Audio !== "undefined"
+        );
+        console.log(
+          "HTMLAudioElement available:",
+          typeof HTMLAudioElement !== "undefined"
+        );
+
+        const audio1 = document.getElementById("audio1");
+        const audio2 = document.getElementById("audio2");
+
+        console.log("audio1 element:", audio1);
+        console.log("audio2 element:", audio2);
+      });
+    </script>
+  </body>
+</html>

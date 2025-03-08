@@ -1,28 +1,47 @@
-const CACHE_NAME = "guessingGame-v1";
-const ASSETS = [
-  "./", // index.html is at root
-  "./index.html",
-  // Add all your asset files here
-  "./clockticking.wav",
-  "./notification.wav",
-  "./gameover.wav",
-  "./manifest.json"
+const CACHE_NAME = 'number-game-v1';
+const ASSETS_TO_CACHE = [
+  './',
+  './index.html',
+  './css/styles.css',
+  './js/main.js',
+  './js/gameLogic.js',
+  './js/gameState.js',
+  './js/uiManager.js',
+  './js/audioManager.js',
+  './assets/notification.wav',
+  './assets/gameover.wav',
+  './manifest.json'
 ];
 
-// Install event: cache all needed files
-self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS);
-    })
-  );
+// Install service worker and cache all assets
+self.addEventListener('install', (event) => {
+  // Skip the wait so the service worker activates immediately
+  self.skipWaiting();
+  
+  console.log('Installing service worker...');
 });
 
-// Fetch event: serve from cache if available
-self.addEventListener("fetch", (event) => {
+// Activate event - clean up old caches
+self.addEventListener('activate', (event) => {
+  console.log('Service worker activated');
+  // Claim clients immediately
+  event.waitUntil(self.clients.claim());
+});
+
+// Fetch event - network first with cache fallback
+self.addEventListener('fetch', (event) => {
+  // Skip non-GET requests and non-HTTP/HTTPS URLs
+  if (event.request.method !== 'GET' || 
+      !event.request.url.startsWith('http')) {
+    return;
+  }
+  
+  // Simple network-first strategy
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      return cachedResponse || fetch(event.request);
-    })
+    fetch(event.request)
+      .catch(() => {
+        console.log('Fetch failed, falling back to cache for:', event.request.url);
+        return caches.match(event.request);
+      })
   );
 });
