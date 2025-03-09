@@ -147,40 +147,46 @@
     </div>
 
     <div id="game-container">
-      <!-- Game UI -->
-      <div id="game-ui">
-        <div id="level-indicator">Level 1</div>
-        <h2>Number Guessing Game</h2>
-        <h3 id="range-info">Guess the number (1-10)</h3>
-
-        <div id="controls">
-          <input
-            type="text"
-            id="userGuess"
-            placeholder="Enter your guess"
-            autocomplete="off"
-          />
-          <button id="submitGuessBtn">Submit</button>
+      <!-- Two-column layout for game -->
+      <div class="game-layout">
+        <!-- Left column with vertical proximity meter (25%) -->
+        <div class="proximity-column">
+          <div class="proximity-label top">Very Close</div>
+          <div id="proximity-container" class="vertical">
+            <div id="proximity-meter">
+              <div id="proximity-fill"></div>
+            </div>
+          </div>
+          <div class="proximity-label bottom">Far Away</div>
         </div>
 
-        <p id="feedback"></p>
-        <p id="attempts"></p>
+        <!-- Right column with game UI (75%) -->
+        <div class="game-content">
+          <!-- Game UI -->
+          <div id="game-ui">
+            <div id="level-indicator">Level 1</div>
+            <h2>Number Guessing Game</h2>
+            <h3 id="range-info">Guess the number (1-10)</h3>
 
-        <!-- Proximity Meter -->
-        <div id="proximity-container">
-          <div id="proximity-meter">
-            <div id="proximity-fill"></div>
-          </div>
-          <div id="proximity-labels">
-            <span>Far Away</span>
-            <span>Very Close</span>
+            <div id="controls">
+              <input
+                type="text"
+                id="userGuess"
+                placeholder="Enter your guess"
+                autocomplete="off"
+              />
+              <button id="submitGuessBtn">Submit</button>
+            </div>
+
+            <p id="feedback"></p>
+            <p id="attempts"></p>
+
+            <!-- Game Control Buttons -->
+            <button id="continueBtn" style="display: none">Continue</button>
+            <button id="playAgainBtn" style="display: none">Play Again</button>
+            <button id="restartBtn" style="display: none">Restart</button>
           </div>
         </div>
-
-        <!-- Game Control Buttons -->
-        <button id="continueBtn" style="display: none">Continue</button>
-        <button id="playAgainBtn" style="display: none">Play Again</button>
-        <button id="restartBtn" style="display: none">Restart</button>
       </div>
     </div>
 

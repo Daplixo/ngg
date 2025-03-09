@@ -105,23 +105,49 @@ export const UIManager = {
         
         if (!proximityContainer || !proximityFill) return;
         
-        // Show the proximity meter after first valid guess
-        proximityContainer.style.display = 'block';
+        // Show the proximity meter - it's always vertical now
+        proximityContainer.style.display = 'flex';
         
         // Calculate how close the guess is to the target
-        // Using an inverse calculation so 100% means "hot" (very close)
         const totalRange = max - min;
         const distance = Math.abs(guess - target);
-        const maxDistance = Math.max(target - min, max - target); // Maximum possible distance
         
-        // Calculate percentage (0-100)
-        // Invert so 0 is cold and 100 is hot
-        let percentage = 100 - (distance / maxDistance * 100);
+        // Use a non-linear algorithm to make proximity feel more accurate
+        // This will make small distances feel more significant
+        // and create more noticeable changes when getting closer
+        
+        // Normalize distance to a 0-1 scale
+        const normalizedDistance = distance / totalRange;
+        
+        // Apply a quadratic curve for better sensitivity when closer to the target
+        // Square the normalized distance and invert it
+        // This creates more visual feedback as you get closer
+        const proximityValue = 1 - (normalizedDistance * normalizedDistance);
+        
+        // Apply exponential scaling for even more accurate feeling
+        // This formula creates a slow start and rapid movement as you get very close
+        const curvedProximity = Math.pow(proximityValue, 1.5);
+        
+        // Convert to percentage for the meter fill
+        const percentage = curvedProximity * 100;
         
         // Ensure percentage is between 0-100
-        percentage = Math.max(0, Math.min(100, percentage));
+        const boundedPercentage = Math.max(0, Math.min(100, percentage));
         
-        // Update the fill width to represent proximity
-        proximityFill.style.width = `${percentage}%`;
+        // Update for flipped vertical meter (growing from top)
+        proximityFill.style.width = '100%';
+        proximityFill.style.height = `${boundedPercentage}%`;
+    },
+
+    // Add a method to handle orientation changes for the proximity meter
+    handleOrientationChange() {
+        const proximityContainer = document.getElementById('proximity-container');
+        const proximityFill = document.getElementById('proximity-fill');
+        
+        if (!proximityContainer || !proximityFill) return;
+        
+        // Reset for flipped vertical meter
+        proximityFill.style.width = '100%';
+        proximityFill.style.height = '0%';
     }
 }; 

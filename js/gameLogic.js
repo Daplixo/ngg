@@ -123,16 +123,11 @@ export class GameLogic {
         
         UIManager.updateAttempts();
         
-        // Reset proximity meter by hiding it
-        const proximityContainer = document.getElementById('proximity-container');
-        if (proximityContainer) {
-            proximityContainer.style.display = 'none';
-        }
-        
-        // Reset fill position
+        // Reset fill position for flipped vertical meter
         const proximityFill = document.getElementById('proximity-fill');
         if (proximityFill) {
-            proximityFill.style.width = '0%';
+            proximityFill.style.width = '100%';
+            proximityFill.style.height = '0%';
         }
         
         UIManager.elements.userGuess.value = "";
