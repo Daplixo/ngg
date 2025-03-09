@@ -75,6 +75,14 @@ export class GameLogic {
                 window.addShake(inputElement);
             }
             
+            // Update proximity meter
+            UIManager.updateProximityMeter(
+                numericGuess, 
+                gameState.randomNumber, 
+                1, 
+                gameState.maxNumber
+            );
+            
             if (gameState.attempts >= gameState.maxAttempts) {
                 UIManager.setFeedback(
                     `Game Over! The correct number was ${gameState.randomNumber}. Try again.`,
@@ -89,8 +97,8 @@ export class GameLogic {
                     window.playWrongSound(true);
                 }
             } else {
-                const hint = numericGuess > gameState.randomNumber ? "Your guess is high!" : "Your guess is low!";
-                UIManager.setFeedback(`Wrong guess! ${hint} Try again.`);
+                // Remove high/low hints and just prompt to try again
+                UIManager.setFeedback("Incorrect! Check the meter and try again!");
                 UIManager.elements.feedback.style.color = "red";
                 
                 // Play wrong sound at reduced volume if available
@@ -109,8 +117,27 @@ export class GameLogic {
         UIManager.hideWinNotification();
         UIManager.hideGameOverNotification();
         UIManager.hidePlayAgainButton();
-        UIManager.setFeedback("");
-        UIManager.elements.attempts.textContent = "";
+        
+        UIManager.elements.continueBtn.style.display = "none";
+        UIManager.elements.restartBtn.style.display = "none";
+        
+        UIManager.setFeedback("Enter your guess and press Submit!");
+        UIManager.elements.feedback.style.color = "#333";
+        
+        UIManager.updateAttempts();
+        
+        // Reset proximity meter by hiding it
+        const proximityContainer = document.getElementById('proximity-container');
+        if (proximityContainer) {
+            proximityContainer.style.display = 'none';
+        }
+        
+        // Reset fill position
+        const proximityFill = document.getElementById('proximity-fill');
+        if (proximityFill) {
+            proximityFill.style.width = '0%';
+        }
+        
         UIManager.elements.userGuess.value = "";
         UIManager.focusInput();
     }

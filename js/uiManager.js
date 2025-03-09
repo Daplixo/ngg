@@ -93,5 +93,35 @@ export const UIManager = {
                 userGuessInput.focus();
             }, 100);
         }
+    },
+
+    updateProximityMeter(guess, target, min, max) {
+        // Don't update if guess is invalid
+        if (isNaN(guess) || guess < min || guess > max) return;
+        
+        // Get the proximity container
+        const proximityContainer = document.getElementById('proximity-container');
+        const proximityFill = document.getElementById('proximity-fill');
+        
+        if (!proximityContainer || !proximityFill) return;
+        
+        // Show the proximity meter after first valid guess
+        proximityContainer.style.display = 'block';
+        
+        // Calculate how close the guess is to the target
+        // Using an inverse calculation so 100% means "hot" (very close)
+        const totalRange = max - min;
+        const distance = Math.abs(guess - target);
+        const maxDistance = Math.max(target - min, max - target); // Maximum possible distance
+        
+        // Calculate percentage (0-100)
+        // Invert so 0 is cold and 100 is hot
+        let percentage = 100 - (distance / maxDistance * 100);
+        
+        // Ensure percentage is between 0-100
+        percentage = Math.max(0, Math.min(100, percentage));
+        
+        // Update the fill width to represent proximity
+        proximityFill.style.width = `${percentage}%`;
     }
 }; 
