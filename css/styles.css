@@ -964,6 +964,10 @@ button:active {
   margin-top: 4px;
 }
 
+#proximity-labels span {
+  font-weight: 600; /* Make all label text bolder */
+}
+
 #proximity-labels span:first-child {
   color: #e74c3c; /* Red for "Far Away" */
 }
