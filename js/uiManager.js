@@ -84,6 +84,14 @@ export const UIManager = {
     },
 
     focusInput() {
-        this.elements.userGuess.focus();
+        const userGuessInput = document.getElementById('userGuess');
+        if (userGuessInput) {
+            userGuessInput.focus();
+            
+            // Allow a small delay for mobile browsers
+            setTimeout(() => {
+                userGuessInput.focus();
+            }, 100);
+        }
     }
 }; 

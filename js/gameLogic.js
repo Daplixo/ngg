@@ -11,8 +11,8 @@ function log(message) {
     }
 }
 
-export const GameLogic = {
-    handleWin() {
+export class GameLogic {
+    static handleWin() {
         console.log(`[GAME] Player won level ${gameState.level}`);
         gameState.hasWon = true;
 
@@ -27,9 +27,9 @@ export const GameLogic = {
             UIManager.showWinNotification("You cleared the final level!");
             UIManager.elements.continueBtn.style.display = "inline-block";
         }
-    },
+    }
 
-    continueNextLevel() {
+    static continueNextLevel() {
         if (gameState.finalWin) {
             this.playAgain();
             return;
@@ -43,9 +43,9 @@ export const GameLogic = {
         }
         
         UIManager.elements.continueBtn.style.display = "none";
-    },
+    }
 
-    checkGuess(userGuess) {
+    static checkGuess(userGuess) {
         if (gameState.gameOver || gameState.hasWon) return;
 
         userGuess = userGuess.trim().toLowerCase();
@@ -58,13 +58,23 @@ export const GameLogic = {
         if (isNaN(numericGuess) || numericGuess < 1 || numericGuess > gameState.maxNumber) {
             UIManager.setFeedback("Invalid input! Enter a number within the range.");
             UIManager.elements.feedback.style.color = "orange";
+            UIManager.focusInput();
             return;
         }
 
         gameState.attempts++;
+
         if (numericGuess === gameState.randomNumber) {
             this.handleWin();
         } else {
+            // Get the input element for shake effect
+            const inputElement = document.getElementById('userGuess');
+            
+            // Add shake effect if the function is available
+            if (window.addShake) {
+                window.addShake(inputElement);
+            }
+            
             if (gameState.attempts >= gameState.maxAttempts) {
                 UIManager.setFeedback(
                     `Game Over! The correct number was ${gameState.randomNumber}. Try again.`,
@@ -73,16 +83,29 @@ export const GameLogic = {
                 gameState.gameOver = true;
                 UIManager.showGameOverNotification("You ran out of attempts!");
                 UIManager.showPlayAgainButton();
+                
+                // Play game over sound at full volume if available
+                if (window.playWrongSound) {
+                    window.playWrongSound(true);
+                }
             } else {
                 const hint = numericGuess > gameState.randomNumber ? "Your guess is high!" : "Your guess is low!";
                 UIManager.setFeedback(`Wrong guess! ${hint} Try again.`);
                 UIManager.elements.feedback.style.color = "red";
+                
+                // Play wrong sound at reduced volume if available
+                if (window.playWrongSound) {
+                    window.playWrongSound(false);
+                }
+                
+                // Refocus the input field after showing feedback
+                setTimeout(UIManager.focusInput, 10);
             }
         }
         UIManager.updateAttempts();
-    },
+    }
 
-    resetUI() {
+    static resetUI() {
         UIManager.hideWinNotification();
         UIManager.hideGameOverNotification();
         UIManager.hidePlayAgainButton();
@@ -90,28 +113,28 @@ export const GameLogic = {
         UIManager.elements.attempts.textContent = "";
         UIManager.elements.userGuess.value = "";
         UIManager.focusInput();
-    },
+    }
 
-    startGameMode() {
+    static startGameMode() {
         UIManager.showGameUI();
         UIManager.updateRangeInfo();
         UIManager.focusInput();
-    },
+    }
 
-    restartGame(resetEverything = true) {
+    static restartGame(resetEverything = true) {
         if (resetEverything) {
             gameState.reset(true);
         }
         
         UIManager.updateRangeInfo();
         this.resetUI();
-    },
+    }
 
-    playAgain() {
+    static playAgain() {
         this.restartGame(true);
-    },
+    }
 
-    handleKeyPress(event) {
+    static handleKeyPress(event) {
         if (event.key === "Enter") {
             event.preventDefault();
             if (gameState.finalWin) {
@@ -136,4 +159,4 @@ export const GameLogic = {
             this.restartGame();
         }
     }
-};
+}
