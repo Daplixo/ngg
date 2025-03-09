@@ -92,13 +92,10 @@ export class GameLogic {
                 UIManager.showGameOverNotification("You ran out of attempts!");
                 UIManager.showPlayAgainButton();
                 
-                // Play game over sound at full volume if available
-                if (window.playWrongSound) {
-                    window.playWrongSound(true);
-                }
+                // Don't play our custom beep sound for game over
+                // The original game over sound will play via the notification system
             } else {
-                // Remove high/low hints and just prompt to try again
-                UIManager.setFeedback("Incorrect! Check the meter and try again!");
+                UIManager.setFeedback("Incorrect! Try again!");
                 UIManager.elements.feedback.style.color = "red";
                 
                 // Play wrong sound at reduced volume if available

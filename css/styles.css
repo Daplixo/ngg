@@ -951,7 +951,7 @@ button:active {
 #proximity-fill {
   height: 100%;
   width: 0; /* Starting width, updated with JS */
-  background: linear-gradient(to right, #2ecc71, #f39c12, #e74c3c);
+  background: linear-gradient(to right, #e74c3c, #f39c12, #2ecc71);
   border-radius: 6px;
   transition: width 0.3s ease-out;
 }
@@ -965,11 +965,11 @@ button:active {
 }
 
 #proximity-labels span:first-child {
-  color: #2ecc71; /* Green for "Far Away" */
+  color: #e74c3c; /* Red for "Far Away" */
 }
 
 #proximity-labels span:last-child {
-  color: #e74c3c; /* Red for "Very Close" */
+  color: #2ecc71; /* Green for "Very Close" */
 }
 
 /* Mobile Styles for Proximity Meter */
