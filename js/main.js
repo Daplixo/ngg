@@ -3,6 +3,9 @@ import { AudioManager } from './audioManager.js';
 import { UIManager } from './uiManager.js';
 import { GameLogic } from './gameLogic.js';
 
+// Add a global flag to track modal state
+window.isModalOpen = false;
+
 // Shake animation function - make it global
 window.addShake = function(element) {
   if (!element) return;
@@ -23,46 +26,41 @@ window.addShake = function(element) {
 
 // Function to play wrong sound with volume control - make it global
 window.playWrongSound = function(isGameOver = false) {
-  // Get the existing game over sound element or create one if not already defined
-  let gameOverSound = document.getElementById('gameOverSound');
-  
-  if (!gameOverSound) {
-    // If the sound element doesn't exist yet, we'll look for it in the typical locations
-    // Try common locations for the sound file
-    const possiblePaths = [
-      'assets/sounds/game-over.mp3',
-      'assets/sounds/gameover.mp3',
-      'assets/audio/game-over.mp3',
-      'assets/audio/gameover.mp3'
-    ];
+  try {
+    // Create audio context
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     
-    // Create audio element
-    gameOverSound = new Audio();
-    gameOverSound.id = 'gameOverSound';
-    document.body.appendChild(gameOverSound);
+    // Create oscillator
+    const oscillator = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
     
-    // Try each possible path
-    for (const path of possiblePaths) {
-      try {
-        gameOverSound.src = path;
-        break;
-      } catch (e) {
-        console.log(`Sound not found at ${path}`);
-      }
-    }
-  }
-  
-  // Set volume based on whether it's game over or just a wrong guess
-  gameOverSound.volume = isGameOver ? 1.0 : 0.3;
-  
-  // Reset sound to beginning if it's already playing
-  gameOverSound.currentTime = 0;
-  
-  // Play the sound
-  gameOverSound.play().catch(error => {
+    // Configure oscillator
+    oscillator.type = 'sine';
+    oscillator.frequency.value = isGameOver ? 180 : 220; // Lower frequency for game over
+    
+    // Configure gain (volume)
+    gainNode.gain.value = isGameOver ? 0.3 : 0.15; // Louder for game over
+    
+    // Connect nodes
+    oscillator.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+    
+    // Start and stop oscillator (short beep)
+    oscillator.start();
+    
+    // Make game over sound longer
+    const duration = isGameOver ? 0.8 : 0.2;
+    
+    // Stop after duration
+    setTimeout(() => {
+      oscillator.stop();
+      // Disconnect nodes to prevent memory leaks
+      oscillator.disconnect();
+      gainNode.disconnect();
+    }, duration * 1000);
+  } catch (error) {
     console.log('Error playing sound:', error);
-    // Browser might prevent autoplay, user needs to interact first
-  });
+  }
 };
 
 // Initialize game when DOM is loaded
@@ -126,65 +124,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Add our sound and animation effects without disrupting existing code
 function addSoundAndAnimationEffects() {
-    // Add shake animation function to window
-    window.addShake = function(element) {
-        if (!element) return;
-        
-        // Add the class to trigger the animation
-        element.classList.add('shake');
-        
-        // Remove focus to improve the visual effect
-        element.blur();
-        
-        // Remove the class after the animation completes
-        setTimeout(() => {
-            if (element) {
-                element.classList.remove('shake');
-            }
-        }, 500);
-    };
-
-    // Create programmatic sound instead of relying on external files
-    window.playWrongSound = function(isGameOver = false) {
-        try {
-            // Create audio context
-            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            
-            // Create oscillator
-            const oscillator = audioCtx.createOscillator();
-            const gainNode = audioCtx.createGain();
-            
-            // Configure oscillator
-            oscillator.type = 'sine';
-            oscillator.frequency.value = isGameOver ? 180 : 220; // Lower frequency for game over
-            
-            // Configure gain (volume)
-            gainNode.gain.value = isGameOver ? 0.3 : 0.15; // Louder for game over
-            
-            // Connect nodes
-            oscillator.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-            
-            // Start and stop oscillator (short beep)
-            oscillator.start();
-            
-            // Make game over sound longer
-            const duration = isGameOver ? 0.8 : 0.2;
-            
-            // Stop after duration
-            setTimeout(() => {
-                oscillator.stop();
-                // Disconnect nodes to prevent memory leaks
-                oscillator.disconnect();
-                gainNode.disconnect();
-            }, duration * 1000);
-        } catch (error) {
-            console.log('Error playing sound:', error);
-        }
-    };
-    
-    // Keep input field focused at all times
+    // Keep input field focused at all times, unless modal is open
     function keepInputFocused() {
+        // Skip refocusing if modal is open
+        if (window.isModalOpen) return;
+        
         const inputElement = document.getElementById('userGuess');
         if (inputElement && !gameState.gameOver && !gameState.hasWon) {
             inputElement.focus();
@@ -194,11 +138,18 @@ function addSoundAndAnimationEffects() {
     // Add focus event handlers
     window.addEventListener('click', function() {
         // Short delay to ensure clicks on buttons are processed first
-        setTimeout(keepInputFocused, 50);
+        // And skip if modal is open
+        if (!window.isModalOpen) {
+            setTimeout(keepInputFocused, 50);
+        }
     });
     
     // Set interval to keep checking focus
-    setInterval(keepInputFocused, 1000);
+    setInterval(function() {
+        if (!window.isModalOpen) {
+            keepInputFocused();
+        }
+    }, 1000);
     
     // Initial focus
     setTimeout(keepInputFocused, 500);
@@ -214,18 +165,42 @@ function initFeedbackModal() {
 
     // Show modal when feedback button is clicked
     feedbackBtn.addEventListener('click', () => {
+        // Set flag to prevent game input focus
+        window.isModalOpen = true;
         modal.classList.add('show');
+        
+        // Optional: Focus on the first form field after modal opens
+        setTimeout(() => {
+            const nameInput = document.getElementById('name');
+            if (nameInput) nameInput.focus();
+        }, 100);
     });
 
     // Hide modal when close button is clicked
     closeModalBtn.addEventListener('click', () => {
         modal.classList.remove('show');
+        // Reset flag when modal is closed
+        setTimeout(() => {
+            window.isModalOpen = false;
+        }, 300); // Wait for modal animation to complete
     });
 
     // Hide modal when clicking outside of it
     window.addEventListener('click', (event) => {
         if (event.target === modal) {
             modal.classList.remove('show');
+            // Reset flag when modal is closed
+            setTimeout(() => {
+                window.isModalOpen = false;
+            }, 300); // Wait for modal animation to complete
         }
     });
-} 
+    
+    // Also handle form submission
+    form.addEventListener('submit', () => {
+        // Reset the flag after form is submitted
+        setTimeout(() => {
+            window.isModalOpen = false;
+        }, 500);
+    });
+}

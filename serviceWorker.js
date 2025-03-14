@@ -18,13 +18,16 @@ self.addEventListener('install', (event) => {
   // Skip the wait so the service worker activates immediately
   self.skipWaiting();
   
-  console.log('Installing service worker...');
+  // Cache critical assets
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(cache => {
+      return cache.addAll(ASSETS_TO_CACHE);
+    })
+  );
 });
 
 // Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
-  console.log('Service worker activated');
-  // Claim clients immediately
   event.waitUntil(self.clients.claim());
 });
 
@@ -40,7 +43,6 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
     fetch(event.request)
       .catch(() => {
-        console.log('Fetch failed, falling back to cache for:', event.request.url);
         return caches.match(event.request);
       })
   );

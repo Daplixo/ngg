@@ -2,8 +2,8 @@ import { gameState } from './gameState.js';
 import { UIManager } from './uiManager.js';
 import { AudioManager } from './audioManager.js';
 
-// Debug flag
-const DEBUG = true;
+// Set debug flag to false for production
+const DEBUG = false;
 
 function log(message) {
     if (DEBUG) {
@@ -49,11 +49,6 @@ export class GameLogic {
         if (gameState.gameOver || gameState.hasWon) return;
 
         userGuess = userGuess.trim().toLowerCase();
-        if (userGuess === "boobs") {
-            this.handleWin();
-            return;
-        }
-
         const numericGuess = parseInt(userGuess);
         if (isNaN(numericGuess) || numericGuess < 1 || numericGuess > gameState.maxNumber) {
             UIManager.setFeedback("Invalid input! Enter a number within the range.");
@@ -91,9 +86,6 @@ export class GameLogic {
                 gameState.gameOver = true;
                 UIManager.showGameOverNotification("You ran out of attempts!");
                 UIManager.showPlayAgainButton();
-                
-                // Don't play our custom beep sound for game over
-                // The original game over sound will play via the notification system
             } else {
                 UIManager.setFeedback("Incorrect! Try again!");
                 UIManager.elements.feedback.style.color = "red";
