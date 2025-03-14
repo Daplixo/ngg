@@ -59,6 +59,18 @@ export class GameLogic {
 
         gameState.attempts++;
 
+        // Calculate proximity for the past guesses feature
+        const distance = Math.abs(numericGuess - gameState.randomNumber);
+        const totalRange = gameState.maxNumber - 1;
+        const normalizedDistance = distance / totalRange;
+        const proximity = 1 - (normalizedDistance * normalizedDistance);
+        
+        // Add guess with proximity to gameState
+        gameState.addGuess(numericGuess, proximity);
+        
+        // Update past guesses display
+        UIManager.updatePastGuesses();
+
         if (numericGuess === gameState.randomNumber) {
             this.handleWin();
         } else {
@@ -131,6 +143,9 @@ export class GameLogic {
         
         UIManager.elements.userGuess.value = "";
         UIManager.focusInput();
+        
+        // Also reset past guesses display
+        UIManager.updatePastGuesses();
     }
 
     static startGameMode() {

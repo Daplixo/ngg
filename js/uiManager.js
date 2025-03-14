@@ -13,7 +13,9 @@ export const UIManager = {
         restartBtn: document.getElementById("restartBtn"),
         winNotification: document.getElementById("winNotification"),
         gameOverNotification: document.getElementById("gameOverNotification"),
-        levelIndicator: document.getElementById("level-indicator")
+        levelIndicator: document.getElementById("level-indicator"),
+        pastGuessesContainer: document.getElementById("past-guesses-container"),
+        pastGuesses: document.getElementById("past-guesses")
     },
 
     showGameUI() {
@@ -149,5 +151,34 @@ export const UIManager = {
         // Reset for flipped vertical meter
         proximityFill.style.width = '100%';
         proximityFill.style.height = '0%';
+        
+        // Also update past guesses
+        this.updatePastGuesses();
+    },
+
+    // Add a method to update the past guesses display
+    updatePastGuesses() {
+        const pastGuessesContainer = document.getElementById("past-guesses-container");
+        const pastGuessesElement = document.getElementById("past-guesses");
+        
+        if (!pastGuessesContainer || !pastGuessesElement) return;
+        
+        // Show the container if there are guesses
+        if (gameState.pastGuesses.length > 0) {
+            pastGuessesContainer.style.display = 'flex';
+            
+            // Clear previous guesses display
+            pastGuessesElement.innerHTML = '';
+            
+            // Add each guess as a chip
+            gameState.pastGuesses.forEach(guess => {
+                const chipElement = document.createElement('div');
+                chipElement.className = `guess-chip proximity-${Math.floor(guess.proximity * 4)}`;
+                chipElement.textContent = guess.value;
+                pastGuessesElement.appendChild(chipElement);
+            });
+        } else {
+            pastGuessesContainer.style.display = 'none';
+        }
     }
-}; 
+};

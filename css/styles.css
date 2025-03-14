@@ -1458,3 +1458,82 @@ html[data-theme="light"] #sun-icon {
     padding: 6px 12px;
   }
 }
+
+/* Past Guesses Section */
+#past-guesses-container {
+  margin: 1rem 0;
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#past-guesses-title {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-color);
+  transition: color 0.3s;
+}
+
+#past-guesses {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 0.5rem 0;
+}
+
+.guess-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 10px;
+  border-radius: 18px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: white;
+  transition: transform 0.2s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.guess-chip:hover {
+  transform: translateY(-2px);
+}
+
+/* Proximity colors for chips, from far to close */
+.proximity-0 { background-color: #e74c3c; } /* Very far - red */
+.proximity-1 { background-color: #e67e22; } /* Far - orange */
+.proximity-2 { background-color: #f1c40f; } /* Medium - yellow */
+.proximity-3 { background-color: #27ae60; } /* Close - light green */
+.proximity-4 { background-color: #2ecc71; } /* Very close - green */
+
+/* Initially hide past guesses container */
+#past-guesses-container {
+  display: none;
+}
+
+/* Responsive styles for past guesses */
+@media (max-width: 768px) {
+  #past-guesses {
+    padding: 0.25rem 0;
+    gap: 6px;
+  }
+  
+  .guess-chip {
+    min-width: 32px;
+    height: 32px;
+    font-size: 0.85rem;
+  }
+  
+  #past-guesses-title {
+    font-size: 0.85rem;
+  }
+}
+
+// ...existing code...

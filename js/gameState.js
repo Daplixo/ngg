@@ -9,6 +9,7 @@ export const gameState = {
     hasWon: false,
     waitingForNextLevel: false,
     finalWin: false,
+    pastGuesses: [], // Track past guesses with their proximity values
 
     reset(resetEverything = true) {
         if (resetEverything) {
@@ -22,6 +23,7 @@ export const gameState = {
         this.finalWin = false;
         this.waitingForNextLevel = false;
         this.randomNumber = Math.floor(Math.random() * this.maxNumber) + 1;
+        this.pastGuesses = []; // Clear past guesses
     },
 
     nextLevel() {
@@ -34,5 +36,13 @@ export const gameState = {
             this.maxAttempts = 5;
         }
         this.reset(false);
+    },
+    
+    // Add a method to add a guess with its proximity value
+    addGuess(guess, proximityValue) {
+        this.pastGuesses.push({
+            value: guess,
+            proximity: proximityValue
+        });
     }
-}; 
+};
