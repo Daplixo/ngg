@@ -111,7 +111,14 @@ export class GameLogic {
         UIManager.elements.restartBtn.style.display = "none";
         
         UIManager.setFeedback("Enter your guess and press Submit!");
-        UIManager.elements.feedback.style.color = "#333";
+        
+        // Update to use CSS variables instead of hardcoded color
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        if (currentTheme === 'dark') {
+            UIManager.elements.feedback.style.color = "var(--feedback-light)";
+        } else {
+            UIManager.elements.feedback.style.color = "#333";
+        }
         
         UIManager.updateAttempts();
         

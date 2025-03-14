@@ -10,6 +10,8 @@ const ASSETS_TO_CACHE = [
   './js/audioManager.js',
   './assets/notification.wav',
   './assets/gameover.wav',
+  './assets/icons/moon.svg',
+  './assets/icons/sun.svg',
   './manifest.json'
 ];
 

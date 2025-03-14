@@ -86,6 +86,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Add sound and animation effects (our additions)
     addSoundAndAnimationEffects();
 
+    // Initialize theme
+    initTheme();
+
     // Focus the input field immediately
     UIManager.elements.userGuess.focus();
 
@@ -202,5 +205,46 @@ function initFeedbackModal() {
         setTimeout(() => {
             window.isModalOpen = false;
         }, 500);
+    });
+}
+
+// Initialize theme - simplified version using DOM attributes
+function initTheme() {
+    const themeToggle = document.getElementById('theme-toggle');
+    const moonIcon = document.getElementById('moon-icon');
+    const sunIcon = document.getElementById('sun-icon');
+    
+    // Check if user has previously chosen a theme
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    
+    // Set initial icon visibility
+    if (savedTheme === 'dark') {
+        moonIcon.style.display = 'none';
+        sunIcon.style.display = 'block';
+    } else {
+        moonIcon.style.display = 'block';
+        sunIcon.style.display = 'none';
+    }
+    
+    themeToggle.addEventListener('click', () => {
+        // Toggle theme
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        
+        // Apply theme
+        document.documentElement.setAttribute('data-theme', nextTheme);
+        
+        // Toggle icon visibility
+        if (nextTheme === 'dark') {
+            moonIcon.style.display = 'none';
+            sunIcon.style.display = 'block';
+        } else {
+            moonIcon.style.display = 'block';
+            sunIcon.style.display = 'none';
+        }
+        
+        // Save user preference
+        localStorage.setItem('theme', nextTheme);
     });
 }
