@@ -15,7 +15,8 @@ export const UIManager = {
         gameOverNotification: document.getElementById("gameOverNotification"),
         levelIndicator: document.getElementById("level-indicator"),
         pastGuessesContainer: document.getElementById("past-guesses-container"),
-        pastGuesses: document.getElementById("past-guesses")
+        pastGuesses: document.getElementById("past-guesses"),
+        customKeyboard: document.getElementById("custom-keyboard") // Add this line
     },
 
     showGameUI() {
@@ -23,6 +24,9 @@ export const UIManager = {
         this.elements.userGuess.style.display = "block";
         this.elements.submitGuessBtn.style.display = "inline-block";
         this.updateLevelIndicator();
+        
+        // Always show custom keyboard
+        this.showCustomKeyboard();
     },
 
     updateRangeInfo() {
@@ -39,6 +43,12 @@ export const UIManager = {
         this.elements.feedback.className = className;
     },
 
+    // Add a new method to clear the feedback area
+    clearFeedback() {
+        this.elements.feedback.textContent = '';
+        this.elements.feedback.className = '';
+    },
+
     updateAttempts() {
         this.elements.attempts.textContent = `Attempts: ${gameState.attempts}/${gameState.maxAttempts}`;
     },
@@ -47,9 +57,10 @@ export const UIManager = {
         this.elements.winNotification.textContent = message;
         this.elements.winNotification.classList.add("show");
         AudioManager.play("levelCleared");
+        // Increased duration to 4 seconds since it's the only feedback now
         setTimeout(() => {
             this.hideWinNotification();
-        }, 3000);
+        }, 4000);
     },
 
     hideWinNotification() {
@@ -64,9 +75,10 @@ export const UIManager = {
         this.elements.gameOverNotification.textContent = message;
         this.elements.gameOverNotification.classList.add("show");
         AudioManager.play("gameOver");
+        // Increased duration to 4 seconds since it's the only feedback now
         setTimeout(() => {
             this.hideGameOverNotification();
-        }, 3000);
+        }, 4000);
     },
 
     hideGameOverNotification() {
@@ -156,29 +168,44 @@ export const UIManager = {
         this.updatePastGuesses();
     },
 
-    // Add a method to update the past guesses display
+    // Update the past guesses method to show only the last guess
     updatePastGuesses() {
-        const pastGuessesContainer = document.getElementById("past-guesses-container");
-        const pastGuessesElement = document.getElementById("past-guesses");
+        const lastGuessElement = document.getElementById("last-guess");
         
-        if (!pastGuessesContainer || !pastGuessesElement) return;
+        if (!lastGuessElement) return;
         
-        // Show the container if there are guesses
+        // Show the last guess if there are any guesses
         if (gameState.pastGuesses.length > 0) {
-            pastGuessesContainer.style.display = 'flex';
+            const lastGuess = gameState.pastGuesses[gameState.pastGuesses.length - 1];
+            const proximityLevel = Math.floor(lastGuess.proximity * 4);
             
-            // Clear previous guesses display
-            pastGuessesElement.innerHTML = '';
-            
-            // Add each guess as a chip
-            gameState.pastGuesses.forEach(guess => {
-                const chipElement = document.createElement('div');
-                chipElement.className = `guess-chip proximity-${Math.floor(guess.proximity * 4)}`;
-                chipElement.textContent = guess.value;
-                pastGuessesElement.appendChild(chipElement);
-            });
+            // Update the last guess display
+            lastGuessElement.textContent = lastGuess.value;
+            lastGuessElement.className = `proximity-${proximityLevel}`;
+            lastGuessElement.classList.add('show');
         } else {
-            pastGuessesContainer.style.display = 'none';
+            lastGuessElement.className = '';
+            lastGuessElement.textContent = '';
+            lastGuessElement.classList.remove('show');
+        }
+    },
+
+    // Update method to show the custom keyboard unconditionally
+    showCustomKeyboard() {
+        if (this.elements.customKeyboard) {
+            this.elements.customKeyboard.style.display = 'block';
+            
+            // Ensure input is readonly to prevent virtual/physical keyboard
+            if (this.elements.userGuess) {
+                this.elements.userGuess.setAttribute('readonly', true);
+            }
+        }
+    },
+    
+    // Method to hide the custom keyboard
+    hideCustomKeyboard() {
+        if (this.elements.customKeyboard) {
+            this.elements.customKeyboard.style.display = 'none';
         }
     }
 };

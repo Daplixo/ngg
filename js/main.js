@@ -80,7 +80,8 @@ document.addEventListener('DOMContentLoaded', () => {
         playAgainBtn: document.getElementById('playAgainBtn'),
         restartBtn: document.getElementById('restartBtn'),
         winNotification: document.getElementById('winNotification'),
-        gameOverNotification: document.getElementById('gameOverNotification')
+        gameOverNotification: document.getElementById('gameOverNotification'),
+        customKeyboard: document.getElementById("custom-keyboard") // Add this line
     };
     
     // Add sound and animation effects (our additions)
@@ -123,6 +124,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize feedback modal
     initFeedbackModal();
+
+    // Initialize custom keyboard for mobile
+    initCustomKeyboard();
+
+    // Initialize UI elements including showing attempts at 0
+    UIManager.updateAttempts();  // Add this line to show attempts: 0/X on initial load
+    
+    // Only show keyboard initially if game is active
+    if (window.innerWidth <= 768 && !gameState.gameOver && !gameState.hasWon) {
+        UIManager.showCustomKeyboard();
+    } else {
+        UIManager.hideCustomKeyboard(); // Hide by default on desktop or when game is not active
+    }
+    
+    // Fix: Initialize keyboard visibility properly when game starts
+    if (window.innerWidth <= 768) {
+        UIManager.showCustomKeyboard();
+    }
 });
 
 // Add our sound and animation effects without disrupting existing code
@@ -246,5 +265,79 @@ function initTheme() {
         
         // Save user preference
         localStorage.setItem('theme', nextTheme);
+    });
+}
+
+// Initialize the custom number keyboard for mobile devices
+function initCustomKeyboard() {
+    const customKeyboard = document.getElementById('custom-keyboard');
+    const userGuessInput = document.getElementById('userGuess');
+    
+    if (!customKeyboard || !userGuessInput) return;
+    
+    // Make input readonly to prevent virtual/physical keyboard
+    userGuessInput.setAttribute('readonly', true);
+    
+    // Add click handlers to all keyboard buttons
+    const keyButtons = customKeyboard.querySelectorAll('.key-btn');
+    
+    keyButtons.forEach(button => {
+        button.addEventListener('click', (e) => {
+            e.preventDefault();
+            const keyValue = button.getAttribute('data-key');
+            
+            // Handle different key types
+            if (keyValue === 'clear') {
+                userGuessInput.value = '';
+            } else if (keyValue === 'enter') {
+                GameLogic.checkGuess(userGuessInput.value);
+                userGuessInput.value = '';
+            } else {
+                // Don't add more digits than needed
+                if (userGuessInput.value.length < 5) {
+                    userGuessInput.value += keyValue;
+                }
+                
+                // Optional: Add haptic feedback if device supports it
+                if (window.navigator && window.navigator.vibrate) {
+                    window.navigator.vibrate(50);
+                }
+            }
+            
+            // Keep the input focused
+            userGuessInput.focus();
+        });
+    });
+    
+    // Prevent default click behavior on input
+    userGuessInput.addEventListener('click', (e) => {
+        e.preventDefault();
+        userGuessInput.blur(); // Remove focus to hide any keyboard
+        
+        // Optional: Visual feedback to show the input is active
+        userGuessInput.classList.add('active-input');
+        
+        setTimeout(() => {
+            userGuessInput.classList.remove('active-input');
+        }, 300);
+    });
+    
+    // Also add keyboard support for physical keyboards
+    document.addEventListener('keydown', (e) => {
+        // Make sure we're not in a modal or something
+        if (window.isModalOpen) return;
+        
+        // Numbers 0-9
+        if (/^[0-9]$/.test(e.key) && userGuessInput.value.length < 5) {
+            userGuessInput.value += e.key;
+        }
+        // Backspace/Delete to clear
+        else if (e.key === 'Backspace' || e.key === 'Delete') {
+            userGuessInput.value = userGuessInput.value.slice(0, -1);
+        }
+        // Clear entire input with Escape
+        else if (e.key === 'Escape') {
+            userGuessInput.value = '';
+        }
     });
 }

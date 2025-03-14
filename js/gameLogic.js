@@ -15,15 +15,18 @@ export class GameLogic {
     static handleWin() {
         console.log(`[GAME] Player won level ${gameState.level}`);
         gameState.hasWon = true;
+        
+        // Hide the keyboard when player wins
+        UIManager.hideCustomKeyboard();
 
         if (gameState.level < 3) {
-            UIManager.setFeedback(`Congratulations! You won level ${gameState.level}!`, "win-message");
+            UIManager.clearFeedback(); // Remove text message, just show notification
             UIManager.showWinNotification(`Level ${gameState.level} cleared! Tap Continue...`);
             gameState.waitingForNextLevel = true;
             UIManager.elements.continueBtn.style.display = "inline-block";
         } else {
             gameState.finalWin = true;
-            UIManager.setFeedback("Congratulations! You won the game!", "win-message");
+            UIManager.clearFeedback(); // Remove text message
             UIManager.showWinNotification("You cleared the final level!");
             UIManager.elements.continueBtn.style.display = "inline-block";
         }
@@ -65,6 +68,9 @@ export class GameLogic {
         const normalizedDistance = distance / totalRange;
         const proximity = 1 - (normalizedDistance * normalizedDistance);
         
+        // Simplified feedback - just say it's incorrect
+        const feedback = "Incorrect! Try again.";
+        
         // Add guess with proximity to gameState
         gameState.addGuess(numericGuess, proximity);
         
@@ -91,15 +97,15 @@ export class GameLogic {
             );
             
             if (gameState.attempts >= gameState.maxAttempts) {
-                UIManager.setFeedback(
-                    `Game Over! The correct number was ${gameState.randomNumber}. Try again.`,
-                    "game-over"
-                );
+                UIManager.clearFeedback(); // Remove text message, just show notification
                 gameState.gameOver = true;
                 UIManager.showGameOverNotification("You ran out of attempts!");
                 UIManager.showPlayAgainButton();
+                
+                // Hide the keyboard on game over
+                UIManager.hideCustomKeyboard();
             } else {
-                UIManager.setFeedback("Incorrect! Try again!");
+                UIManager.setFeedback(feedback);
                 UIManager.elements.feedback.style.color = "red";
                 
                 // Play wrong sound at reduced volume if available
@@ -122,7 +128,8 @@ export class GameLogic {
         UIManager.elements.continueBtn.style.display = "none";
         UIManager.elements.restartBtn.style.display = "none";
         
-        UIManager.setFeedback("Enter your guess and press Submit!");
+        // Remove the explicit feedback message when restarting or changing levels
+        UIManager.clearFeedback();
         
         // Update to use CSS variables instead of hardcoded color
         const currentTheme = document.documentElement.getAttribute('data-theme');
@@ -132,7 +139,7 @@ export class GameLogic {
             UIManager.elements.feedback.style.color = "#333";
         }
         
-        UIManager.updateAttempts();
+        UIManager.updateAttempts(); // This will now show "Attempts: 0/X"
         
         // Reset fill position for flipped vertical meter
         const proximityFill = document.getElementById('proximity-fill');
@@ -146,6 +153,18 @@ export class GameLogic {
         
         // Also reset past guesses display
         UIManager.updatePastGuesses();
+        
+        // Fix: Always check keyboard visibility when game is active
+        if (window.innerWidth <= 768 && !gameState.gameOver && !gameState.hasWon) {
+            UIManager.showCustomKeyboard();
+        } else {
+            UIManager.hideCustomKeyboard();
+        }
+        
+        // Show keyboard again if conditions are met
+        if (!gameState.gameOver && !gameState.hasWon) {
+            UIManager.showCustomKeyboard();
+        }
     }
 
     static startGameMode() {
@@ -165,6 +184,7 @@ export class GameLogic {
 
     static playAgain() {
         this.restartGame(true);
+        // The resetUI method will handle showing the keyboard
     }
 
     static handleKeyPress(event) {
