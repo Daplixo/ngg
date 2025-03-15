@@ -46,6 +46,10 @@ document.addEventListener('DOMContentLoaded', () => {
         winNotification: document.getElementById('winNotification'),
         gameOverNotification: document.getElementById('gameOverNotification'),
         customKeyboard: document.getElementById("custom-keyboard"),
+        lastGuess: document.getElementById("last-guess"),
+        lastGuessIndex: document.getElementById("guess-index"),
+        prevGuessBtn: document.getElementById("prev-guess-btn"),
+        nextGuessBtn: document.getElementById("next-guess-btn"),
         // Remove the restoreBtn reference since it's no longer in the HTML
         // restoreBtn: document.getElementById('restoreBtn')
     };
@@ -126,6 +130,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('click', () => AudioManager.resumeAudio());
     document.addEventListener('touchstart', () => AudioManager.resumeAudio());
     document.addEventListener('keydown', () => AudioManager.resumeAudio());
+
+    // Initialize guess navigation
+    UIManager.initGuessNavigation();
 });
 
 // Update UI to match the loaded game state

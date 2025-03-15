@@ -151,9 +151,28 @@
             </div>
           </div>
           <div class="proximity-label bottom">Far Away</div>
-          <!-- Add last guess section -->
+          <!-- Updated last guess section with navigation -->
           <div id="last-guess-container">
-            <div id="last-guess"></div>
+            <button
+              id="prev-guess-btn"
+              class="guess-nav-btn"
+              aria-label="Newer guess"
+              title="Newer guess"
+            >
+              ▲
+            </button>
+            <div id="last-guess-display">
+              <div id="last-guess"></div>
+              <div id="guess-index" style="display: none"></div>
+            </div>
+            <button
+              id="next-guess-btn"
+              class="guess-nav-btn"
+              aria-label="Older guess"
+              title="Older guess"
+            >
+              ▼
+            </button>
           </div>
         </div>
 
