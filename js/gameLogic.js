@@ -16,6 +16,9 @@ export class GameLogic {
         console.log(`[GAME] Player won level ${gameState.level}`);
         gameState.hasWon = true;
         
+        // Save state after winning
+        gameState.saveState();
+        
         // Hide the keyboard when player wins
         UIManager.hideCustomKeyboard();
 
@@ -23,9 +26,11 @@ export class GameLogic {
             UIManager.clearFeedback(); // Remove text message, just show notification
             UIManager.showWinNotification(`Correct! The number was ${gameState.randomNumber}. Level ${gameState.level} cleared!`);
             gameState.waitingForNextLevel = true;
+            gameState.saveState(); // Save that we're waiting for next level
             UIManager.elements.continueBtn.style.display = "inline-block";
         } else {
             gameState.finalWin = true;
+            gameState.saveState(); // Save final win state
             UIManager.clearFeedback(); // Remove text message
             UIManager.showWinNotification(`Correct! The number was ${gameState.randomNumber}. You cleared the final level!`);
             UIManager.elements.continueBtn.style.display = "inline-block";
@@ -40,7 +45,7 @@ export class GameLogic {
         
         if (gameState.waitingForNextLevel) {
             gameState.waitingForNextLevel = false;
-            gameState.nextLevel();
+            gameState.nextLevel(); // This already saves state
             UIManager.updateRangeInfo();
             this.resetUI();
         }
@@ -61,6 +66,7 @@ export class GameLogic {
         }
 
         gameState.attempts++;
+        gameState.saveState(); // Save after incrementing attempts
 
         // Calculate proximity for the past guesses feature
         const distance = Math.abs(numericGuess - gameState.randomNumber);
@@ -71,7 +77,7 @@ export class GameLogic {
         // Simplified feedback - just say it's incorrect
         const feedback = "Incorrect! Try again.";
         
-        // Add guess with proximity to gameState
+        // Add guess with proximity to gameState (this saves state)
         gameState.addGuess(numericGuess, proximity);
         
         // Update past guesses display
@@ -99,6 +105,7 @@ export class GameLogic {
             if (gameState.attempts >= gameState.maxAttempts) {
                 UIManager.clearFeedback(); // Remove text message, just show notification
                 gameState.gameOver = true;
+                gameState.saveState(); // Save game over state
                 UIManager.showGameOverNotification(`Game Over! The number was ${gameState.randomNumber}`);
                 UIManager.showPlayAgainButton();
                 
@@ -183,8 +190,7 @@ export class GameLogic {
     }
 
     static playAgain() {
-        this.restartGame(true);
-        // The resetUI method will handle showing the keyboard
+        this.restartGame(true); // This will clear saved state through gameState.reset
     }
 
     static handleKeyPress(event) {

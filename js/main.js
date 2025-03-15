@@ -65,9 +65,6 @@ window.playWrongSound = function(isGameOver = false) {
 
 // Initialize game when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize game state
-    gameState.reset(true);
-
     // Get DOM elements
     UIManager.elements = {
         levelIndicator: document.getElementById('level-indicator'),
@@ -81,10 +78,21 @@ document.addEventListener('DOMContentLoaded', () => {
         restartBtn: document.getElementById('restartBtn'),
         winNotification: document.getElementById('winNotification'),
         gameOverNotification: document.getElementById('gameOverNotification'),
-        customKeyboard: document.getElementById("custom-keyboard") // Add this line
+        customKeyboard: document.getElementById("custom-keyboard")
     };
     
-    // Add sound and animation effects (our additions)
+    // Try to load saved game state first, if that fails, initialize a new game
+    const savedStateLoaded = gameState.loadState();
+    
+    if (!savedStateLoaded) {
+        // No saved state, initialize a new game
+        gameState.reset(true);
+    } else {
+        // Saved state loaded, update UI to match
+        updateUIFromSavedState();
+    }
+    
+    // Add sound and animation effects
     addSoundAndAnimationEffects();
 
     // Initialize theme
@@ -92,7 +100,80 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Focus the input field immediately
     UIManager.elements.userGuess.focus();
+    
+    // Set up event listeners
+    setupEventListeners();
 
+    // Initialize feedback modal
+    initFeedbackModal();
+
+    // Initialize custom keyboard for mobile
+    initCustomKeyboard();
+
+    // Update UI elements including showing attempts
+    UIManager.updateAttempts();
+    
+    // Set visibility of the custom keyboard based on game state and device
+    updateKeyboardVisibility();
+    
+    // Show a notification about the restored game if state was loaded
+    if (savedStateLoaded) {
+        if (gameState.gameOver) {
+            UIManager.showGameOverNotification(`Game restored. The number was ${gameState.randomNumber}`);
+            UIManager.showPlayAgainButton();
+        } else if (gameState.hasWon) {
+            if (gameState.waitingForNextLevel) {
+                UIManager.showWinNotification(`Game restored. You completed Level ${gameState.level}!`);
+                UIManager.elements.continueBtn.style.display = "inline-block";
+            } else if (gameState.finalWin) {
+                UIManager.showWinNotification(`Game restored. You completed all levels!`);
+                UIManager.elements.continueBtn.style.display = "inline-block";
+            }
+        } else {
+            // Show a temporary notification about the restored game
+            const tempNotification = document.createElement('div');
+            tempNotification.textContent = `Game restored: Level ${gameState.level}, Attempts ${gameState.attempts}/${gameState.maxAttempts}`;
+            tempNotification.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#4d6fed;color:white;padding:10px 20px;border-radius:5px;z-index:1000;';
+            document.body.appendChild(tempNotification);
+            setTimeout(() => {
+                tempNotification.style.opacity = '0';
+                tempNotification.style.transition = 'opacity 0.5s';
+                setTimeout(() => tempNotification.remove(), 500);
+            }, 3000);
+        }
+    }
+});
+
+// Update UI to match the loaded game state
+function updateUIFromSavedState() {
+    UIManager.updateRangeInfo();
+    UIManager.updateAttempts();
+    
+    // Update proximity meter if there are past guesses
+    if (gameState.pastGuesses.length > 0) {
+        const lastGuess = gameState.pastGuesses[gameState.pastGuesses.length - 1];
+        UIManager.updateProximityMeter(
+            lastGuess.value,
+            gameState.randomNumber,
+            1,
+            gameState.maxNumber
+        );
+        UIManager.updatePastGuesses();
+    }
+    
+    // Set up UI based on game state
+    if (gameState.gameOver) {
+        UIManager.hideCustomKeyboard();
+    } else if (gameState.hasWon) {
+        UIManager.hideCustomKeyboard();
+        if (gameState.waitingForNextLevel || gameState.finalWin) {
+            UIManager.elements.continueBtn.style.display = "inline-block";
+        }
+    }
+}
+
+// Set up event listeners for game controls
+function setupEventListeners() {
     // Set submit button click event
     UIManager.elements.submitGuessBtn.addEventListener('click', () => {
         GameLogic.checkGuess(UIManager.elements.userGuess.value);
@@ -121,28 +202,16 @@ document.addEventListener('DOMContentLoaded', () => {
             GameLogic.handleKeyPress(event);
         }
     });
+}
 
-    // Initialize feedback modal
-    initFeedbackModal();
-
-    // Initialize custom keyboard for mobile
-    initCustomKeyboard();
-
-    // Initialize UI elements including showing attempts at 0
-    UIManager.updateAttempts();  // Add this line to show attempts: 0/X on initial load
-    
-    // Only show keyboard initially if game is active
-    if (window.innerWidth <= 768 && !gameState.gameOver && !gameState.hasWon) {
-        UIManager.showCustomKeyboard();
+// Update keyboard visibility based on game state and device
+function updateKeyboardVisibility() {
+    if (gameState.gameOver || gameState.hasWon) {
+        UIManager.hideCustomKeyboard();
     } else {
-        UIManager.hideCustomKeyboard(); // Hide by default on desktop or when game is not active
-    }
-    
-    // Fix: Initialize keyboard visibility properly when game starts
-    if (window.innerWidth <= 768) {
         UIManager.showCustomKeyboard();
     }
-});
+}
 
 // Add our sound and animation effects without disrupting existing code
 function addSoundAndAnimationEffects() {
