@@ -2529,3 +2529,50 @@ html[data-theme="light"] #sun-icon {
 #last-guess.proximity-2 { background-color: #f1c40f; }
 #last-guess.proximity-3 { background-color: #27ae60; }
 #last-guess.proximity-4 { background-color: #2ecc71; }
+
+/* Game Controls Container */
+.game-controls {
+  position: relative;
+  height: 42px; /* Match height of other buttons */
+  width: 100%;
+  max-width: 300px;
+  margin: 10px auto; /* Reduced margin to match other elements */
+}
+
+/* Position buttons inside game-controls with minimal spacing */
+#continueBtn, #playAgainBtn, #restartBtn {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  margin: 0;
+  display: none;
+  max-width: 100%;
+  height: 42px; /* Match height of other buttons */
+}
+
+/* Remove existing individual button margins */
+#continueBtn {
+  background-color: #2eb82e;
+}
+
+#playAgainBtn {
+  background-color: #666;
+}
+
+#restartBtn {
+  background-color: #444;
+}
+
+/* Adjust spacing between calculator and controls */
+#custom-keyboard {
+  margin: 10px auto; /* Reduced margin */
+  padding-top: 0;    /* Remove top padding */
+}
+
+/* Remove any conflicting margins */
+#continueBtn, #playAgainBtn, #restartBtn {
+  margin-top: 0;
+  margin-bottom: 0;
+}

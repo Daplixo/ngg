@@ -21,13 +21,13 @@ export class GameLogic {
 
         if (gameState.level < 3) {
             UIManager.clearFeedback(); // Remove text message, just show notification
-            UIManager.showWinNotification(`Level ${gameState.level} cleared! Tap Continue...`);
+            UIManager.showWinNotification(`Correct! The number was ${gameState.randomNumber}. Level ${gameState.level} cleared!`);
             gameState.waitingForNextLevel = true;
             UIManager.elements.continueBtn.style.display = "inline-block";
         } else {
             gameState.finalWin = true;
             UIManager.clearFeedback(); // Remove text message
-            UIManager.showWinNotification("You cleared the final level!");
+            UIManager.showWinNotification(`Correct! The number was ${gameState.randomNumber}. You cleared the final level!`);
             UIManager.elements.continueBtn.style.display = "inline-block";
         }
     }
@@ -99,7 +99,7 @@ export class GameLogic {
             if (gameState.attempts >= gameState.maxAttempts) {
                 UIManager.clearFeedback(); // Remove text message, just show notification
                 gameState.gameOver = true;
-                UIManager.showGameOverNotification("You ran out of attempts!");
+                UIManager.showGameOverNotification(`Game Over! The number was ${gameState.randomNumber}`);
                 UIManager.showPlayAgainButton();
                 
                 // Hide the keyboard on game over

@@ -57,10 +57,10 @@ export const UIManager = {
         this.elements.winNotification.textContent = message;
         this.elements.winNotification.classList.add("show");
         AudioManager.play("levelCleared");
-        // Increased duration to 4 seconds since it's the only feedback now
+        // Increased to 5 seconds to give time to read the number
         setTimeout(() => {
             this.hideWinNotification();
-        }, 4000);
+        }, 5000);
     },
 
     hideWinNotification() {
@@ -75,10 +75,10 @@ export const UIManager = {
         this.elements.gameOverNotification.textContent = message;
         this.elements.gameOverNotification.classList.add("show");
         AudioManager.play("gameOver");
-        // Increased duration to 4 seconds since it's the only feedback now
+        // Increased to 5 seconds to give time to read the number
         setTimeout(() => {
             this.hideGameOverNotification();
-        }, 4000);
+        }, 5000);
     },
 
     hideGameOverNotification() {
