@@ -137,7 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             // Show a temporary notification about the restored game
             const tempNotification = document.createElement('div');
-            tempNotification.textContent = `Game restored: Level ${gameState.level}, Attempts ${gameState.attempts}/${gameState.maxAttempts}`;
+            tempNotification.textContent = "Game restored!"; // Updated to simpler message
             tempNotification.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#4d6fed;color:white;padding:10px 20px;border-radius:5px;z-index:1000;';
             document.body.appendChild(tempNotification);
             setTimeout(() => {

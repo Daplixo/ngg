@@ -329,7 +329,7 @@ export class GameLogic {
     
     static showGameRestoredNotification() {
         const tempNotification = document.createElement('div');
-        tempNotification.textContent = `Game restored: Level ${gameState.level}, Attempts ${gameState.attempts}/${gameState.maxAttempts}`;
+        tempNotification.textContent = "Game restored!";
         tempNotification.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#8e44ad;color:white;padding:10px 20px;border-radius:5px;z-index:1000;';
         document.body.appendChild(tempNotification);
         setTimeout(() => {

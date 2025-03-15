@@ -926,14 +926,25 @@ button:active {
 .social-links {
   display: flex;
   align-items: center;
-  gap: 1.25rem;
+  justify-content: space-between; /* Using space-between for equal distribution */
+  width: 100%;
+  max-width: 140px; /* Increased width to match author heading width better */
+  margin-top: 6px; /* Space between heading and icons */
 }
 
 .social-icon {
-  width: 18px;
+  width: 18px; /* Smaller icon size */
   height: 18px;
   color: var(--social-icon);
   transition: color 0.2s ease;
+  opacity: 0.7; /* Reduced opacity for darker appearance */
+  filter: brightness(0.85); /* Make icons darker */
+}
+
+/* Handle dark mode for footer icons */
+[data-theme="dark"] .social-icon {
+  filter: brightness(0) invert(0.7); /* Make icons light in dark mode but slightly dimmer */
+  opacity: 0.8; /* Slightly higher opacity for dark mode */
 }
 
 /* Right column */
@@ -1031,12 +1042,13 @@ button:active {
   }
   
   .social-links {
-    gap: 1rem;
+    max-width: 130px; /* Slightly wider on mobile */
   }
   
   .social-icon {
-    width: 16px;
+    width: 16px; /* Even smaller on mobile */
     height: 16px;
+    filter: brightness(0.8); /* Slightly darker on mobile */
   }
   
   .action-buttons {
@@ -1079,9 +1091,9 @@ button:active {
   }
   
   .social-links {
-    width: auto !important;
-    margin: 3px 0 0 0 !important;
-    justify-content: flex-start !important;
+    max-width: 130px !important; /* Ensure consistent width on very small screens */
+    margin: 4px 0 0 0 !important;
+    justify-content: space-between !important; /* Override existing styles */
   }
   
   .action-buttons {
@@ -2956,4 +2968,87 @@ html[data-theme="light"] #sun-icon {
   margin: 0 !important;
 }
 
-/* ...existing code... */
+/* Improved Custom Number Keyboard alignment */
+#custom-keyboard {
+  width: 100%;
+  max-width: 300px; /* Match with other buttons (like Play Again) */
+  margin: 0.75rem auto;
+  padding-top: 0;
+  user-select: none;
+  display: block;
+  box-sizing: border-box;
+}
+
+.keyboard-row {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  width: 100%;
+}
+
+.key-btn {
+  flex: 1;
+  min-width: 0; /* Allow buttons to shrink if needed */
+  height: 48px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  border-radius: 6px;
+  background-color: #e0e0e0;
+  color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  padding: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.1s ease, box-shadow 0.1s ease, background-color 0.2s ease, color 0.2s ease;
+  -webkit-user-select: none;
+  user-select: none;
+  outline: none;
+  border: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Game Controls Container - improved alignment with keypad */
+.game-controls {
+  position: relative;
+  height: auto;
+  width: 100%;
+  max-width: 300px; /* Match width with keypad */
+  margin: 10px auto;
+}
+
+/* Make dropdown container match width of keypad */
+.dropdown-container {
+  position: relative;
+  width: 100%;
+  max-width: 300px; /* Match with keypad */
+  margin: 0 auto;
+  display: block;
+  box-sizing: border-box; /* Include padding and border in width calculation */
+}
+
+/* Responsive adjustments for consistent button sizes */
+@media (max-width: 360px) {
+  #custom-keyboard, .dropdown-container, .game-controls {
+    max-width: 280px; /* Consistent width on small screens */
+  }
+  
+  .key-btn {
+    height: 42px;
+    font-size: 1.1rem;
+  }
+  
+  .key-clear, .key-enter {
+    font-size: 0.8rem;
+  }
+}
+
+/* For very small screens */
+@media (max-width: 320px) {
+  #custom-keyboard, .dropdown-container, .game-controls {
+    max-width: 250px; /* Further reduced consistent width */
+  }
+}
