@@ -306,17 +306,22 @@ function setupDropdownMenu() {
         user-select: none !important;
     `;
     
-    // Add arrow to DOM - append to container instead of button for more reliable positioning
+    // Add arrow to DOM - append to container for reliable positioning
     dropdownContainer.appendChild(dropdownArrow);
     
-    // Position the arrow over the button from the container context
+    // Position the arrow
     dropdownArrow.style.position = 'absolute';
     dropdownArrow.style.right = '10px';
     
-    // Absolute positioning for the button to ensure padding works
+    // Fix button styling to ensure text is centered
     playAgainBtn.style.position = 'relative';
     playAgainBtn.style.width = '100%';
     playAgainBtn.style.paddingRight = '36px';
+    playAgainBtn.style.paddingLeft = '36px'; // Match right padding for visual centering
+    playAgainBtn.style.textAlign = 'center';
+    playAgainBtn.style.justifyContent = 'center';
+    playAgainBtn.style.display = 'flex';
+    playAgainBtn.style.alignItems = 'center';
     
     console.log("Arrow added:", dropdownArrow);
     

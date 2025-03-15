@@ -285,45 +285,39 @@ export class GameLogic {
     static restoreGame() {
         console.log('[GAME] Performing full game reset');
         
-        // Show confirmation dialog
-        if (confirm("Reset game completely? This will delete all saved progress.")) {
-            // Clear the saved state
-            gameState.clearSavedState();
-            
-            // Reset to initial game state
-            gameState.level = 1;
-            gameState.maxNumber = 10;
-            gameState.maxAttempts = 3;
-            gameState.attempts = 0;
-            gameState.randomNumber = Math.floor(Math.random() * 10) + 1;
-            gameState.gameOver = false;
-            gameState.hasWon = false;
-            gameState.waitingForNextLevel = false;
-            gameState.finalWin = false;
-            gameState.pastGuesses = [];
-            
-            // Update UI completely
-            UIManager.updateRangeInfo();
-            UIManager.updateAttempts();
-            this.resetUI();
-            
-            // Show a temporary notification about the reset
-            this.showResetNotification();
-            
-            // Show keyboard for a fresh game
-            UIManager.showCustomKeyboard();
-            
-            return true;
-        } else {
-            // User cancelled reset
-            console.log('[GAME] Game reset cancelled by user');
-            return false;
-        }
+        // Remove confirmation dialog and directly reset the game
+        // Clear the saved state
+        gameState.clearSavedState();
+        
+        // Reset to initial game state
+        gameState.level = 1;
+        gameState.maxNumber = 10;
+        gameState.maxAttempts = 3;
+        gameState.attempts = 0;
+        gameState.randomNumber = Math.floor(Math.random() * 10) + 1;
+        gameState.gameOver = false;
+        gameState.hasWon = false;
+        gameState.waitingForNextLevel = false;
+        gameState.finalWin = false;
+        gameState.pastGuesses = [];
+        
+        // Update UI completely
+        UIManager.updateRangeInfo();
+        UIManager.updateAttempts();
+        this.resetUI();
+        
+        // Show a temporary notification about the reset
+        this.showResetNotification();
+        
+        // Show keyboard for a fresh game
+        UIManager.showCustomKeyboard();
+        
+        return true;
     }
     
     static showResetNotification() {
         const tempNotification = document.createElement('div');
-        tempNotification.textContent = "Game has been reset completely";
+        tempNotification.textContent = "Reset successful!";
         tempNotification.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#e74c3c;color:white;padding:10px 20px;border-radius:5px;z-index:1000;';
         document.body.appendChild(tempNotification);
         setTimeout(() => {
