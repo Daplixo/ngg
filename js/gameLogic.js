@@ -27,13 +27,18 @@ export class GameLogic {
             UIManager.showWinNotification(`Correct! The number was ${gameState.randomNumber}. Level ${gameState.level} cleared!`);
             gameState.waitingForNextLevel = true;
             gameState.saveState(); // Save that we're waiting for next level
-            UIManager.elements.continueBtn.style.display = "inline-block";
+            
+            // Transform the Play Again button into a Continue button
+            // Always explicitly set text to "Continue" for levels 1-2
+            UIManager.transformPlayAgainToContinue("Continue");
         } else {
             gameState.finalWin = true;
             gameState.saveState(); // Save final win state
             UIManager.clearFeedback(); // Remove text message
             UIManager.showWinNotification(`Correct! The number was ${gameState.randomNumber}. You cleared the final level!`);
-            UIManager.elements.continueBtn.style.display = "inline-block";
+            
+            // For the final level, use "Play Again"
+            UIManager.transformPlayAgainToContinue("Play Again");
         }
     }
 
@@ -48,8 +53,12 @@ export class GameLogic {
             gameState.nextLevel(); // This already saves state
             UIManager.updateRangeInfo();
             this.resetUI();
+            
+            // Reset the button style back to normal
+            UIManager.restorePlayAgainButton();
         }
         
+        // Hide the original continue button (if it was being used)
         UIManager.elements.continueBtn.style.display = "none";
     }
 
@@ -59,7 +68,8 @@ export class GameLogic {
         userGuess = userGuess.trim().toLowerCase();
         const numericGuess = parseInt(userGuess);
         if (isNaN(numericGuess) || numericGuess < 1 || numericGuess > gameState.maxNumber) {
-            UIManager.setFeedback("Invalid input! Enter a number within the range.");
+            // Simplified error message, just "Invalid input!"
+            UIManager.setFeedback("Invalid input!");
             UIManager.elements.feedback.style.color = "orange";
             UIManager.focusInput();
             return;
@@ -68,16 +78,18 @@ export class GameLogic {
         gameState.attempts++;
         gameState.saveState(); // Save after incrementing attempts
 
+        // Update attempts display immediately
+        UIManager.updateAttempts();
+
         // Calculate proximity for the past guesses feature
         const distance = Math.abs(numericGuess - gameState.randomNumber);
         const totalRange = gameState.maxNumber - 1;
         const normalizedDistance = distance / totalRange;
         const proximity = 1 - (normalizedDistance * normalizedDistance);
         
-        // Simplified feedback - just say it's incorrect
         const feedback = "Incorrect! Try again.";
         
-        // Add guess with proximity to gameState (this saves state)
+        // Add guess with proximity to gameState
         gameState.addGuess(numericGuess, proximity);
         
         // Update past guesses display
@@ -103,34 +115,36 @@ export class GameLogic {
             );
             
             if (gameState.attempts >= gameState.maxAttempts) {
-                UIManager.clearFeedback(); // Remove text message, just show notification
+                UIManager.clearFeedback();
                 gameState.gameOver = true;
-                gameState.saveState(); // Save game over state
+                gameState.saveState();
                 UIManager.showGameOverNotification(`Game Over! The number was ${gameState.randomNumber}`);
                 UIManager.showPlayAgainButton();
-                
-                // Hide the keyboard on game over
                 UIManager.hideCustomKeyboard();
             } else {
                 UIManager.setFeedback(feedback);
                 UIManager.elements.feedback.style.color = "red";
                 
-                // Play wrong sound at reduced volume if available
                 if (window.playWrongSound) {
                     window.playWrongSound(false);
                 }
                 
-                // Refocus the input field after showing feedback
                 setTimeout(UIManager.focusInput, 10);
             }
         }
+        
+        // Ensure attempts display is updated
         UIManager.updateAttempts();
     }
 
     static resetUI() {
         UIManager.hideWinNotification();
         UIManager.hideGameOverNotification();
-        UIManager.hidePlayAgainButton();
+        // Remove the line that hides the Play Again button
+        // UIManager.hidePlayAgainButton();
+        
+        // Instead, ensure the button is shown with the appropriate text
+        UIManager.showPlayAgainButton();
         
         UIManager.elements.continueBtn.style.display = "none";
         UIManager.elements.restartBtn.style.display = "none";
@@ -187,10 +201,58 @@ export class GameLogic {
         
         UIManager.updateRangeInfo();
         this.resetUI();
+        
+        // This call is no longer needed since we're using dropdown
+        // UIManager.updateRestoreButtonVisibility();
     }
 
     static playAgain() {
-        this.restartGame(true); // This will clear saved state through gameState.reset
+        // If game is not over or won, just restart the current level
+        const restartCurrentLevel = !gameState.gameOver && !gameState.hasWon;
+        
+        if (restartCurrentLevel) {
+            // Keep the current level but reset attempts and guesses
+            const currentLevel = gameState.level;
+            const currentMaxNumber = gameState.maxNumber;
+            const currentMaxAttempts = gameState.maxAttempts;
+            
+            // Reset but keep level parameters
+            gameState.attempts = 0;
+            gameState.gameOver = false;
+            gameState.hasWon = false;
+            gameState.finalWin = false;
+            gameState.waitingForNextLevel = false;
+            gameState.pastGuesses = [];
+            gameState.randomNumber = Math.floor(Math.random() * currentMaxNumber) + 1;
+            
+            // Save the reset state
+            gameState.saveState();
+            
+            // Update UI for the restarted level
+            UIManager.updateRangeInfo();
+            this.resetUI();
+            
+            // Show a notification
+            this.showLevelRestartNotification(currentLevel);
+        } else {
+            // Full game restart (original behavior)
+            this.restartGame(true);
+        }
+        
+        // Show keyboard again if needed
+        UIManager.showCustomKeyboard();
+    }
+
+    static showLevelRestartNotification(level) {
+        const tempNotification = document.createElement('div');
+        tempNotification.textContent = `Level ${level} restarted`;
+        tempNotification.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#8e44ad;color:white;padding:10px 20px;border-radius:5px;z-index:1000;';
+        document.body.appendChild(tempNotification);
+        setTimeout(() => {
+            tempNotification.style.opacity = '0';
+            tempNotification.style.transition = 'opacity 0.5s';
+            setTimeout(() => tempNotification.remove(), 500);
+        }, 2000);
     }
 
     static handleKeyPress(event) {
@@ -217,5 +279,81 @@ export class GameLogic {
             event.preventDefault();
             this.restartGame();
         }
+    }
+    
+    // Method to reset the game state completely - replaces restoreGame
+    static restoreGame() {
+        console.log('[GAME] Performing full game reset');
+        
+        // Show confirmation dialog
+        if (confirm("Reset game completely? This will delete all saved progress.")) {
+            // Clear the saved state
+            gameState.clearSavedState();
+            
+            // Reset to initial game state
+            gameState.level = 1;
+            gameState.maxNumber = 10;
+            gameState.maxAttempts = 3;
+            gameState.attempts = 0;
+            gameState.randomNumber = Math.floor(Math.random() * 10) + 1;
+            gameState.gameOver = false;
+            gameState.hasWon = false;
+            gameState.waitingForNextLevel = false;
+            gameState.finalWin = false;
+            gameState.pastGuesses = [];
+            
+            // Update UI completely
+            UIManager.updateRangeInfo();
+            UIManager.updateAttempts();
+            this.resetUI();
+            
+            // Show a temporary notification about the reset
+            this.showResetNotification();
+            
+            // Show keyboard for a fresh game
+            UIManager.showCustomKeyboard();
+            
+            return true;
+        } else {
+            // User cancelled reset
+            console.log('[GAME] Game reset cancelled by user');
+            return false;
+        }
+    }
+    
+    static showResetNotification() {
+        const tempNotification = document.createElement('div');
+        tempNotification.textContent = "Game has been reset completely";
+        tempNotification.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#e74c3c;color:white;padding:10px 20px;border-radius:5px;z-index:1000;';
+        document.body.appendChild(tempNotification);
+        setTimeout(() => {
+            tempNotification.style.opacity = '0';
+            tempNotification.style.transition = 'opacity 0.5s';
+            setTimeout(() => tempNotification.remove(), 500);
+        }, 3000);
+    }
+    
+    static showGameRestoredNotification() {
+        const tempNotification = document.createElement('div');
+        tempNotification.textContent = `Game restored: Level ${gameState.level}, Attempts ${gameState.attempts}/${gameState.maxAttempts}`;
+        tempNotification.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#8e44ad;color:white;padding:10px 20px;border-radius:5px;z-index:1000;';
+        document.body.appendChild(tempNotification);
+        setTimeout(() => {
+            tempNotification.style.opacity = '0';
+            tempNotification.style.transition = 'opacity 0.5s';
+            setTimeout(() => tempNotification.remove(), 500);
+        }, 3000);
+    }
+    
+    static showErrorNotification(message) {
+        const errorNotification = document.createElement('div');
+        errorNotification.textContent = message;
+        errorNotification.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#e74c3c;color:white;padding:10px 20px;border-radius:5px;z-index:1000;';
+        document.body.appendChild(errorNotification);
+        setTimeout(() => {
+            errorNotification.style.opacity = '0';
+            errorNotification.style.transition = 'opacity 0.5s';
+            setTimeout(() => errorNotification.remove(), 500);
+        }, 3000);
     }
 }

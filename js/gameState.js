@@ -116,5 +116,61 @@ export const gameState = {
         
         // Save state after each guess
         this.saveState();
+    },
+
+    // Check if there's a valid saved game that can be restored
+    hasSavedGame() {
+        try {
+            const savedState = localStorage.getItem('numberGuessGameState');
+            if (!savedState) {
+                console.log("No saved game state found in localStorage");
+                return false;
+            }
+            
+            // Parse the state to verify it's valid JSON
+            const parsedState = JSON.parse(savedState);
+            
+            // Basic validation - make sure it has the essential properties
+            if (!parsedState || typeof parsedState !== 'object') {
+                console.log("Invalid saved game format");
+                return false;
+            }
+            
+            if (!('level' in parsedState) || !('randomNumber' in parsedState)) {
+                console.log("Missing required properties in saved game");
+                return false;
+            }
+            
+            // Compare with current game state - don't restore if it's the same game
+            const isSameGame = (
+                this.level === parsedState.level &&
+                this.attempts === parsedState.attempts &&
+                this.randomNumber === parsedState.randomNumber
+            );
+            
+            if (isSameGame) {
+                console.log("Saved game is the same as current game");
+                return false;
+            }
+            
+            // Look for evidence of progress or completion
+            const hasProgress = (
+                parsedState.level > 1 || 
+                parsedState.attempts > 0 ||
+                parsedState.gameOver ||
+                parsedState.hasWon
+            );
+            
+            if (!hasProgress) {
+                console.log("No progress in saved game");
+                return false;
+            }
+            
+            console.log("Valid saved game found that can be restored");
+            return true;
+        } catch (error) {
+            console.error('Error checking for saved game:', error);
+            return false;
+        }
     }
 };

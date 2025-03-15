@@ -16,7 +16,8 @@ export const UIManager = {
         levelIndicator: document.getElementById("level-indicator"),
         pastGuessesContainer: document.getElementById("past-guesses-container"),
         pastGuesses: document.getElementById("past-guesses"),
-        customKeyboard: document.getElementById("custom-keyboard") // Add this line
+        customKeyboard: document.getElementById("custom-keyboard"), // Add this line
+        restoreBtn: document.getElementById("restoreBtn")
     },
 
     showGameUI() {
@@ -24,6 +25,9 @@ export const UIManager = {
         this.elements.userGuess.style.display = "block";
         this.elements.submitGuessBtn.style.display = "inline-block";
         this.updateLevelIndicator();
+        
+        // Always show the Play Again button with the appropriate text
+        this.showPlayAgainButton();
         
         // Always show custom keyboard
         this.showCustomKeyboard();
@@ -49,8 +53,27 @@ export const UIManager = {
         this.elements.feedback.className = '';
     },
 
+    // Update attempts display method to ensure visibility
     updateAttempts() {
+        if (!this.elements.attempts) {
+            console.error("Attempts display element not found");
+            return;
+        }
+        
+        // Make attempts display consistent
         this.elements.attempts.textContent = `Attempts: ${gameState.attempts}/${gameState.maxAttempts}`;
+        
+        // Ensure the container and element are visible
+        const container = document.getElementById('attempts-container');
+        if (container) {
+            container.style.display = 'block';
+            container.style.visibility = 'visible';
+        }
+        
+        this.elements.attempts.style.display = 'inline-block';
+        this.elements.attempts.style.visibility = 'visible';
+        
+        console.log("Updated attempts display:", this.elements.attempts.textContent);
     },
 
     showWinNotification(message) {
@@ -90,11 +113,58 @@ export const UIManager = {
     },
 
     showPlayAgainButton() {
-        this.elements.playAgainBtn.style.display = "inline-block";
+        const dropdownContainer = document.querySelector('.dropdown-container');
+        
+        // Check if button should be in "continue" mode
+        const shouldBeContinueButton = gameState.waitingForNextLevel || gameState.finalWin;
+        
+        // First update button text and style based on game state
+        if (this.elements.playAgainBtn) {
+            if (shouldBeContinueButton) {
+                // Already in continue mode, don't change anything
+                if (!this.elements.playAgainBtn.classList.contains('continue-mode')) {
+                    const buttonText = gameState.finalWin ? "Play Again" : "Continue";
+                    this.transformPlayAgainToContinue(buttonText);
+                }
+            } else {
+                // Not in continue mode
+                if (this.elements.playAgainBtn.classList.contains('continue-mode')) {
+                    this.restorePlayAgainButton();
+                } else if (gameState.gameOver || gameState.hasWon) {
+                    this.elements.playAgainBtn.textContent = "Play Again";
+                } else {
+                    this.elements.playAgainBtn.textContent = "Restart Level";
+                }
+            }
+        }
+        
+        if (dropdownContainer) {
+            // Ensure the container is always visible
+            dropdownContainer.style.display = "block";
+            
+            if (this.elements.playAgainBtn) {
+                this.elements.playAgainBtn.style.display = "inline-block";
+            }
+        } else {
+            // Fallback to just showing the button if container not found
+            if (this.elements.playAgainBtn) {
+                this.elements.playAgainBtn.style.display = "inline-block";
+            }
+        }
+
+        // CRITICAL FIX: Make sure the arrow is visible after showing button
+        setTimeout(() => this.ensureDropdownArrow(), 10);
     },
 
     hidePlayAgainButton() {
-        this.elements.playAgainBtn.style.display = "none";
+        const dropdownContainer = document.querySelector('.dropdown-container');
+        if (dropdownContainer) {
+            dropdownContainer.style.display = "none";
+            this.elements.playAgainBtn.style.display = "none";
+        } else {
+            // Fallback to just hiding the button if container not found
+            this.elements.playAgainBtn.style.display = "none";
+        }
     },
 
     focusInput() {
@@ -190,22 +260,126 @@ export const UIManager = {
         }
     },
 
-    // Update method to show the custom keyboard unconditionally
+    // Improved custom keyboard display methods
     showCustomKeyboard() {
         if (this.elements.customKeyboard) {
+            // Make sure keyboard is fully visible
             this.elements.customKeyboard.style.display = 'block';
+            this.elements.customKeyboard.style.visibility = 'visible';
+            this.elements.customKeyboard.style.opacity = '1';
             
-            // Ensure input is readonly to prevent virtual/physical keyboard
+            // Ensure consistent styling for function buttons
+            const clearBtn = this.elements.customKeyboard.querySelector('.key-clear');
+            const enterBtn = this.elements.customKeyboard.querySelector('.key-enter');
+            
+            if (clearBtn) {
+                clearBtn.style.fontSize = '0.8rem';
+            }
+            
+            if (enterBtn) {
+                enterBtn.style.fontSize = '0.8rem';
+            }
+            
+            // Ensure input is readonly to prevent virtual keyboard
             if (this.elements.userGuess) {
                 this.elements.userGuess.setAttribute('readonly', true);
+                setTimeout(() => this.elements.userGuess.focus(), 0);
             }
+            
+            console.log("Custom keyboard shown and styled");
         }
     },
-    
-    // Method to hide the custom keyboard
+
     hideCustomKeyboard() {
         if (this.elements.customKeyboard) {
             this.elements.customKeyboard.style.display = 'none';
+            console.log("Custom keyboard hidden");
+        }
+    },
+
+    showRestoreButton() {
+        if (this.elements.restoreBtn) {
+            this.elements.restoreBtn.style.display = "inline-block";
+        }
+    },
+
+    hideRestoreButton() {
+        if (this.elements.restoreBtn) {
+            this.elements.restoreBtn.style.display = "none";
+        }
+    },
+
+    // Update this method to work with the dropdown menu instead
+    updateRestoreButtonVisibility() {
+        // No special visibility logic needed anymore - the dropdown
+        // is shown whenever the Play Again button is shown
+        
+        // We previously made this do nothing, but we should at least log something for debugging
+        console.log("Dropdown reset menu is available through Play Again button");
+    },
+
+    // New method to transform Play Again button into Continue button
+    transformPlayAgainToContinue(buttonText = "Continue") {
+        const playAgainBtn = this.elements.playAgainBtn;
+        if (!playAgainBtn) return;
+        
+        // Store the original style for later restoration
+        playAgainBtn.dataset.originalBg = playAgainBtn.style.backgroundColor || '#666';
+        playAgainBtn.dataset.originalText = playAgainBtn.textContent;
+        
+        // Change appearance to green Continue button
+        playAgainBtn.textContent = buttonText; // Ensure text is explicitly set
+        playAgainBtn.style.backgroundColor = '#2eb82e';
+        
+        // Add the continue mode class
+        playAgainBtn.classList.add('continue-mode');
+        
+        // Log the change for debugging
+        console.log(`Button transformed to: ${buttonText}`);
+        
+        // Ensure dropdown setup is refreshed after button transform
+        setTimeout(() => {
+            if (typeof window.setupDropdownMenu === 'function') {
+                window.setupDropdownMenu();
+            }
+        }, 10);
+    },
+
+    // New method to restore Play Again button to original state
+    restorePlayAgainButton() {
+        const playAgainBtn = this.elements.playAgainBtn;
+        if (!playAgainBtn) return;
+        
+        // Restore original styling
+        if (playAgainBtn.dataset.originalBg) {
+            playAgainBtn.style.backgroundColor = playAgainBtn.dataset.originalBg;
+        } else {
+            playAgainBtn.style.backgroundColor = '#666'; // Default color
+        }
+        
+        // Update button text based on game state
+        if (gameState.gameOver || gameState.hasWon) {
+            playAgainBtn.textContent = "Play Again";
+        } else {
+            playAgainBtn.textContent = "Restart Level";
+        }
+        
+        // Remove continue mode class
+        playAgainBtn.classList.remove('continue-mode');
+        
+        // Ensure dropdown setup is refreshed after button restore
+        setTimeout(() => {
+            if (typeof window.setupDropdownMenu === 'function') {
+                window.setupDropdownMenu();
+            }
+        }, 10);
+    },
+
+    // Add a new method to ensure dropdown arrow exists and is visible
+    ensureDropdownArrow() {
+        // Call the global setup function to ensure arrow visibility
+        if (typeof window.setupDropdownMenu === 'function') {
+            window.setupDropdownMenu();
         }
     }
 };
