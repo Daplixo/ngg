@@ -26,41 +26,8 @@ window.addShake = function(element) {
 
 // Function to play wrong sound with volume control - make it global
 window.playWrongSound = function(isGameOver = false) {
-  try {
-    // Create audio context
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    
-    // Create oscillator
-    const oscillator = audioCtx.createOscillator();
-    const gainNode = audioCtx.createGain();
-    
-    // Configure oscillator
-    oscillator.type = 'sine';
-    oscillator.frequency.value = isGameOver ? 180 : 220; // Lower frequency for game over
-    
-    // Configure gain (volume)
-    gainNode.gain.value = isGameOver ? 0.3 : 0.15; // Louder for game over
-    
-    // Connect nodes
-    oscillator.connect(gainNode);
-    gainNode.connect(audioCtx.destination);
-    
-    // Start and stop oscillator (short beep)
-    oscillator.start();
-    
-    // Make game over sound longer
-    const duration = isGameOver ? 0.8 : 0.2;
-    
-    // Stop after duration
-    setTimeout(() => {
-      oscillator.stop();
-      // Disconnect nodes to prevent memory leaks
-      oscillator.disconnect();
-      gainNode.disconnect();
-    }, duration * 1000);
-  } catch (error) {
-    console.log('Error playing sound:', error);
-  }
+    // Use the improved AudioManager method instead of the old implementation
+    AudioManager.playBeep(isGameOver);
 };
 
 // Initialize game when DOM is loaded
@@ -85,6 +52,10 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Try to load saved game state first, if that fails, initialize a new game
     const savedStateLoaded = gameState.loadState();
+    
+    // Initialize audio system early
+    AudioManager.init();
+    AudioManager.preloadSounds();
     
     if (!savedStateLoaded) {
         // No saved state, initialize a new game
@@ -150,6 +121,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Update restore button visibility at startup
     UIManager.updateRestoreButtonVisibility();
+    
+    // Add event listeners to resume audio context on interaction
+    document.addEventListener('click', () => AudioManager.resumeAudio());
+    document.addEventListener('touchstart', () => AudioManager.resumeAudio());
+    document.addEventListener('keydown', () => AudioManager.resumeAudio());
 });
 
 // Update UI to match the loaded game state

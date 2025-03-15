@@ -106,6 +106,11 @@ export class GameLogic {
                 window.addShake(inputElement);
             }
             
+            // Play the wrong sound BEFORE updating UI for faster response
+            if (window.playWrongSound) {
+                window.playWrongSound(false);
+            }
+            
             // Update proximity meter
             UIManager.updateProximityMeter(
                 numericGuess, 
@@ -118,6 +123,10 @@ export class GameLogic {
                 UIManager.clearFeedback();
                 gameState.gameOver = true;
                 gameState.saveState();
+                
+                // Play game over sound directly via AudioManager for reliability
+                AudioManager.playBeep(true);
+                
                 UIManager.showGameOverNotification(`Game Over! The number was ${gameState.randomNumber}`);
                 UIManager.showPlayAgainButton();
                 UIManager.hideCustomKeyboard();
@@ -125,9 +134,7 @@ export class GameLogic {
                 UIManager.setFeedback(feedback);
                 UIManager.elements.feedback.style.color = "red";
                 
-                if (window.playWrongSound) {
-                    window.playWrongSound(false);
-                }
+                // Already played wrong sound at the start
                 
                 setTimeout(UIManager.focusInput, 10);
             }
