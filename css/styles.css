@@ -2530,16 +2530,571 @@ html[data-theme="light"] #sun-icon {
 
 /* Last guess container */
 #last-guess-container {
-  height: 90px; /* Increased from 60px to 90px */
+  height: 80px;
   width: 100%;
   display: flex;
-  flex-direction: column; /* Change to column layout */
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: center; /* Center all content vertically */
+  gap: 3px; /* Equal small spacing between elements */
   padding: 0;
   border-top: 1px solid var(--border-color);
-  flex-shrink: 0; /* Prevent container from shrinking */
-  flex: 0.3; /* Give it 30% of the available space */
+  flex-shrink: 0;
+  flex: 0.3;
+  box-sizing: border-box;
+  position: relative; /* Ensure proper positioning */
+  margin: 0; /* Remove any margin */
+}
+
+/* Adjust the guess display to have equal padding above and below */
+#last-guess-display {
+  height: 44px;
+  width: 100%;
+  margin: 0; /* Remove margin that might affect centering */
+  padding: 0; /* Remove padding */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+/* Navigation buttons - equal sizes with no margins */
+.guess-nav-btn {
+  width: 100%;
+  height: 16px;
+  padding: 0;
+  margin: 0; /* Remove any margins causing spacing issues */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  color: var(--btn-primary);
+  font-size: 16px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  opacity: 0.8;
+  box-shadow: none;
+  font-weight: bold;
+}
+
+/* Remove any special positioning that might be causing misalignment */
+#prev-guess-btn, #next-guess-btn {
+  margin: 0; /* Override any specific margins */
+}
+
+/* Game Controls Container */
+.game-controls {
+  position: relative;
+  height: auto; /* Allow flexible height */
+  width: 100%;
+  max-width: 300px;
+  margin: 10px auto;
+}
+
+/* Position buttons inside game-controls */
+#continueBtn, #restartBtn {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  margin: 0;
+  display: none;
+  max-width: 100%;
+  height: 42px;
+}
+
+/* Make Play Again button always positioned relative */
+.dropdown-container {
+  position: relative;
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+  /* Always visible */
+  display: block;
+}
+
+#playAgainBtn {
+  background-color: #666;
+  margin: 0.5rem auto;
+  display: block;
+  max-width: 100%;
+}
+
+/* Adjust spacing between calculator and controls */
+#custom-keyboard {
+  margin: 10px auto; /* Reduced margin */
+  padding-top: 0;    /* Remove top padding */
+}
+
+/* Remove any conflicting margins */
+#continueBtn, #playAgainBtn, #restartBtn {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+/* Dropdown Menu Styling */
+.dropdown-container {
+  position: relative;
+  display: block;
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: #fff;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  margin-top: 5px;
+  z-index: 100;
+  overflow: hidden;
+  /* Enable pointer events by default */
+  pointer-events: auto;
+}
+
+[data-theme="dark"] .dropdown-menu {
+  background-color: #333;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* Fix dropdown option height to match other game buttons */
+.dropdown-option {
+  padding: 12px 15px;
+  font-size: 1rem;
+  color: #e74c3c;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-weight: 500;
+  text-align: center;
+  display: flex; /* Change to flex for better vertical centering */
+  align-items: center; /* Center content vertically */
+  justify-content: center; /* Center content horizontally */
+  width: 100%;
+  min-height: 42px; /* Match the standard button height */
+  box-sizing: border-box;
+}
+
+.dropdown-option:hover {
+  background-color: #f5f5f5;
+}
+
+[data-theme="dark"] .dropdown-option {
+  color: #ff6b6b;
+}
+
+[data-theme="dark"] .dropdown-option:hover {
+  background-color: #2a2a2a;
+}
+
+/* Show dropdown when active class is added */
+.dropdown-container.active .dropdown-menu {
+  display: block;
+  animation: fadeIn 0.2s ease;
+}
+
+/* Add down arrow to play again button with a more reliable method */
+#playAgainBtn {
+  position: relative;
+  padding-right: 30px; /* Make room for the arrow */
+}
+
+#playAgainBtn::after {
+  content: "▼";
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 10px;
+  opacity: 0.8;
+}
+
+/* Hide the dropdown arrow when in continue mode */
+#playAgainBtn.continue-mode {
+  padding-right: 16px; /* Reset padding when in continue mode */
+}
+
+#playAgainBtn.continue-mode::after {
+  content: none;
+}
+
+/* Improve fade-in animation for better UX */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Mobile specific styles for dropdown */
+@media (max-width: 768px) {
+  .dropdown-container {
+    max-width: 250px;
+  }
+  
+  .dropdown-menu {
+    margin-top: 3px;
+  }
+  
+  /* Increase touch target size on mobile */
+  .dropdown-option {
+    padding: 15px;
+    min-height: 54px; /* Even larger for touch */
+  }
+}
+
+/* Style for the separate dropdown arrow element */
+.dropdown-arrow {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  opacity: 0.8;
+  cursor: pointer;
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+}
+
+.dropdown-arrow:hover {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .dropdown-arrow {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .dropdown-arrow:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Remove the arrow from the Play Again button since we have a dedicated arrow element */
+#playAgainBtn {
+  position: relative;
+  padding-right: 40px; /* Make room for the arrow */
+}
+
+/* Hide the default arrow */
+#playAgainBtn::after {
+  content: none;
+}
+
+/* Hide the dropdown arrow when in continue mode */
+#playAgainBtn.continue-mode {
+  padding-right: 16px; /* Reset padding when in continue mode */
+}
+
+/* Improve fade-in animation for better UX */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Mobile specific styles for dropdown */
+@media (max-width: 768px) {
+  .dropdown-container {
+    max-width: 250px;
+  }
+  
+  .dropdown-menu {
+    margin-top: 3px;
+  }
+  
+  /* Even larger touch targets on mobile */
+  .dropdown-option {
+    padding: 18px;
+    min-height: 60px;
+  }
+  
+  /* Larger arrow area for mobile touch */
+  .dropdown-arrow {
+    width: 30px;
+    height: 30px;
+    font-size: 12px;
+  }
+}
+
+/* Dropdown Menu Styling - Improved for better interaction */
+.dropdown-container {
+  position: relative;
+  display: block;
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: #fff;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  margin-top: 5px;
+  z-index: 100;
+  overflow: hidden;
+  pointer-events: auto;
+}
+
+[data-theme="dark"] .dropdown-menu {
+  background-color: #333;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* Make the dropdown option easier to click */
+.dropdown-option {
+  padding: 16px; /* Increased padding for easier touch targets */
+  font-size: 1rem;
+  color: #e74c3c;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-weight: 500;
+  text-align: center;
+  display: block;
+  width: 100%;
+  min-height: 54px; /* Taller for better clickability */
+  box-sizing: border-box;
+}
+
+.dropdown-option:hover {
+  background-color: #f5f5f5;
+}
+
+[data-theme="dark"] .dropdown-option {
+  color: #ff6b6b;
+}
+
+[data-theme="dark"] .dropdown-option:hover {
+  background-color: #2a2a2a;
+}
+
+/* Show dropdown when active class is added */
+.dropdown-container.active .dropdown-menu {
+  display: block;
+  animation: fadeIn 0.2s ease;
+}
+
+/* Explicit styling for dropdown arrow to ensure it's visible */
+.dropdown-arrow {
+  position: absolute !important;
+  right: 10px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  width: 30px !important;
+  height: 30px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 12px !important;
+  opacity: 0.9 !important;
+  cursor: pointer !important;
+  z-index: 10 !important;
+  background-color: rgba(0, 0, 0, 0.2) !important;
+  border-radius: 50% !important;
+  color: white !important;
+  transition: background-color 0.2s ease !important;
+}
+
+/* Make the arrow stand out more on hover */
+.dropdown-arrow:hover {
+  background-color: rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Ensure the dropdown arrow is visible in dark mode */
+[data-theme="dark"] .dropdown-arrow {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+[data-theme="dark"] .dropdown-arrow:hover {
+  background-color: rgba(255, 255, 255, 0.25) !important;
+}
+
+/* Position the Play Again button correctly */
+#playAgainBtn {
+  position: relative !important;
+  padding-right: 40px !important;
+  padding-left: 16px !important;
+  width: 100% !important;
+  overflow: visible !important; /* Ensure arrow is not clipped */
+}
+
+/* Hide dropdown arrow when in continue mode */
+#playAgainBtn.continue-mode + .dropdown-arrow {
+  display: none !important;
+}
+
+/* Fade in animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.dropdown-container.active .dropdown-menu {
+  animation: fadeIn 0.2s ease;
+}
+
+/* Fix for Play Again / Restart Level button text centering */
+#playAgainBtn {
+  position: relative !important;
+  padding-right: 36px !important; /* Space for arrow */
+  padding-left: 36px !important; /* Match right padding for visual centering */
+  width: 100% !important;
+  overflow: visible !important;
+  text-align: center !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+/* Additional fix for arrow positioning to not affect text centering */
+.dropdown-arrow {
+  position: absolute !important;
+  right: 5px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  width: 26px !important;
+  height: 26px !important;
+  background-color: rgba(0, 0, 0, 0.6) !important;
+  border-radius: 50% !important;
+  color: white !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 12px !important;
+  cursor: pointer !important;
+  z-index: 9999 !important;
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+  pointer-events: auto !important;
+  user-select: none !important;
+  /* Make sure it doesn't affect text alignment */
+  margin: 0 !important;
+}
+
+/* Improved Custom Number Keyboard alignment */
+#custom-keyboard {
+  width: 100%;
+  max-width: 300px; /* Match with other buttons (like Play Again) */
+  margin: 0.75rem auto;
+  padding-top: 0;
+  user-select: none;
+  display: block;
+  box-sizing: border-box;
+}
+
+.keyboard-row {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  width: 100%;
+}
+
+.key-btn {
+  flex: 1;
+  min-width: 0; /* Allow buttons to shrink if needed */
+  height: 48px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  border-radius: 6px;
+  background-color: #e0e0e0;
+  color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  padding: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.1s ease, box-shadow 0.1s ease, background-color 0.2s ease, color 0.2s ease;
+  -webkit-user-select: none;
+  user-select: none;
+  outline: none;
+  border: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Game Controls Container - improved alignment with keypad */
+.game-controls {
+  position: relative;
+  height: auto;
+  width: 100%;
+  max-width: 300px; /* Match width with keypad */
+  margin: 10px auto;
+}
+
+/* Make dropdown container match width of keypad */
+.dropdown-container {
+  position: relative;
+  width: 100%;
+  max-width: 300px; /* Match with keypad */
+  margin: 0 auto;
+  display: block;
+  box-sizing: border-box; /* Include padding and border in width calculation */
+}
+
+/* Responsive adjustments for consistent button sizes */
+@media (max-width: 360px) {
+  #custom-keyboard, .dropdown-container, .game-controls {
+    max-width: 280px; /* Consistent width on small screens */
+  }
+  
+  .key-btn {
+    height: 42px;
+    font-size: 1.1rem;
+  }
+  
+  .key-clear, .key-enter {
+    font-size: 0.8rem;
+  }
+  
+  .key-btn {
+    width: 42px;
+    height: 42px;
+    font-size: 1.1rem;
+    border-radius: 5px;
+  }
+  
+  .key-clear, .key-enter {
+    font-size: 0.8rem;
+  }
+  
+  #custom-keyboard {
+    max-width: 240px;
+  }
+}
+
+/* For very small screens */
+@media (max-width: 320px) {
+  #custom-keyboard, .dropdown-container, .game-controls {
+    max-width: 250px; /* Further reduced consistent width */
+  }
+}
+
+/* Last guess container with navigation */
+#last-guess-container {
+  height: 90px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 0;
+  border-top: 1px solid var(--border-color);
+  flex-shrink: 0;
+  flex: 0.3;
 }
 
 #last-guess-display {
@@ -3100,154 +3655,278 @@ html[data-theme="light"] #sun-icon {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 52px; /* Reduced from 58px to fit better */
-  width: 100%;
-  position: relative; /* Ensure proper positioning */
+  height: 58px;
 }
 
 #last-guess {
-  width: 44px; /* Slightly reduced from 48px */
-  height: 44px; /* Slightly reduced from 48px */
-  border-radius: 6px;
+  width: 48px; /* Increased from 40px to 48px */
+  height: 48px; /* Increased from 40px to 48px */
+  border-radius: 6px; /* Square with slightly rounded corners */
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: bold;
-  font-size: 1.25rem;
+  font-size: 1.25rem; /* Slightly larger font */
   color: white;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  position: relative;
   opacity: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 #last-guess.show {
   opacity: 1;
 }
 
-/* Navigation buttons - simplified design without circular background */
-.guess-nav-btn {
-  width: 100%; /* Take full width of container for better tappable area */
-  height: 22px; /* Keep the height */
-  padding: 0;
-  border: none;
-  background: none; /* Remove background */
-  color: var(--btn-primary); /* Use the primary button color */
-  font-size: 14px; /* Slightly larger font */
+/* Add proximity colors for last guess */
+#last-guess.proximity-0 { background-color: #e74c3c; }
+#last-guess.proximity-1 { background-color: #e67e22; }
+#last-guess.proximity-2 { background-color: #f1c40f; }
+#last-guess.proximity-3 { background-color: #27ae60; }
+#last-guess.proximity-4 { background-color: #2ecc71; }
+
+/* Hide the guess index element since we don't need it */
+#guess-index {
+  display: none; /* Hide the element completely */
+}
+
+/* Game Controls Container */
+.game-controls {
+  position: relative;
+  height: auto; /* Allow flexible height */
+  width: 100%;
+  max-width: 300px;
+  margin: 10px auto;
+}
+
+/* Position buttons inside game-controls */
+#continueBtn, #restartBtn {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  margin: 0;
+  display: none;
+  max-width: 100%;
+  height: 42px;
+}
+
+/* Make Play Again button always positioned relative */
+.dropdown-container {
+  position: relative;
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+  /* Always visible */
+  display: block;
+}
+
+#playAgainBtn {
+  background-color: #666;
+  margin: 0.5rem auto;
+  display: block;
+  max-width: 100%;
+}
+
+/* Adjust spacing between calculator and controls */
+#custom-keyboard {
+  margin: 10px auto; /* Reduced margin */
+  padding-top: 0;    /* Remove top padding */
+}
+
+/* Remove any conflicting margins */
+#continueBtn, #playAgainBtn, #restartBtn {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+/* Dropdown Menu Styling */
+.dropdown-container {
+  position: relative;
+  display: block;
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: #fff;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  margin-top: 5px;
+  z-index: 100;
+  overflow: hidden;
+  /* Enable pointer events by default */
+  pointer-events: auto;
+}
+
+[data-theme="dark"] .dropdown-menu {
+  background-color: #333;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* Fix dropdown option height to match other game buttons */
+.dropdown-option {
+  padding: 12px 15px;
+  font-size: 1rem;
+  color: #e74c3c;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-weight: 500;
+  text-align: center;
+  display: flex; /* Change to flex for better vertical centering */
+  align-items: center; /* Center content vertically */
+  justify-content: center; /* Center content horizontally */
+  width: 100%;
+  min-height: 42px; /* Match the standard button height */
+  box-sizing: border-box;
+}
+
+.dropdown-option:hover {
+  background-color: #f5f5f5;
+}
+
+[data-theme="dark"] .dropdown-option {
+  color: #ff6b6b;
+}
+
+[data-theme="dark"] .dropdown-option:hover {
+  background-color: #2a2a2a;
+}
+
+/* Show dropdown when active class is added */
+.dropdown-container.active .dropdown-menu {
+  display: block;
+  animation: fadeIn 0.2s ease;
+}
+
+/* Add down arrow to play again button with a more reliable method */
+#playAgainBtn {
+  position: relative;
+  padding-right: 30px; /* Make room for the arrow */
+}
+
+#playAgainBtn::after {
+  content: "▼";
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 10px;
+  opacity: 0.8;
+}
+
+/* Hide the dropdown arrow when in continue mode */
+#playAgainBtn.continue-mode {
+  padding-right: 16px; /* Reset padding when in continue mode */
+}
+
+#playAgainBtn.continue-mode::after {
+  content: none;
+}
+
+/* Improve fade-in animation for better UX */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Mobile specific styles for dropdown */
+@media (max-width: 768px) {
+  .dropdown-container {
+    max-width: 250px;
+  }
+  
+  .dropdown-menu {
+    margin-top: 3px;
+  }
+  
+  /* Increase touch target size on mobile */
+  .dropdown-option {
+    padding: 15px;
+    min-height: 54px; /* Even larger for touch */
+  }
+}
+
+/* Style for the separate dropdown arrow element */
+.dropdown-arrow {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  transition: color 0.2s ease;
+  font-size: 10px;
   opacity: 0.8;
-  box-shadow: none; /* Remove shadow */
-  font-weight: bold; /* Make arrows bolder */
+  cursor: pointer;
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
 }
 
-.guess-nav-btn:hover {
-  opacity: 1;
-  color: var(--btn-hover); /* Change color on hover */
-  background: none; /* Ensure no background on hover */
+.dropdown-arrow:hover {
+  background-color: rgba(0, 0, 0, 0.2);
 }
 
-.guess-nav-btn:disabled {
-  opacity: 0.3;
-  cursor: default;
-  color: #999;
-  background: none; /* Ensure no background when disabled */
+[data-theme="dark"] .dropdown-arrow {
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
-/* Ensure animations fit within the container */
-@keyframes fadeOutUp {
-  from {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  to {
-    opacity: 0;
-    transform: translateY(-15px); /* Reduced from -20px */
-  }
+[data-theme="dark"] .dropdown-arrow:hover {
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(15px); /* Reduced from 20px */
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* Remove the arrow from the Play Again button since we have a dedicated arrow element */
+#playAgainBtn {
+  position: relative;
+  padding-right: 40px; /* Make room for the arrow */
 }
 
-@keyframes fadeOutDown {
-  from {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  to {
-    opacity: 0;
-    transform: translateY(15px); /* Reduced from 20px */
-  }
+/* Hide the default arrow */
+#playAgainBtn::after {
+  content: none;
 }
 
-@keyframes fadeInDown {
-  from {
-    opacity: 0;
-    transform: translateY(-15px); /* Reduced from -20px */
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* Hide the dropdown arrow when in continue mode */
+#playAgainBtn.continue-mode {
+  padding-right: 16px; /* Reset padding when in continue mode */
 }
 
-/* Mobile optimizations for the last guess container */
+/* Improve fade-in animation for better UX */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Mobile specific styles for dropdown */
 @media (max-width: 768px) {
-  #last-guess-container {
-    height: 80px; /* Slightly smaller on mobile */
-    padding: 2px 0;
+  .dropdown-container {
+    max-width: 250px;
   }
   
-  #last-guess {
-    width: 36px; /* Smaller on mobile */
-    height: 36px;
-    font-size: 1rem;
+  .dropdown-menu {
+    margin-top: 3px;
   }
   
-  .guess-nav-btn {
-    height: 20px;
-    font-size: 12px; /* Slightly smaller font */
+  /* Even larger touch targets on mobile */
+  .dropdown-option {
+    padding: 18px;
+    min-height: 60px;
   }
   
-  #last-guess-display {
-    height: 40px; /* Reduced height on mobile */
-  }
-  
-  /* Hide tooltips on mobile */
-  .guess-nav-btn::after {
-    display: none;
-  }
-}
-
-/* Very small screens */
-@media (max-width: 320px) {
-  #last-guess-container {
-    height: 70px; /* Even smaller on tiny screens */
-  }
-  
-  #last-guess {
-    width: 32px;
-    height: 32px;
-    font-size: 0.9rem;
-  }
-  
-  .guess-nav-btn {
-    height: 18px;
-  }
-  
-  #last-guess-display {
-    height: 34px;
+  /* Larger arrow area for mobile touch */
+  .dropdown-arrow {
+    width: 30px;
+    height: 30px;
+    font-size: 12px;
   }
 }
 

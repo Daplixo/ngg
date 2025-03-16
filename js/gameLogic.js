@@ -42,17 +42,71 @@ export class GameLogic {
         }
     }
 
+    static showLevelStartNotification(level) {
+        // First remove ALL existing notifications to prevent multiple notifications
+        const allNotifications = document.querySelectorAll('div[style*="position:fixed"][style*="top:20px"]');
+        allNotifications.forEach(notification => notification.remove());
+        
+        const tempNotification = document.createElement('div');
+        tempNotification.textContent = `Level ${level} started`;
+        tempNotification.setAttribute('data-notification-type', 'level-start');
+        tempNotification.setAttribute('id', 'level-start-notification');
+        tempNotification.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#2eb82e;color:white;padding:10px 20px;border-radius:5px;z-index:1000;';
+        document.body.appendChild(tempNotification);
+        
+        // Use animation frame for smoother rendering
+        requestAnimationFrame(() => {
+            // Ensure the notification is visible for a moment before fading
+            setTimeout(() => {
+                // Check if the element still exists before modifying it
+                if (document.getElementById('level-start-notification')) {
+                    tempNotification.style.transition = 'opacity 0.5s ease';
+                    tempNotification.style.opacity = '0';
+                    setTimeout(() => {
+                        if (document.getElementById('level-start-notification')) {
+                            tempNotification.remove();
+                        }
+                    }, 500);
+                }
+            }, 2000);
+        });
+    }
+
     static continueNextLevel() {
+        console.log("[DEBUG] continueNextLevel called");
+        
         if (gameState.finalWin) {
-            this.playAgain();
+            console.log("[DEBUG] Final win detected, doing clean restart");
+            // Do a clean restart without using playAgain
+            gameState.reset(true);
+            UIManager.updateRangeInfo();
+            this.resetUI();
             return;
         }
         
         if (gameState.waitingForNextLevel) {
+            console.log("[DEBUG] Waiting for next level, continuing to level " + (gameState.level + 1));
+            
+            // Store the new level number before updating state
+            const newLevel = gameState.level + 1;
+            
+            // Set a flag to prevent playAgain from showing restart notification
+            window._isLevelTransition = true;
+            
+            // Update game state
             gameState.waitingForNextLevel = false;
             gameState.nextLevel(); // This already saves state
             UIManager.updateRangeInfo();
             this.resetUI();
+            
+            // Show level start notification using the new level number
+            // Slight delay to ensure UI is updated first
+            console.log("[DEBUG] Showing level start notification for level", newLevel);
+            setTimeout(() => {
+                this.showLevelStartNotification(newLevel);
+                // Clear the flag after notification is shown
+                window._isLevelTransition = false;
+            }, 10);
             
             // Reset the button style back to normal
             UIManager.restorePlayAgainButton();
@@ -214,6 +268,15 @@ export class GameLogic {
     }
 
     static playAgain() {
+        // If we're waiting for next level, make sure we don't restart the current one
+        if (gameState.waitingForNextLevel) {
+            this.continueNextLevel();
+            return;
+        }
+        
+        // Skip showing restart notification if we're in a level transition
+        const isLevelTransition = window._isLevelTransition === true;
+        
         // If game is not over or won, just restart the current level
         const restartCurrentLevel = !gameState.gameOver && !gameState.hasWon;
         
@@ -239,8 +302,10 @@ export class GameLogic {
             UIManager.updateRangeInfo();
             this.resetUI();
             
-            // Show a notification
-            this.showLevelRestartNotification(currentLevel);
+            // Show a notification only if not in level transition
+            if (!isLevelTransition) {
+                this.showLevelRestartNotification(currentLevel);
+            }
         } else {
             // Full game restart (original behavior)
             this.restartGame(true);
@@ -251,32 +316,82 @@ export class GameLogic {
     }
 
     static showLevelRestartNotification(level) {
+        // First remove ALL existing notifications
+        const allNotifications = document.querySelectorAll('div[style*="position:fixed"][style*="top:20px"]');
+        allNotifications.forEach(notification => notification.remove());
+        
+        // Skip if we're in a level transition
+        if (window._isLevelTransition === true) {
+            console.log("[DEBUG] Skipping restart notification during level transition");
+            return;
+        }
+        
         const tempNotification = document.createElement('div');
         tempNotification.textContent = `Level ${level} restarted`;
+        tempNotification.setAttribute('data-notification-type', 'level-restart');
+        tempNotification.setAttribute('id', 'level-restart-notification');
         tempNotification.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#8e44ad;color:white;padding:10px 20px;border-radius:5px;z-index:1000;';
         document.body.appendChild(tempNotification);
         setTimeout(() => {
-            tempNotification.style.opacity = '0';
-            tempNotification.style.transition = 'opacity 0.5s';
-            setTimeout(() => tempNotification.remove(), 500);
+            // Check if the element still exists before modifying it
+            if (document.getElementById('level-restart-notification')) {
+                tempNotification.style.opacity = '0';
+                tempNotification.style.transition = 'opacity 0.5s';
+                setTimeout(() => {
+                    if (document.getElementById('level-restart-notification')) {
+                        tempNotification.remove();
+                    }
+                }, 500);
+            }
         }, 2000);
     }
 
     static handleKeyPress(event) {
         if (event.key === "Enter") {
             event.preventDefault();
+            console.log("[DEBUG] Enter key pressed, game state:", 
+                gameState.finalWin ? "finalWin" : 
+                gameState.waitingForNextLevel ? "waitingForNextLevel" : 
+                gameState.gameOver ? "gameOver" : "normal");
+                
             if (gameState.finalWin) {
-                this.playAgain();
+                console.log("[DEBUG] Final win, restarting game");
+                // Use restartGame directly instead of playAgain to avoid showing restart notification
+                this.restartGame(true);
                 return;
             }
+            
             if (gameState.waitingForNextLevel) {
+                console.log("[DEBUG] Waiting for next level, continuing to level " + (gameState.level + 1));
+                
+                // Set transition flag to true
+                window._isLevelTransition = true;
+                
+                // Store the new level number before updating state
+                const newLevel = gameState.level + 1;
+                
+                // Update game state
                 gameState.waitingForNextLevel = false;
-                gameState.nextLevel();
+                gameState.nextLevel(); // This already saves state
                 UIManager.updateRangeInfo();
                 this.resetUI();
+                
+                // Show level start notification using the new level number
+                // Slight delay to ensure UI is updated first
+                console.log("[DEBUG] Showing level start notification for level", newLevel);
+                setTimeout(() => {
+                    this.showLevelStartNotification(newLevel);
+                    // Clear the flag after notification is shown
+                    window._isLevelTransition = false;
+                }, 10);
+                
+                // Reset the button style back to normal
+                UIManager.restorePlayAgainButton();
+                
                 UIManager.elements.continueBtn.style.display = "none";
                 return;
             }
+            
             if (gameState.gameOver) {
                 this.restartGame();
             } else {
@@ -323,6 +438,10 @@ export class GameLogic {
     }
     
     static showResetNotification() {
+        // First remove ALL existing notifications
+        const allNotifications = document.querySelectorAll('div[style*="position:fixed"][style*="top:20px"]');
+        allNotifications.forEach(notification => notification.remove());
+        
         const tempNotification = document.createElement('div');
         tempNotification.textContent = "Reset successful!";
         tempNotification.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#e74c3c;color:white;padding:10px 20px;border-radius:5px;z-index:1000;';
@@ -335,6 +454,10 @@ export class GameLogic {
     }
     
     static showGameRestoredNotification() {
+        // First remove ALL existing notifications
+        const allNotifications = document.querySelectorAll('div[style*="position:fixed"][style*="top:20px"]');
+        allNotifications.forEach(notification => notification.remove());
+        
         const tempNotification = document.createElement('div');
         tempNotification.textContent = "Game restored!";
         tempNotification.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#8e44ad;color:white;padding:10px 20px;border-radius:5px;z-index:1000;';
@@ -347,6 +470,10 @@ export class GameLogic {
     }
     
     static showErrorNotification(message) {
+        // First remove ALL existing notifications
+        const allNotifications = document.querySelectorAll('div[style*="position:fixed"][style*="top:20px"]');
+        allNotifications.forEach(notification => notification.remove());
+        
         const errorNotification = document.createElement('div');
         errorNotification.textContent = message;
         errorNotification.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#e74c3c;color:white;padding:10px 20px;border-radius:5px;z-index:1000;';
