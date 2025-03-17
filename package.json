@@ -1,0 +1,13 @@
+{
+  "name": "number-guessing-game",
+  "version": "1.0.0",
+  "description": "A fun number guessing game with multiple levels",
+  "scripts": {
+    "sass": "sass scss/main.scss:css/styles.css --watch",
+    "build": "sass scss/main.scss:css/styles.css --style compressed",
+    "start": "npm run sass"
+  },
+  "devDependencies": {
+    "sass": "^1.69.5"
+  }
+}
