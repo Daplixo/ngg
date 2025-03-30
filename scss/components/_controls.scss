@@ -1,0 +1,70 @@
+/* Controls group to line up input and submit button nicely */
+#controls {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 1.5rem;
+  padding: 0;
+  width: 100%;
+  max-width: 400px; /* Control max width for better appearance */
+}
+
+/* Style for the input box */
+#userGuess {
+  padding: 0;
+  height: 42px;
+  border: 1.5px solid var(--input-border);
+  border-radius: 6px;
+  font-size: 1rem;
+  outline: none;
+  width: 100%;
+  text-align: center;
+  background-color: var(--input-bg);
+  color: var(--text-color);
+  transition: border-color 0.3s, background-color 0.3s, color 0.3s;
+  
+  &:focus {
+    border-color: var(--btn-primary);
+    box-shadow: 0 0 0 2px rgba(77, 111, 237, 0.1);
+  }
+}
+
+/* Visual feedback for active input */
+.active-input {
+  box-shadow: 0 0 0 2px var(--btn-primary);
+  border-color: var(--btn-primary);
+}
+
+/* Responsive adjustments */
+@media (max-width: $breakpoint-md) {
+  #controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    margin: 0.25rem 0;
+    padding: 0 0.5rem;
+    width: 100%;
+    max-width: 300px;
+  }
+
+  #userGuess {
+    text-align: center;
+    padding: 0;
+  }
+}
+
+/* For very large screens */
+@media (min-width: $breakpoint-xl) {
+  #controls {
+    max-width: 500px; /* Slightly wider on very large screens */
+  }
+}
+
+/* Mobile specific adjustments */
+@media (max-width: $breakpoint-sm) {
+  #controls {
+    max-width: 250px;
+  }
+}

@@ -1,0 +1,45 @@
+.form-group {
+  margin-bottom: $spacing-medium;
+  
+  label {
+    display: block;
+    margin-bottom: $spacing-small;
+    font-weight: 500;
+  }
+  
+  input, select, textarea {
+    width: 100%;
+    padding: $spacing-small;
+    border: 1px solid #ddd;
+    border-radius: $border-radius;
+    font-family: $base-font-family;
+    font-size: $base-font-size;
+    
+    &:focus {
+      outline: none;
+      border-color: $primary-color;
+      box-shadow: 0 0 0 2px rgba($primary-color, 0.2);
+    }
+  }
+  
+  .error-message {
+    color: $error-color;
+    font-size: $base-font-size * 0.8;
+    margin-top: $spacing-small / 2;
+  }
+}
+
+.input-group {
+  display: flex;
+  
+  input {
+    flex: 1;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+  
+  .btn {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+}

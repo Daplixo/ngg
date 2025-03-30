@@ -1,0 +1,277 @@
+/* Base button styles */
+button {
+  height: 42px;
+  padding: 0 16px;
+  border: none;
+  border-radius: $border-radius-medium;
+  background-color: var(--btn-primary);
+  color: #fff;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 0;
+  
+  &:active {
+    transform: scale(0.98);
+  }
+  
+  &:hover {
+    background-color: var(--btn-hover);
+  }
+}
+
+.btn {
+  @include button-base;
+  
+  &-primary {
+    background-color: $primary-color;
+    color: white;
+    border: none;
+    
+    &:hover {
+      background-color: darken($primary-color, 10%);
+    }
+  }
+  
+  &-secondary {
+    background-color: transparent;
+    color: $primary-color;
+    border: 1px solid $primary-color;
+    
+    &:hover {
+      background-color: rgba($primary-color, 0.1);
+    }
+  }
+  
+  &-large {
+    padding: $spacing-medium $spacing-large;
+    font-size: $base-font-size * 1.2;
+  }
+  
+  &-small {
+    padding: $spacing-small / 2 $spacing-small;
+    font-size: $base-font-size * 0.8;
+  }
+  
+  &-block {
+    display: block;
+    width: 100%;
+  }
+}
+
+/* Specific button types */
+#restartBtn {
+  background-color: var(--btn-restart-bg);
+  margin-top: 20px;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 300px;
+  
+  &:hover {
+    background-color: var(--btn-restart-hover);
+  }
+}
+
+#playAgainBtn {
+  background-color: var(--btn-play-again-bg);
+  margin-top: 0.5rem;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 300px;
+  position: relative;
+  padding-right: 36px; /* Space for arrow */
+  padding-left: 36px; /* Match right padding for visual centering */
+  overflow: visible;
+  text-align: center;
+  justify-content: center;
+  
+  &:hover {
+    background-color: var(--btn-play-again-hover);
+  }
+  
+  &.continue-mode {
+    background-color: var(--btn-continue-bg);
+    padding-right: 16px;
+    
+    &:hover {
+      background-color: var(--btn-continue-hover);
+    }
+  }
+}
+
+#continueBtn {
+  display: none;
+  margin-top: 20px;
+  background-color: var(--btn-continue-bg);
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 300px;
+  
+  &:hover {
+    background-color: var(--btn-continue-hover);
+  }
+}
+
+/* Restore Game button styling */
+#restoreBtn {
+  background-color: var(--btn-restore-bg);
+  margin-top: 0;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 300px;
+  
+  &:hover {
+    background-color: var(--btn-restore-hover);
+  }
+}
+
+/* Reset Game button styling */
+#restoreBtn {
+  background-color: var(--btn-reset-bg);
+  margin-top: 0;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 300px;
+  
+  &:hover {
+    background-color: var(--btn-reset-hover);
+  }
+}
+
+/* Special styling for the dropdown arrow button */
+.dropdown-arrow {
+  position: absolute !important;
+  right: 5px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  width: 26px !important;
+  height: 26px !important;
+  background-color: var(--dropdown-arrow-bg) !important;
+  border-radius: $border-radius-circle !important;
+  color: white !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 12px !important;
+  cursor: pointer !important;
+  z-index: $z-index-dropdown-arrow !important;
+  border: 1px solid var(--dropdown-arrow-border) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+  pointer-events: auto !important;
+  user-select: none !important;
+  
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.3) !important;
+  }
+}
+
+[data-theme="dark"] .dropdown-arrow {
+  background-color: var(--dropdown-arrow-bg) !important;
+  
+  &:hover {
+    background-color: var(--dropdown-arrow-hover-bg) !important;
+  }
+}
+
+/* For play again / continue button dropdown arrow */
+#playAgainBtn.continue-mode + .dropdown-arrow {
+  display: none !important;
+}
+
+/* Footer buttons */
+.footer-btn, .donate-btn {
+  height: 28px; /* Reduced button height */
+  padding: 0 12px;
+  border-radius: $border-radius-medium;
+  font-size: 0.8rem;
+  font-weight: 500;
+  width: 120px; /* Consistent width for both buttons */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+  cursor: pointer;
+  color: white; /* Ensure text is white for both buttons */
+}
+
+/* Specific styling for each footer button */
+#feedbackBtn {
+  background-color: var(--feedback-btn-bg);
+  border-color: var(--feedback-btn-bg);
+  
+  &:hover {
+    background-color: var(--feedback-btn-hover);
+    border-color: var(--feedback-btn-hover);
+  }
+}
+
+.donate-btn {
+  background-color: var(--donate-btn-bg) !important;
+  border-color: var(--donate-btn-bg) !important;
+  
+  &:hover {
+    background-color: var(--donate-btn-hover) !important;
+    border-color: var(--donate-btn-hover) !important;
+  }
+}
+
+/* Mobile optimizations */
+@media (max-width: $breakpoint-md) {
+  .footer-btn, .donate-btn {
+    height: 26px !important;
+    padding: 0 10px !important;
+    font-size: 0.75rem !important;
+    width: 110px !important;
+  }
+  
+  .btn-icon {
+    width: 12px !important;
+    height: 12px !important;
+    margin-right: 5px !important;
+  }
+}
+
+/* Smaller screens */
+@media (max-width: $breakpoint-sm) {
+  #feedbackBtn, .donate-btn {
+    width: 115px !important;
+  }
+}
+
+/* Very small screens */
+@media (max-width: $breakpoint-xs) {
+  #feedbackBtn, .donate-btn {
+    width: 105px !important;
+    font-size: 0.7rem !important;
+  }
+}
+
+/* Very small heights */
+@media (max-height: 600px) {
+  .footer-btn, .donate-btn, #feedbackBtn {
+    height: 28px;
+    font-size: 0.75rem;
+    padding: 0 10px;
+  }
+}
+
+/* Button icons */
+.btn-icon {
+  width: 12px !important;
+  height: 12px !important;
+  margin-right: 4px !important;
+  flex-shrink: 0 !important;
+  position: relative !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}

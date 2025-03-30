@@ -1,0 +1,316 @@
+/* Footer Styles */
+.footer {
+  width: 100%;
+  background-color: var(--footer-bg);
+  border-top: 1px solid var(--border-color);
+  padding: 0.3rem 0;
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 0.75rem; /* Reduce overall horizontal padding */
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+/* Left column */
+.footer-left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+  margin-left: 0.15rem; /* Reduced left margin */
+}
+
+.author-info {
+  margin: 0;
+  
+  h3 {
+    margin: 0;
+    color: var(--author-text);
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: color 0.3s;
+  }
+}
+
+.social-links {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Using space-between for equal distribution */
+  width: 100%;
+  max-width: 140px; /* Increased width to match author heading width better */
+  margin-top: 6px; /* Space between heading and icons */
+}
+
+.social-icon {
+  width: 18px; /* Smaller icon size */
+  height: 18px;
+  color: var(--social-icon);
+  transition: color 0.2s ease;
+  opacity: 0.7; /* Reduced opacity for darker appearance */
+  filter: brightness(0.85); /* Make icons darker */
+}
+
+/* Handle dark mode for footer icons */
+[data-theme="dark"] .social-icon {
+  filter: brightness(0) invert(0.7); /* Make icons light in dark mode but slightly dimmer */
+  opacity: 0.8; /* Slightly higher opacity for dark mode */
+}
+
+/* Right column */
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: flex-end;
+  margin-right: 0.15rem; /* Reduced right margin */
+}
+
+/* Footer height optimization for smaller screens */
+@media (max-height: 700px) {
+  .footer {
+    padding: 0.2rem 0;
+  }
+  
+  .footer-content {
+    padding: 0.3rem 0.5rem;
+  }
+  
+  .footer-btn, .donate-btn, #feedbackBtn {
+    height: 24px !important;
+    font-size: 0.7rem !important;
+  }
+  
+  .author-info h3 {
+    font-size: 0.8rem;
+  }
+  
+  .social-icon {
+    width: 16px;
+    height: 16px;
+  }
+  
+  body {
+    padding-bottom: 40px;
+  }
+}
+
+/* Further reduction for very small heights */
+@media (max-height: 600px) {
+  .footer {
+    padding: 0.1rem 0;
+  }
+  
+  .footer-content {
+    padding: 0.2rem 0.5rem;
+  }
+  
+  .footer-btn, .donate-btn, #feedbackBtn {
+    height: 22px !important;
+    font-size: 0.65rem !important;
+  }
+  
+  .btn-icon {
+    width: 10px !important;
+    height: 10px !important;
+    margin-right: 3px !important;
+  }
+  
+  .author-info h3 {
+    font-size: 0.75rem;
+  }
+  
+  .social-icon {
+    width: 14px;
+    height: 14px;
+  }
+  
+  .social-links {
+    max-width: 120px;
+  }
+  
+  body {
+    padding-bottom: 34px;
+  }
+}
+
+/* For phones in landscape mode or very small heights */
+@media (max-height: 450px) {
+  .footer {
+    padding: 0;
+  }
+  
+  body {
+    padding-bottom: 30px;
+  }
+  
+  /* Optimize game container for very small heights */
+  #game-container {
+    min-height: 70vh;
+  }
+  
+  .game-layout {
+    min-height: 350px;
+    height: 450px;
+  }
+}
+
+/* Footer size optimization for mobile devices */
+@media (max-width: $breakpoint-md) {
+  .footer {
+    padding: 0.2rem 0;
+  }
+  
+  .footer-content {
+    padding: 0.3rem 0.5rem;
+  }
+  
+  .footer-btn, .donate-btn, #feedbackBtn {
+    height: 26px !important;
+    font-size: 0.75rem !important;
+  }
+  
+  .btn-icon {
+    width: 12px !important;
+    height: 12px !important;
+  }
+  
+  .author-info h3 {
+    font-size: 0.8rem;
+  }
+  
+  .social-icon {
+    width: 16px;
+    height: 16px;
+  }
+  
+  body {
+    padding-bottom: 40px;
+  }
+}
+
+/* Additional optimization for mobile devices in portrait mode */
+@media (max-width: $breakpoint-sm) {
+  .footer {
+    padding: 0.15rem 0;
+  }
+  
+  .footer-content {
+    padding: 0.25rem 0.4rem;
+  }
+  
+  /* Make column layout more compact */
+  .author-info {
+    margin-top: 0;
+  }
+  
+  .social-links {
+    margin-top: 4px;
+  }
+  
+  body {
+    padding-bottom: 38px;
+  }
+  
+  /* Further reduce button sizes */
+  .footer-btn, .donate-btn, #feedbackBtn {
+    height: 24px !important;
+    padding: 0 8px !important;
+    font-size: 0.7rem !important;
+    width: 100px !important;
+  }
+}
+
+/* Fix footer margin issues with more forceful approach */
+.footer-left {
+  margin-left: 0 !important; /* Force zero left margin */
+  padding-left: 0 !important; /* Also remove any padding */
+}
+
+.action-buttons {
+  margin-right: 0 !important; /* Force zero right margin */
+  padding-right: 0 !important; /* Also remove any padding */
+}
+
+.game-footer {
+  width: 100%;
+  padding: 16px;
+  text-align: center;
+  background-color: var(--footer-bg);
+  color: var(--footer-text);
+  transition: background-color 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  
+  .footer-content {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .footer-links {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+  
+  .footer-text {
+    font-size: 0.8rem;
+    color: var(--footer-text);
+    opacity: 0.8;
+    margin-top: 8px;
+  }
+  
+  a {
+    color: var(--footer-link);
+    transition: color 0.3s ease;
+    
+    &:hover {
+      color: var(--footer-link-hover);
+    }
+  }
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: $breakpoint-md) {
+  .game-footer {
+    padding: 12px;
+    
+    .footer-content {
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .footer-links {
+      margin: 0 auto;
+    }
+    
+    .footer-text {
+      font-size: 0.75rem;
+    }
+  }
+}
+
+@media screen and (max-width: $breakpoint-sm) {
+  .game-footer {
+    padding: 10px;
+  }
+}
+
+@media screen and (max-height: 600px) {
+  .game-footer {
+    padding: 8px;
+    
+    .footer-text {
+      margin-top: 4px;
+    }
+  }
+}

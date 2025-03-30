@@ -1,0 +1,207 @@
+/* Modal base styles for all screen sizes */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--modal-overlay-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: $z-index-modal;
+  box-sizing: border-box;
+  padding: 0;
+  
+  /* Make sure the modal is hidden when not active */
+  &:not(.show) {
+    display: none;
+  }
+  
+  /* Fix the display property when modal is shown */
+  &.show {
+    display: flex;
+  }
+}
+
+.modal-content {
+  background-color: var(--modal-bg);
+  border-radius: $border-radius-large;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  position: relative;
+  box-sizing: border-box;
+  width: 500px;
+  max-width: 90%;
+  padding: 2rem;
+  margin: 0 auto;
+  left: auto;
+  right: auto;
+  transition: background-color 0.3s;
+  
+  h2 {
+    font-size: 1.5rem;
+    margin: 0 0 1.5rem 0;
+    text-align: center;
+    color: var(--modal-text);
+    font-weight: 600;
+    transition: color 0.3s;
+  }
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+  
+  label {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    display: block;
+    color: var(--form-label);
+    font-weight: 500;
+  }
+  
+  input,
+  textarea {
+    width: 100%;
+    font-size: 1rem;
+    padding: 0.75rem 1rem;
+    border-radius: $border-radius-medium;
+    border: 1px solid var(--border-color);
+    box-sizing: border-box;
+    transition: border-color 0.2s ease, background-color 0.3s, color 0.3s;
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    
+    &:focus {
+      border-color: var(--btn-primary);
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(77, 111, 237, 0.2);
+    }
+  }
+  
+  textarea {
+    height: 150px;
+    resize: none;
+  }
+}
+
+.submit-btn {
+  width: 100%;
+  min-height: 48px;
+  font-size: 1rem;
+  border-radius: $border-radius-medium;
+  background-color: var(--btn-primary);
+  color: white;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  
+  &:hover {
+    background-color: var(--btn-hover);
+  }
+}
+
+.close-modal {
+  position: absolute;
+  right: 20px;
+  top: 15px;
+  font-size: 28px;
+  background: transparent;
+  border: none;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+  color: var(--close-btn);
+  padding: 0;
+  margin: 0;
+  transition: color 0.2s ease;
+  
+  &:hover {
+    color: darken(#555, 20%);
+  }
+}
+
+/* Media query overrides for smaller screens */
+@media (max-width: $breakpoint-md) {
+  .modal-content {
+    padding: 1.5rem;
+    max-width: 95%;
+  }
+  
+  .form-group {
+    margin-bottom: 1rem;
+  }
+
+  .form-group input,
+  .form-group textarea {
+    padding: 0.6rem 0.8rem;
+    font-size: 0.95rem;
+  }
+
+  .form-group textarea {
+    height: 120px;
+  }
+
+  .submit-btn {
+    min-height: 44px;
+    font-size: 0.95rem;
+  }
+
+  .close-modal {
+    right: 15px;
+    top: 10px;
+    font-size: 24px;
+    width: 32px;
+    height: 32px;
+  }
+}
+
+/* Very small screens */
+@media (max-width: $breakpoint-xs) {
+  .modal-content {
+    padding: 1.2rem;
+  }
+
+  .modal-content h2 {
+    font-size: 1.3rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .form-group {
+    margin-bottom: 0.8rem;
+  }
+
+  .form-group label {
+    font-size: 0.9rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .form-group input,
+  .form-group textarea {
+    padding: 0.5rem 0.6rem;
+    font-size: 0.9rem;
+  }
+
+  .form-group textarea {
+    height: 100px;
+  }
+
+  .submit-btn {
+    min-height: 40px;
+    font-size: 0.9rem;
+  }
+
+  .close-modal {
+    right: 10px;
+    top: 8px;
+    font-size: 22px;
+    width: 28px;
+    height: 28px;
+  }
+}

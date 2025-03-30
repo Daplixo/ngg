@@ -1,0 +1,137 @@
+/* Media Queries for responsive design */
+
+/* Extra small devices - Small phones */
+@media (max-width: $breakpoint-xs) {
+  #game-container {
+    padding: 0.5rem;
+  }
+  
+  h2 {
+    font-size: 1.4rem;
+    margin: 0.75rem 0;
+  }
+  
+  .game-layout {
+    min-height: 380px;
+    height: 460px;
+  }
+  
+  /* Ensure proper spacing in very small screens */
+  #range-info {
+    margin: 1rem 0 0.75rem;
+  }
+  
+  /* Further size reductions for smaller screens */
+  .key-btn {
+    height: 40px;
+    font-size: 1rem;
+  }
+  
+  /* Smaller footer on tiny screens */
+  .footer {
+    padding: 0.1rem 0;
+  }
+}
+
+/* Small devices - Large phones */
+@media (min-width: $breakpoint-xs + 1) and (max-width: $breakpoint-sm) {
+  .game-layout {
+    min-height: 400px;
+    height: 480px;
+  }
+}
+
+/* Medium devices - Tablets */
+@media (min-width: $breakpoint-sm + 1) and (max-width: $breakpoint-md) {
+  .game-layout {
+    height: 500px;
+  }
+}
+
+/* Large devices - Desktops */
+@media (min-width: $breakpoint-md + 1) and (max-width: $breakpoint-lg) {
+  #game-container {
+    padding: 1.5rem;
+  }
+  
+  .game-layout {
+    height: 520px;
+  }
+}
+
+/* Extra large devices - Large desktops */
+@media (min-width: $breakpoint-xl) {
+  #game-container {
+    padding: 2rem;
+  }
+  
+  .game-layout {
+    height: 550px;
+    max-width: 1100px;
+  }
+  
+  h2 {
+    font-size: 2rem;
+  }
+}
+
+/* Height-specific media queries */
+@media (max-height: 700px) {
+  .game-layout {
+    height: 450px;
+    min-height: 350px;
+  }
+}
+
+/* Very short screens (landscape on mobile) */
+@media (max-height: 600px) {
+  #game-container {
+    padding: 0.25rem;
+    min-height: 70vh;
+  }
+  
+  .game-layout {
+    height: 420px;
+    min-height: 320px;
+  }
+  
+  h2 {
+    font-size: 1.4rem;
+    margin: 0.5rem 0;
+  }
+  
+  #range-info {
+    margin: 0.75rem 0 0.5rem;
+  }
+}
+
+/* Print styles */
+@media print {
+  #theme-toggle,
+  #custom-keyboard,
+  .dropdown-container,
+  .footer {
+    display: none !important;
+  }
+  
+  body {
+    background-color: white !important;
+    color: black !important;
+  }
+  
+  .game-layout {
+    box-shadow: none !important;
+    border: 1px solid #ccc !important;
+  }
+  
+  /* Ensure content is properly visible when printing */
+  #range-info {
+    background-color: #f5f5f5 !important;
+    color: black !important;
+    border: 1px solid #ccc !important;
+  }
+  
+  h2 {
+    color: black !important;
+  }
+}

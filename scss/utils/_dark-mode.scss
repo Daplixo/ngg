@@ -1,0 +1,67 @@
+/* Dark mode utilities and overrides */
+
+/* Ensure dark mode text color is always applied correctly */
+[data-theme="dark"] {
+  color: var(--text-color);
+  
+  h1, h2, h3, h4, h5, h6 {
+    color: var(--text-color);
+  }
+  
+  /* Special text overrides for dark mode */
+  .text-neutral {
+    color: var(--text-color);
+  }
+  
+  .text-subdued {
+    color: rgba(255, 255, 255, 0.7);
+  }
+  
+  /* Ensure labels and form elements have proper colors */
+  label {
+    color: var(--form-label);
+  }
+  
+  input, select, textarea {
+    color: var(--text-color);
+    background-color: var(--input-bg);
+    border-color: var(--input-border);
+  }
+}
+
+/* Transition properties for smooth theme switching */
+html {
+  transition: color 0.3s, background-color 0.3s;
+}
+
+/* Ensure all themed elements have transitions */
+*[class*="theme"], *[class*="dark"], *[class*="light"],
+*[id*="theme"], *[id*="dark"], *[id*="light"] {
+  transition: color 0.3s, background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+
+/* Ensure proper contrast for links in dark mode */
+[data-theme="dark"] {
+  a:not(.btn):not(.button):not([class*="btn-"]) {
+    color: #77b6ff;
+    
+    &:hover {
+      color: #99ccff;
+    }
+  }
+  
+  /* Adjust focus visible styles for better contrast */
+  *:focus-visible {
+    outline-color: #77b6ff;
+  }
+}
+
+/* Dark mode specific mobile overrides */
+@media (max-width: $breakpoint-md) {
+  [data-theme="dark"] {
+    /* Ensure good contrast for mobile elements */
+    input, select, textarea {
+      border-width: 1px; /* Ensure borders are visible enough */
+    }
+  }
+}

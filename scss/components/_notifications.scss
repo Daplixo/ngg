@@ -1,0 +1,96 @@
+/* Notifications container */
+#notifications-container {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: $z-index-notification;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  pointer-events: none;
+}
+
+/* Base styles for notifications */
+#winNotification, #gameOverNotification {
+  display: none;
+  padding: 12px 24px;
+  border-radius: $border-radius-medium;
+  font-weight: bold;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  pointer-events: auto;
+  color: #fff;
+}
+
+/* Win notification */
+#winNotification {
+  background-color: var(--win-notification-bg);
+}
+
+/* Game over notification */
+#gameOverNotification {
+  background-color: var(--gameover-notification-bg);
+}
+
+/* Special notifications created dynamically */
+[data-notification-type="level-start"] {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #2eb82e;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  z-index: $z-index-notification;
+}
+
+[data-notification-type="level-restart"] {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #8e44ad;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  z-index: $z-index-notification;
+}
+
+/* Reset notification */
+div[style*="position:fixed"][style*="top:20px"][style*="background:#e74c3c"] {
+  background-color: #e74c3c;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  z-index: $z-index-notification;
+}
+
+/* Game restored notification */
+div[style*="position:fixed"][style*="top:20px"][style*="background:#8e44ad"] {
+  background-color: #8e44ad;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  z-index: $z-index-notification;
+}
+
+/* Error notification */
+div[style*="position:fixed"][style*="top:20px"][style*="background:#e74c3c"] {
+  background-color: #e74c3c;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  z-index: $z-index-notification;
+}
+
+/* Mobile responsive styles for notifications */
+@media (max-width: $breakpoint-md) {
+  #winNotification, #gameOverNotification {
+    padding: 10px 20px;
+    font-size: 0.9rem;
+    max-width: 90%;
+  }
+}

@@ -1,0 +1,129 @@
+/* Accessibility improvements */
+
+/* Focus styles */
+*:focus-visible {
+  outline: 2px solid var(--btn-primary);
+  outline-offset: 2px;
+}
+
+/* Skip to content link - becomes visible on focus */
+.skip-to-content {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--btn-primary);
+  color: white;
+  padding: 8px;
+  z-index: $z-index-modal + 1; /* Above everything */
+  transition: top 0.3s;
+  
+  &:focus {
+    top: 0;
+  }
+}
+
+/* Ensure interactive elements have proper focus indication */
+button, 
+input[type="button"], 
+input[type="submit"], 
+input[type="reset"],
+.dropdown-option {
+  &:focus-visible {
+    outline: 2px solid var(--btn-primary);
+    outline-offset: 2px;
+  }
+}
+
+/* Improve keyboard navigation */
+.key-btn,
+.dropdown-arrow,
+.close-modal,
+.guess-nav-btn {
+  &:focus-visible {
+    outline: 2px solid var(--btn-primary);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 2px rgba(77, 111, 237, 0.25);
+  }
+}
+
+/* Ensure no animations for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  /* Specific overrides for game elements */
+  .guess-entering-up, 
+  .guess-entering-down, 
+  .guess-leaving-up, 
+  .guess-leaving-down {
+    animation: none !important;
+  }
+  
+  .dropdown-container.active .dropdown-menu {
+    animation: none !important;
+  }
+  
+  #winNotification.show, 
+  #gameOverNotification.show,
+  #winNotification.hide, 
+  #gameOverNotification.hide {
+    animation: none !important;
+  }
+  
+  .shake {
+    animation: none !important;
+  }
+}
+
+/* Enhance contrast for better readability */
+.high-contrast {
+  --border-color: #666 !important;
+  --input-border: #666 !important;
+  
+  /* Increase contrast of important elements */
+  #range-info {
+    border: 1px solid var(--border-color);
+  }
+  
+  .proximity-fill {
+    border: 1px solid #333;
+  }
+  
+  [data-theme="dark"] & {
+    --border-color: #999 !important;
+    --input-border: #999 !important;
+    
+    .proximity-fill {
+      border: 1px solid #ccc;
+    }
+  }
+}
+
+/* Add proper ARIA labels to interactive elements */
+[role="button"]:not([aria-label]):not(.sr-only) {
+  &::before {
+    content: attr(title);
+    @extend .sr-only;
+  }
+}
+
+/* Ensure keyboard navigation works for custom click events */
+[role="button"], 
+[tabindex="0"] {
+  cursor: pointer;
+  
+  &:not(input):not(button):not(a):not(select):not(textarea) {
+    &:focus {
+      outline: 2px solid var(--btn-primary);
+      outline-offset: 2px;
+    }
+    
+    &[aria-pressed="true"] {
+      box-shadow: inset 0 0 0 2px var(--btn-primary);
+    }
+  }
+}

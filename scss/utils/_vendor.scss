@@ -1,0 +1,126 @@
+/* Vendor-specific styles and browser compatibility fixes */
+
+/* Safari-specific fixes */
+@supports (-webkit-touch-callout: none) {
+  /* iOS Safari specific styles */
+  .key-btn {
+    -webkit-appearance: none; /* Remove default styling */
+    -webkit-tap-highlight-color: transparent; /* Remove tap highlight */
+  }
+  
+  input {
+    font-size: 16px !important; /* Prevent zoom on focus in iOS Safari */
+  }
+  
+  /* Fix for Safari's handling of position: fixed elements */
+  .modal {
+    position: absolute;
+    height: 100vh; /* Use vh instead of % */
+  }
+}
+
+/* Firefox-specific fixes */
+@-moz-document url-prefix() {
+  /* Improve button rendering in Firefox */
+  .key-btn {
+    /* Firefox needs explicit border-radius on buttons */
+    border-radius: 6px;
+  }
+  
+  /* Fix for Firefox scrollbar appearance */
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+  }
+  
+  [data-theme="dark"] .custom-scrollbar {
+    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+  }
+}
+
+/* IE11 fixes (for legacy support) */
+@media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+  /* Add fallbacks for CSS variables */
+  .game-layout {
+    background-color: #ffffff;
+    border: 1px solid #e1e4e8;
+  }
+  
+  [data-theme="dark"] .game-layout {
+    background-color: #1e1e1e;
+    border-color: #333333;
+  }
+  
+  /* Fix flex layouts in IE11 */
+  .game-layout {
+    display: -ms-flexbox;
+    -ms-flex-direction: row;
+  }
+  
+  .game-content {
+    -ms-flex: 1;
+  }
+}
+
+/* Microsoft Edge (legacy) fixes */
+@supports (-ms-ime-align: auto) {
+  /* Fix button rendering in Edge */
+  button {
+    background-color: #4d6fed;
+  }
+}
+
+/* Chrome/Edge/Safari scrollbar customization */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 6px;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Mobile device optimizations */
+@media (hover: none) {
+  /* Optimize for touch devices by increasing tap targets */
+  .key-btn, 
+  .dropdown-option,
+  .guess-nav-btn {
+    min-height: 48px; /* Minimum recommended tap target size */
+  }
+}
+
+/* Make flex work more consistently across browsers */
+.flex-fix {
+  display: flex;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+  flex-direction: row;
+}
+
+.flex-column-fix {
+  display: flex;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+}

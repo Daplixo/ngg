@@ -1,0 +1,146 @@
+/* Last guess container with navigation */
+#last-guess-container {
+  height: 80px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px; /* Tiny gap between elements */
+  padding: 0;
+  border-top: 1px solid var(--border-color);
+  flex-shrink: 0;
+  flex: 0.3;
+  box-sizing: border-box;
+}
+
+#last-guess-display {
+  height: 44px;
+  width: 100%;
+  position: relative;
+  margin: 0; /* Remove margin */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#last-guess {
+  width: 44px;
+  height: 44px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.25rem;
+  color: white;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  position: relative;
+  opacity: 0;
+  
+  &.show {
+    opacity: 1;
+  }
+  
+  /* Add proximity colors for last guess */
+  &.proximity-0 { background-color: var(--proximity-far-color); }
+  &.proximity-1 { background-color: var(--proximity-medium-far-color); }
+  &.proximity-2 { background-color: var(--proximity-medium-color); }
+  &.proximity-3 { background-color: var(--proximity-close-color); }
+  &.proximity-4 { background-color: var(--proximity-very-close-color); }
+}
+
+/* Hide the guess index element since we don't need it */
+#guess-index {
+  display: none; /* Hide the element completely */
+}
+
+/* Navigation buttons - minimal styling */
+.guess-nav-btn {
+  width: 100%;
+  height: 16px; /* Reduced height */
+  padding: 0;
+  margin: 0; /* Remove any margins causing spacing issues */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  color: var(--btn-primary);
+  font-size: 16px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  opacity: 0.8;
+  box-shadow: none;
+  font-weight: bold;
+  
+  &:hover {
+    opacity: 1;
+    color: var(--btn-hover);
+  }
+  
+  &:disabled {
+    opacity: 0.3;
+    cursor: default;
+    color: #999;
+  }
+  
+  /* Add highlight on hover */
+  &:not(:disabled):hover::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 24px;
+    height: 24px;
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 50%;
+    z-index: -1;
+  }
+}
+
+/* Special positioning for each arrow */
+#prev-guess-btn {
+  margin-bottom: 0;
+}
+
+#next-guess-btn {
+  margin-top: 0;
+}
+
+/* Mobile optimizations */
+@media (max-width: $breakpoint-md) {
+  #last-guess-container {
+    height: 70px;
+  }
+  
+  #last-guess {
+    width: 40px;
+    height: 40px;
+    font-size: 1.1rem;
+  }
+  
+  .guess-nav-btn {
+    height: 14px;
+    font-size: 14px;
+  }
+}
+
+/* Animations for guess transitions */
+.guess-leaving-up {
+  animation: guess-leaving-up 0.2s forwards;
+}
+
+.guess-leaving-down {
+  animation: guess-leaving-down 0.2s forwards;
+}
+
+.guess-entering-up {
+  animation: guess-entering-up 0.2s forwards;
+}
+
+.guess-entering-down {
+  animation: guess-entering-down 0.2s forwards;
+}

@@ -1,0 +1,143 @@
+/* Proximity Meter Styles */
+#proximity-container {
+  margin: 16px auto;
+  width: 80%;
+  max-width: 400px;
+  display: none; /* Initially hidden, shown after first guess */
+}
+
+#proximity-heading {
+  text-align: center;
+  font-size: 0.875rem;
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: var(--text-color); /* Use text color variable */
+  transition: color 0.3s;
+}
+
+#proximity-meter {
+  height: 12px;
+  background-color: var(--proximity-meter-bg);
+  border-radius: 6px;
+  margin-bottom: 4px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+#proximity-fill {
+  height: 100%;
+  width: 0; /* Starting width, updated with JS */
+  /* Enhanced gradient with more color steps for better visual accuracy */
+  background: linear-gradient(to right, 
+    var(--proximity-far-color) 0%,   /* Bright red (far) */
+    var(--proximity-medium-far-color) 25%,  /* Orange */
+    var(--proximity-medium-color) 50%,  /* Yellow (getting closer) */
+    var(--proximity-close-color) 75%,  /* Light green */
+    var(--proximity-very-close-color) 100%  /* Bright green (very close) */
+  );
+  border-radius: 6px;
+  transition: width 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); /* Smoother animation */
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+#proximity-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: #666;
+  margin-top: 4px;
+  
+  span {
+    font-weight: 600; /* Make all label text bolder */
+  }
+  
+  span:first-child {
+    color: var(--proximity-far-color); /* Red for "Far Away" */
+  }
+  
+  span:last-child {
+    color: var(--proximity-very-close-color); /* Green for "Very Close" */
+  }
+}
+
+/* Proximity label styles */
+.proximity-label {
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 10px 5px;
+  color: var(--proximity-label-text); /* Use variable for base color */
+  transition: color 0.3s;
+  
+  &.top {
+    color: var(--proximity-very-close-color); /* Green for "Very Close" */
+  }
+  
+  &.bottom {
+    color: var(--proximity-far-color); /* Red for "Far Away" */
+  }
+}
+
+/* Vertical Proximity Meter */
+#proximity-container.vertical {
+  flex: 0.7; /* Reduced from 1 to 0.7 to make it take less space */
+  display: flex;
+  flex-direction: column;
+  width: 40px;
+  margin: 8px auto; /* Slightly reduced margins */
+  padding: 0;
+  min-height: 0; /* Allow shrinking */
+  
+  #proximity-meter {
+    width: 12px;
+    height: 100%; /* Fill available space */
+    margin: 0 auto;
+    border-radius: 6px;
+    background-color: var(--proximity-meter-bg);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+    position: relative;
+  }
+  
+  #proximity-fill {
+    width: 100%;
+    height: 0; /* Starting height, updated with JS */
+    position: absolute;
+    bottom: 0; /* Changed to bottom so it grows upward */
+    left: 0;
+    /* Gradient now correctly shows red at bottom, green at top */
+    background: linear-gradient(to top, 
+      var(--proximity-far-color) 0%,   /* Bright red (far away) at bottom */
+      var(--proximity-medium-far-color) 25%,  /* Orange */
+      var(--proximity-medium-color) 50%,  /* Yellow (getting closer) */
+      var(--proximity-close-color) 75%,  /* Light green */
+      var(--proximity-very-close-color) 100%  /* Bright green (very close) at top */
+    );
+    border-radius: 6px;
+    transition: height 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  }
+}
+
+/* Mobile Styles for Proximity Meter */
+@media (max-width: $breakpoint-md) {
+  #proximity-container {
+    width: 90%;
+  }
+  
+  #proximity-meter {
+    height: 10px;
+  }
+  
+  #proximity-labels {
+    font-size: 0.7rem;
+  }
+  
+  #proximity-container.vertical {
+    flex: 0.7;
+    width: 30px;
+  }
+  
+  #proximity-container.vertical #proximity-meter {
+    width: 10px;
+  }
+}

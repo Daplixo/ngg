@@ -1,0 +1,40 @@
+// Flexbox
+@mixin flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+// Media queries
+@mixin mobile {
+  @media (max-width: $mobile) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media (min-width: $mobile + 1) and (max-width: $tablet) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media (min-width: $tablet + 1) {
+    @content;
+  }
+}
+
+// Button styles
+@mixin button-base {
+  padding: $spacing-small $spacing-medium;
+  border-radius: $border-radius;
+  font-family: $base-font-family;
+  font-size: $base-font-size;
+  cursor: pointer;
+  transition: all $transition-speed ease;
+}

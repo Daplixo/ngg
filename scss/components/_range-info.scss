@@ -1,0 +1,81 @@
+/* Make range info text smaller and fit on one line */
+#range-info {
+  display: inline-block;
+  background-color: var(--range-info-bg);
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin: 1.75rem 0 1.25rem; /* Adjusted margins */
+  font-weight: 500;
+  color: var(--range-info-text);
+  font-size: 0.95rem; /* Smaller text size */
+  transition: background-color 0.3s, color 0.3s;
+  text-align: center;
+  width: fit-content;
+  white-space: nowrap; /* Prevent text wrapping */
+}
+
+/* Responsive adjustments */
+@media (max-width: $breakpoint-md) {
+  #range-info {
+    font-size: 0.85rem; /* Even smaller on mobile */
+    padding: 4px 6px;
+    margin: 1.5rem 0 1rem;
+  }
+}
+
+/* For very large screens */
+@media (min-width: $breakpoint-xl) {
+  #range-info {
+    font-size: 1.1rem; /* Slightly larger text on big screens */
+    padding: 6px 12px;
+  }
+}
+
+.range-info {
+  width: 100%;
+  background-color: var(--range-bg);
+  color: var(--range-text);
+  padding: 12px 16px;
+  border-radius: $border-radius;
+  margin-bottom: 20px;
+  text-align: center;
+  transition: background-color 0.3s ease;
+  
+  .range-text {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    
+    .range-value {
+      font-weight: 700;
+      color: var(--range-highlight);
+    }
+  }
+}
+
+/* Dark mode specific styles */
+[data-theme="dark"] .range-info {
+  border: 1px solid var(--border-color);
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: $breakpoint-md) {
+  .range-info {
+    padding: 10px 14px;
+    margin-bottom: 16px;
+    
+    .range-text {
+      font-size: 0.9rem;
+    }
+  }
+}
+
+@media screen and (max-width: $breakpoint-sm) {
+  .range-info {
+    padding: 8px 12px;
+    margin-bottom: 14px;
+    
+    .range-text {
+      font-size: 0.85rem;
+    }
+  }
+}

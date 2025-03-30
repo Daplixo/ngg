@@ -1,0 +1,111 @@
+/* Past Guesses Section */
+#past-guesses-container {
+  margin: 0.5rem 0; /* Reduced from 1rem to 0.5rem */
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 70px; /* Fixed height to prevent layout shifts */
+  overflow-y: hidden; /* Hide vertical overflow */
+}
+
+#past-guesses-title {
+  margin: 0 0 0.25rem 0; /* Reduced bottom margin from 0.5rem to 0.25rem */
+  font-size: 0.85rem; /* Slightly smaller title */
+  font-weight: 600;
+  color: var(--text-color);
+  transition: color 0.3s;
+}
+
+#past-guesses {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px; /* Reduced from 8px to 6px */
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 0.25rem 0; /* Reduced padding from 0.5rem to 0.25rem */
+  min-height: 40px; /* Ensure consistent minimum height */
+}
+
+.guess-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px; /* Reduced from 36px to 32px */
+  height: 32px; /* Reduced from 36px to 32px */
+  padding: 0 8px;
+  border-radius: 16px;
+  font-size: 0.85rem; /* Smaller font size */
+  font-weight: 600;
+  color: white !important; /* Ensure text is white */
+  transition: transform 0.2s, box-shadow 0.2s;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  margin: 0; /* Ensure no unexpected margins */
+}
+
+/* Define explicit colors for proximity levels */
+.guess-chip.proximity-0 { 
+  background-color: var(--proximity-far-color) !important; /* Very far - bright red */
+  box-shadow: 0 2px 5px rgba(231, 76, 60, 0.4) !important;
+} 
+
+.guess-chip.proximity-1 { 
+  background-color: var(--proximity-medium-far-color) !important; /* Far - orange */
+  box-shadow: 0 2px 5px rgba(230, 126, 34, 0.4) !important;
+} 
+
+.guess-chip.proximity-2 { 
+  background-color: var(--proximity-medium-color) !important; /* Medium - yellow */
+  box-shadow: 0 2px 5px rgba(241, 196, 15, 0.4) !important;
+} 
+
+.guess-chip.proximity-3 { 
+  background-color: var(--proximity-close-color) !important; /* Close - light green */
+  box-shadow: 0 2px 5px rgba(46, 204, 113, 0.4) !important;
+} 
+
+.guess-chip.proximity-4 { 
+  background-color: var(--proximity-very-close-color) !important; /* Very close - green */
+  box-shadow: 0 2px 5px rgba(39, 174, 96, 0.4) !important;
+}
+
+/* Ensure dark mode doesn't override chip colors */
+[data-theme="dark"] .guess-chip.proximity-0 { background-color: var(--proximity-far-color) !important; }
+[data-theme="dark"] .guess-chip.proximity-1 { background-color: var(--proximity-medium-far-color) !important; }
+[data-theme="dark"] .guess-chip.proximity-2 { background-color: var(--proximity-medium-color) !important; }
+[data-theme="dark"] .guess-chip.proximity-3 { background-color: var(--proximity-close-color) !important; }
+[data-theme="dark"] .guess-chip.proximity-4 { background-color: var(--proximity-very-close-color) !important; }
+
+/* Initially hide past guesses container */
+#past-guesses-container {
+  display: none;
+}
+
+/* Mobile optimizations to save even more space */
+@media (max-width: $breakpoint-md) {
+  #past-guesses-container {
+    margin: 0.25rem 0; /* Further reduced margin */
+    height: 60px; /* Even smaller fixed height on mobile */
+  }
+  
+  #past-guesses-title {
+    font-size: 0.8rem;
+    margin: 0 0 0.15rem 0;
+  }
+  
+  #past-guesses {
+    padding: 0.15rem 0;
+    gap: 5px; /* Further reduce gap */
+  }
+  
+  .guess-chip {
+    min-width: 28px; /* Smaller on mobile */
+    height: 28px;
+    font-size: 0.8rem;
+    padding: 0 6px;
+  }
+}

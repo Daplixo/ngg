@@ -1,0 +1,137 @@
+/* Custom Number Keyboard - Visible on all screen sizes */
+#custom-keyboard {
+  width: 100%;
+  max-width: $max-width-keyboard;
+  margin: 0.75rem auto;
+  padding-top: 0;
+  user-select: none;
+  display: block;
+  box-sizing: border-box;
+}
+
+.keyboard-row {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  width: 100%;
+}
+
+.key-btn {
+  flex: 1;
+  min-width: 0; /* Allow buttons to shrink if needed */
+  height: $key-btn-size;
+  font-size: 1.2rem;
+  font-weight: 600;
+  border-radius: $border-radius-medium;
+  background-color: var(--key-btn-bg);
+  color: var(--key-btn-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  padding: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.1s ease, box-shadow 0.1s ease, background-color 0.2s ease, color 0.2s ease;
+  -webkit-user-select: none;
+  user-select: none;
+  outline: none;
+  border: none;
+  -webkit-tap-highlight-color: transparent;
+  
+  &:active {
+    transform: translateY(2px);
+    box-shadow: 0 0px 1px rgba(0, 0, 0, 0.2);
+    
+    /* Add inner shadow when pressed to enhance 3D effect */
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border-radius: 5px;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+      pointer-events: none;
+    }
+  }
+  
+  &:hover {
+    background-color: var(--key-btn-hover);
+  }
+  
+  /* Add subtle top highlight to buttons for 3D effect */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    opacity: 0.8;
+  }
+}
+
+/* Function keys with distinct colors */
+.key-clear {
+  background-color: var(--key-clear-bg) !important;
+  color: white !important;
+  font-size: 0.9rem;
+  
+  &:hover {
+    background-color: var(--key-clear-hover) !important;
+  }
+}
+
+.key-enter {
+  background-color: var(--key-enter-bg) !important;
+  color: white !important;
+  font-size: 0.9rem;
+  
+  &:hover {
+    background-color: var(--key-enter-hover) !important;
+  }
+}
+
+/* Dark mode adjustments */
+[data-theme="dark"] {
+  .key-btn {
+    background-color: var(--key-btn-bg);
+    color: var(--key-btn-color);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+    
+    &:hover {
+      background-color: var(--key-btn-hover);
+    }
+    
+    &::before {
+      opacity: 0.2;
+    }
+    
+    &:active::after {
+      box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.4);
+    }
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: $breakpoint-sm) {
+  .key-btn {
+    height: $key-btn-size-small;
+    font-size: 1.1rem;
+  }
+  
+  .key-clear, .key-enter {
+    font-size: 0.8rem;
+  }
+}
+
+/* Ensure proper padding between keyboard and other elements */
+#custom-keyboard {
+  margin: 10px auto; /* Reduced margin */
+  padding-top: 0;    /* Remove top padding */
+}

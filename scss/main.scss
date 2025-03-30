@@ -1,0 +1,52 @@
+// Main SCSS file that imports all partials
+
+// 1. Base & Variables
+@import 'variables';
+@import 'mixins';
+@import 'base';
+
+// 2. Layout & Structure
+@import 'layout/layout';
+@import 'layout/game-container';
+@import 'layout/header';
+@import 'layout/footer';
+
+// 3. Game Components
+@import 'components/level-indicator';
+@import 'components/range-info';
+@import 'components/controls';
+@import 'components/buttons';
+@import 'components/forms';
+@import 'components/modals';
+@import 'components/feedback';
+@import 'components/attempts';
+@import 'components/notifications';
+
+// 4. Game Features
+@import 'features/proximity-meter';
+@import 'features/past-guesses';
+@import 'features/last-guess';
+@import 'features/custom-keyboard';
+
+// 5. UI Components
+@import 'ui/dropdown';
+@import 'ui/modal';
+@import 'ui/theme-toggle';
+
+// 6. Pages
+@import 'pages/game';
+@import 'pages/high-scores';
+
+// 7. Animations
+@import 'utils/animations';
+
+// 8. Utilities
+@import 'utils/helpers';
+@import 'utils/dark-mode';
+@import 'utils/accessibility';
+
+// 9. Media Queries
+@import 'utils/media-queries';
+
+// 10. Vendor & Browser Specifics
+@import 'utils/vendor';
