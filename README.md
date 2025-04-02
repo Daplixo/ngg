@@ -30,7 +30,7 @@ A simple and fun number guessing game with multiple levels of increasing difficu
 2. Open index.html in your browser
 3. Start playing!
 
-Or simply visit the live version at [game URL]
+Or simply visit the live version at Daplixo.github.io/Number-Guessing-Game/
 
 ## Development
 
