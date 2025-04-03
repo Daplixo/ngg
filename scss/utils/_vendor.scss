@@ -93,8 +93,17 @@
   /* Optimize for touch devices by increasing tap targets */
   .key-btn, 
   .dropdown-option,
-  .guess-nav-btn {
+  .guess-nav-btn,
+  .side-menu-button {
     min-height: 48px; /* Minimum recommended tap target size */
+  }
+  
+  /* Make social icons slightly larger on touch devices for better tapping */
+  a.side-menu-button[href*="linkedin"] svg,
+  a.side-menu-button[href*="github"] svg,
+  a.side-menu-button[href*="instagram"] svg {
+    width: 18px;
+    height: 18px;
   }
 }
 

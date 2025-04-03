@@ -1,6 +1,6 @@
 Fix styling of the Feedback form. [done]
 
-Re design footer. 
+Re design footer. [done]
 
 make buttons consistent inside the game container. [done]
 
@@ -8,4 +8,8 @@ fix styling for the retart game dropdown button. [done]
 
 change the color graidient style in proximity meter. [done]
 
-add a navigation side bar.
+add a navigation side bar. [done]
+
+Add a link to all the socials in the side menu. 
+
+Add a User profile system in the side menu which will save user data and reload it every time.

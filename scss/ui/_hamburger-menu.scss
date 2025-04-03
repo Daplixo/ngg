@@ -215,6 +215,49 @@ body.menu-open {
   a.side-menu-button[href*="buymeacoffee"] span {
     margin-left: 8px; /* Increased from 4px to 8px to move it further right */
   }
+
+  /* Ensure consistent styling for social media buttons */
+  a.side-menu-button[href*="linkedin"] svg,
+  a.side-menu-button[href*="github"] svg,
+  a.side-menu-button[href*="instagram"] svg {
+    stroke-width: 2px;
+    width: 16px;
+    height: 16px;
+    margin-right: 24px; /* Increased from 22px to 24px for more spacing */
+    flex-shrink: 0;
+  }
+  
+  /* Move social media button text slightly to the left */
+  a.side-menu-button[href*="linkedin"] span,
+  a.side-menu-button[href*="github"] span,
+  a.side-menu-button[href*="instagram"] span {
+    position: relative;
+    left: -8px; /* Increased from -6px to -8px for more offset */
+    font-size: 0.9rem; /* Match the size of other menu items */
+    font-weight: 400;
+    line-height: 1.2;
+    color: var(--text-color);
+  }
+  
+  /* Make all side menu items consistently styled */
+  .side-menu-item {
+    padding: 12px 0;
+    
+    &:first-child {
+      padding-top: 0; /* Remove top padding from first item */
+    }
+    
+    &:last-child {
+      border-bottom: none;
+    }
+    
+    /* Ensure consistent text styling across all buttons */
+    .side-menu-button span {
+      font-size: 0.95rem;
+      font-weight: 400;
+      line-height: 1.2;
+    }
+  }
   
   a.side-menu-button {
     text-decoration: none;
