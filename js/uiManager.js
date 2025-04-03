@@ -37,8 +37,13 @@ export const UIManager = {
     },
 
     updateRangeInfo() {
-        this.elements.rangeInfo.textContent = `Guess the number (1-${gameState.maxNumber})`;
-        this.updateLevelIndicator();
+        // Update the input placeholder to show the current range
+        const userGuessInput = document.getElementById('userGuess');
+        if (userGuessInput) {
+            userGuessInput.placeholder = `Enter a number (1-${gameState.maxNumber})`;
+        }
+        
+        console.log(`Range updated: 1-${gameState.maxNumber}`);
     },
 
     updateLevelIndicator() {
@@ -236,6 +241,9 @@ export const UIManager = {
         proximityFill.style.width = '100%';
         proximityFill.style.height = `${boundedPercentage}%`;
         
+        // New code: Set color based on proximity percentage
+        this.updateProximityColor(proximityFill, boundedPercentage);
+        
         // Ensure the proximity meter and its fill are visible
         const proximityMeter = document.getElementById('proximity-meter');
         if (proximityMeter) {
@@ -247,6 +255,27 @@ export const UIManager = {
         proximityFill.style.visibility = 'visible';
     },
 
+    // Add new method to set color based on proximity percentage
+    updateProximityColor(element, percentage) {
+        // Set color based on percentage ranges
+        if (percentage < 20) {
+            // Far away - bright red
+            element.style.backgroundColor = 'var(--proximity-far-color)';
+        } else if (percentage < 40) {
+            // Medium far - orange
+            element.style.backgroundColor = 'var(--proximity-medium-far-color)';
+        } else if (percentage < 60) {
+            // Medium - yellow
+            element.style.backgroundColor = 'var(--proximity-medium-color)';
+        } else if (percentage < 80) {
+            // Close - light green
+            element.style.backgroundColor = 'var(--proximity-close-color)';
+        } else {
+            // Very close - bright green
+            element.style.backgroundColor = 'var(--proximity-very-close-color)';
+        }
+    },
+
     handleOrientationChange() {
         const proximityContainer = document.getElementById('proximity-container');
         const proximityFill = document.getElementById('proximity-fill');
@@ -256,6 +285,9 @@ export const UIManager = {
         // Reset for flipped vertical meter
         proximityFill.style.width = '100%';
         proximityFill.style.height = '0%';
+        
+        // Reset to default color when orientation changes
+        proximityFill.style.backgroundColor = 'var(--proximity-far-color)';
     },
 
     updatePastGuesses() {
@@ -407,6 +439,8 @@ export const UIManager = {
         // Reset input field
         if (this.elements.userGuess) {
             this.elements.userGuess.value = '';
+            // Make sure placeholder shows current range after reset
+            this.elements.userGuess.placeholder = `Enter a number (1-${gameState.maxNumber})`;
         }
         
         // Clear feedback

@@ -5,3 +5,5 @@ Re design footer.
 make buttons consistent inside the game container.
 
 fix styling for the retart game dropdown button.
+
+change the color graidient style in proximity meter.

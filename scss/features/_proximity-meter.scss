@@ -30,17 +30,12 @@
 #proximity-fill {
   height: 100%;
   width: 0; /* Starting width, updated with JS */
-  /* Enhanced gradient with more color steps for better visual accuracy */
-  background: linear-gradient(to right, 
-    var(--proximity-far-color) 0%,   /* Bright red (far) */
-    var(--proximity-medium-far-color) 25%,  /* Orange */
-    var(--proximity-medium-color) 50%,  /* Yellow (getting closer) */
-    var(--proximity-close-color) 75%,  /* Light green */
-    var(--proximity-very-close-color) 100%  /* Bright green (very close) */
-  );
+  position: relative;
   border-radius: 6px;
   transition: width 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); /* Smoother animation */
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  /* Remove gradient and add a background-color property that will be set by JS */
+  background-color: var(--proximity-far-color); /* Default starting color */
 }
 
 #proximity-labels {
@@ -115,14 +110,8 @@
   position: absolute;
   bottom: 0; /* Changed to bottom so it grows upward */
   left: 0;
-  /* Gradient now correctly shows red at bottom, green at top */
-  background: linear-gradient(to top, 
-    var(--proximity-far-color) 0%,   /* Bright red (far away) at bottom */
-    var(--proximity-medium-far-color) 25%,  /* Orange */
-    var(--proximity-medium-color) 50%,  /* Yellow (getting closer) */
-    var(--proximity-close-color) 75%,  /* Light green */
-    var(--proximity-very-close-color) 100%  /* Bright green (very close) at top */
-  );
+  /* Remove gradient, we'll set the color via JS */
+  background-color: var(--proximity-far-color); /* Default starting color */
   border-radius: 6px;
   transition: height 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
 }

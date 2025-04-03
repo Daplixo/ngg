@@ -132,6 +132,16 @@
   #theme-toggle {
     top: 5px;
     right: 5px;
+    z-index: 100;
+  }
+  
+  #level-indicator {
+    z-index: 100;
+  }
+  
+  #theme-toggle {
+    top: 5px;
+    right: 5px;
   }
   
   .game-layout {

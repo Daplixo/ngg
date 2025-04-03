@@ -1,14 +1,14 @@
 /* Controls group to line up input and submit button nicely */
 #controls {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: center;
-  align-items: center;
-  gap: 10px;
+  align-items: center; /* Changed to center for visual harmony */
+  gap: 8px;
   margin: 0 0 1.5rem;
   padding: 0;
   width: 100%;
-  max-width: 400px; /* Control max width for better appearance */
+  max-width: $max-width-keyboard; /* Match the keyboard width using the variable */
 }
 
 /* Style for the input box */
@@ -31,22 +31,25 @@
   }
 }
 
+/* Submit button - ensure consistent width */
+#submitGuessBtn {
+  width: 100%;
+  height: 42px;
+  border-radius: 6px;
+}
+
 /* Visual feedback for active input */
 .active-input {
   box-shadow: 0 0 0 2px var(--btn-primary);
   border-color: var(--btn-primary);
 }
 
-/* Responsive adjustments */
+/* Responsive adjustments - now only adjusts sizes where needed */
 @media (max-width: $breakpoint-md) {
   #controls {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 8px;
     margin: 0.25rem 0;
-    padding: 0 0.5rem;
+    padding: 0;
     width: 100%;
-    max-width: 300px;
   }
 
   #userGuess {
@@ -57,14 +60,12 @@
 
 /* For very large screens */
 @media (min-width: $breakpoint-xl) {
-  #controls {
-    max-width: 500px; /* Slightly wider on very large screens */
-  }
+  /* No need to change max-width since we want it consistent with keyboard */
 }
 
 /* Mobile specific adjustments */
 @media (max-width: $breakpoint-sm) {
   #controls {
-    max-width: 250px;
+    max-width: 240px; /* Match smaller keyboard width on very small screens */
   }
 }

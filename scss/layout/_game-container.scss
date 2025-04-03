@@ -13,8 +13,10 @@
   position: relative;
   height: auto; /* Allow flexible height */
   width: 100%;
-  max-width: 300px;
+  max-width: $max-width-keyboard; /* Match the keyboard width */
   margin: 10px auto;
+  display: flex;
+  justify-content: center;
 }
 
 /* Position buttons inside game-controls */
@@ -27,7 +29,22 @@
   margin: 0;
   display: none;
   max-width: 100%;
-  height: 42px;
+  height: 42px; /* Match input and submit button height */
+}
+
+/* Dropdown container consistency */
+.dropdown-container {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Style for the Play Again / Restart Level button */
+#playAgainBtn {
+  width: 100%;
+  height: 42px; /* Match input and submit button height */
+  border-radius: 6px;
+  padding-right: 36px; /* Keep space for dropdown arrow */
+  padding-left: 36px; /* Match right padding for visual centering */
 }
 
 /* Game UI container */
