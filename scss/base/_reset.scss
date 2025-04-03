@@ -5,11 +5,27 @@
   padding: 0;
 }
 
+/* EMERGENCY DIRECT COLOR OVERRIDE - NO CSS VARIABLES */
+html,
+html[data-theme="light"],
+body,
+body[data-theme="light"] {
+  background-color: #e9ecef !important; /* Grey background for light mode */
+  color: #333333 !important;
+}
+
+html[data-theme="dark"],
+body[data-theme="dark"] {
+  background-color: #121212 !important; /* Dark background for dark mode */
+  color: #e0e0e0 !important;
+}
+
+/* Original body styling */
 body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
-  background-color: var(--bg-color);
+  /* background-color declaration moved to direct override above */
   min-height: 100vh;
   height: 100vh;
   display: flex;
@@ -17,8 +33,7 @@ body {
   box-sizing: border-box;
   overflow-x: hidden;
   overflow-y: auto;
-  color: var(--text-color);
-  transition: background-color 0.3s, color 0.3s;
+  transition: none !important; /* Disable transitions to see immediate change */
   padding-bottom: 70px; /* Space for footer */
 }
 

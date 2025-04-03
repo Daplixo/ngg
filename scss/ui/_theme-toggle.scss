@@ -1,86 +1,75 @@
 /* Theme Toggle Button styles */
 #theme-toggle {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  overflow: hidden;
+  /* Most styles are inherited from .side-menu-button in _hamburger-menu.scss */
   
-  svg {
+  .icon-container {
+    position: relative;
     width: 16px;
     height: 16px;
-    stroke: currentColor;
-    stroke-width: 2;
-    display: block;
-    transition: opacity 0.3s ease;
+    margin-right: 12px;
     flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
   
-  img {
-    width: 16px;
-    height: 16px;
-    display: block;
-    flex-shrink: 0;
-  }
-  
-  /* Original button-style when not in header */
-  &.standalone {
+  /* Position both icons in the same space */
+  #moon-icon, #sun-icon {
     position: absolute;
-    top: 10px;
-    right: 10px;
-    height: 32px;
-    width: auto;
-    min-width: 32px;
-    max-width: max-content;
-    padding: 6px 12px;
-    border-radius: 16px;
-    background: var(--btn-primary);
-    border: none;
-    z-index: 1000;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    
-    svg {
-      stroke: white;
-    }
-    
-    img {
-      filter: brightness(0) invert(1) !important;
-    }
-    
-    &:hover {
-      background-color: var(--btn-hover);
-    }
+    left: 0;
+    top: 0;
+    width: 16px;
+    height: 16px;
+    transition: opacity 0.3s ease;
   }
 }
 
-/* Control visibility with opacity for smoother transition */
+/* Explicitly set colors for both icons regardless of mode */
 #moon-icon {
-  opacity: 1;
-  display: block;
+  stroke: #333 !important; /* Force dark color with !important */
+  fill: none !important;
   
   [data-theme="dark"] & {
     opacity: 0;
-    display: none;
+  }
+  
+  [data-theme="light"] & {
+    opacity: 1;
   }
 }
 
 #sun-icon {
-  opacity: 0;
-  display: none;
+  stroke: white !important; /* Force white color with !important */
+  fill: none !important;
   
   [data-theme="dark"] & {
     opacity: 1;
-    display: block;
   }
+  
+  [data-theme="light"] & {
+    opacity: 0;
+  }
+}
+
+/* Add direct attribute selectors to ensure SVG paths are properly colored */
+[data-theme="light"] #moon-icon path,
+[data-theme="light"] #moon-icon line,
+[data-theme="light"] #moon-icon circle {
+  stroke: #333 !important;
+}
+
+[data-theme="dark"] #sun-icon path,
+[data-theme="dark"] #sun-icon line,
+[data-theme="dark"] #sun-icon circle {
+  stroke: white !important;
 }
 
 /* Responsive styles */
 @media (max-width: $breakpoint-md) {
   #theme-toggle.standalone {
-    padding: 4px 10px;
+    padding: 0;
     top: 8px;
-    right: 8px;
+    left: 8px;
     height: 28px;
     
     img, svg {
@@ -92,6 +81,6 @@
 
 @media (max-width: $breakpoint-xs) {
   #theme-toggle.standalone {
-    padding: 3px 8px;
+    padding: 0;
   }
 }

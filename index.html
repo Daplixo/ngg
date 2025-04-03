@@ -89,10 +89,167 @@
   </head>
 
   <body>
+    <!-- Side Menu -->
+    <div class="side-menu-overlay"></div>
+    <nav class="side-menu" id="side-menu">
+      <div class="side-menu-header">
+        <!-- Close button explicitly placed as first element -->
+        <button class="side-menu-close" aria-label="Close menu">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+        <!-- No other elements in header to ensure X is on left -->
+      </div>
+
+      <!-- Side menu content -->
+      <div class="side-menu-content">
+        <!-- Theme Toggle - Updated structure -->
+        <div class="side-menu-item">
+          <button
+            id="theme-toggle"
+            class="side-menu-button"
+            aria-label="Toggle dark/light mode"
+          >
+            <div class="icon-container">
+              <!-- Moon icon (inline SVG) -->
+              <svg
+                id="moon-icon"
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M21 12.79A9 9 0 1 1 11.21 3 A7 7 0 0 0 21 12.79z"
+                ></path>
+              </svg>
+
+              <!-- Sun icon (inline SVG) -->
+              <svg
+                id="sun-icon"
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="12" cy="12" r="5"></circle>
+                <line x1="12" y1="1" x2="12" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="23"></line>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                <line x1="1" y1="12" x2="3" y2="12"></line>
+                <line x1="21" y1="12" x2="23" y2="12"></line>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+              </svg>
+            </div>
+            <span>Theme</span>
+          </button>
+        </div>
+
+        <!-- Added Feedback Button -->
+        <div class="side-menu-item">
+          <button
+            id="side-menu-feedback-btn"
+            class="side-menu-button"
+            aria-label="Send feedback"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+              ></path></svg
+            ><span>Send Feedback</span>
+          </button>
+        </div>
+
+        <!-- Added Buy Me a Coffee Button -->
+        <div class="side-menu-item">
+          <a
+            href="https://www.buymeacoffee.com/Daplixo"
+            target="_blank"
+            rel="noopener"
+            class="side-menu-button"
+            ><svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
+              <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
+              <line x1="6" y1="1" x2="6" y2="4"></line>
+              <line x1="10" y1="1" x2="10" y2="4"></line>
+              <line x1="14" y1="1" x2="14" y2="4"></line></svg
+            ><span>Buy Me a Coffee</span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
     <!-- Game Header with Level, Attempts and Theme Toggle -->
     <header class="game-header">
       <div class="header-left header-item">
-        <div id="level-indicator">Level 1</div>
+        <!-- Improved accessibility for hamburger menu -->
+        <button
+          id="menu-toggle"
+          class="hamburger-menu"
+          aria-label="Open menu"
+          aria-expanded="false"
+          aria-controls="side-menu"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="22"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
       </div>
 
       <div class="header-center header-item">
@@ -100,47 +257,7 @@
       </div>
 
       <div class="header-right header-item">
-        <button id="theme-toggle" aria-label="Toggle dark/light mode">
-          <!-- Moon icon (inline SVG) -->
-          <svg
-            id="moon-icon"
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path d="M21 12.79A9 9 0 1 1 11.21 3 A7 7 0 0 0 21 12.79z"></path>
-          </svg>
-
-          <!-- Sun icon (inline SVG) -->
-          <svg
-            id="sun-icon"
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <circle cx="12" cy="12" r="5"></circle>
-            <line x1="12" y1="1" x2="12" y2="3"></line>
-            <line x1="12" y1="21" x2="12" y2="23"></line>
-            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-            <line x1="1" y1="12" x2="3" y2="12"></line>
-            <line x1="21" y1="12" x2="23" y2="12"></line>
-            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-          </svg>
-        </button>
+        <div id="level-indicator">Level 1</div>
       </div>
     </header>
 
@@ -241,124 +358,65 @@
       </div>
     </div>
 
-    <!-- Footer - Modified to thin strip with 2 columns -->
+    <!-- Footer - Simplified to only show creator info -->
     <footer class="footer">
       <div class="footer-content">
-        <!-- Left column with author info and social links -->
-        <div class="footer-left">
-          <div class="author-info">
-            <h3>Created by Aashutosh</h3>
-          </div>
-          <div class="social-links">
-            <a
-              href="https://github.com/Daplixo"
-              target="_blank"
-              rel="noopener"
-              title="GitHub"
-            >
-              <img
-                src="assets/icons/github.svg"
-                alt="GitHub"
-                class="social-icon"
-              />
-            </a>
-            <a
-              href="https://www.linkedin.com/in/aashutoshsharma2111/"
-              target="_blank"
-              rel="noopener"
-              title="LinkedIn"
-            >
-              <img
-                src="assets/icons/linkedin.svg"
-                alt="LinkedIn"
-                class="social-icon"
-              />
-            </a>
-            <a
-              href="https://instagram.com/ashucloud"
-              target="_blank"
-              rel="noopener"
-              title="Instagram"
-            >
-              <img
-                src="assets/icons/instagram.svg"
-                alt="Instagram"
-                class="social-icon"
-              />
-            </a>
-          </div>
-        </div>
-
-        <!-- Right column with stacked buttons -->
-        <div class="action-buttons">
-          <button id="feedbackBtn" class="footer-btn">
-            <img src="assets/icons/feedback.svg" alt="" class="btn-icon" />
-            Send Feedback
-          </button>
-          <a
-            href="https://buymeacoffee.com/daplixo"
-            target="_blank"
-            rel="noopener"
-            class="footer-btn donate-btn"
-          >
-            <img src="assets/icons/coffee.svg" alt="" class="btn-icon" />
-            Buy me a coffee
-          </a>
+        <div class="author-info">
+          <h3>Created by Aashutosh</h3>
         </div>
       </div>
     </footer>
 
     <!-- Feedback Modal -->
     <div id="feedbackModal" class="modal-wrapper">
-      <div class="modal-container">
-        <div class="modal-content">
-          <span class="close-modal">&times;</span>
-          <h2>Send Feedback</h2>
-          <form
-            id="feedbackForm"
-            action="https://formsubmit.co/aashugfx@gmail.com"
-            method="POST"
-          >
-            <!-- Anti-spam honeypot field -->
-            <input type="text" name="_honey" style="display: none" />
+      <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <h2>Send Feedback</h2>
+        <form
+          id="feedbackForm"
+          action="https://formsubmit.co/aashugfx@gmail.com"
+          method="POST"
+        >
+          <!-- Anti-spam honeypot field -->
+          <input type="text" name="_honey" style="display: none" />
 
-            <!-- Disable captcha -->
-            <input type="hidden" name="_captcha" value="false" />
+          <!-- Disable captcha -->
+          <input type="hidden" name="_captcha" value="false" />
 
-            <!-- Add a subject field for better organization -->
-            <input
-              type="hidden"
-              name="_subject"
-              value="Number Guessing Game Feedback"
-            />
+          <!-- Add a subject field for better organization -->
+          <input
+            type="hidden"
+            name="_subject"
+            value="Number Guessing Game Feedback"
+          />
 
-            <!-- Automatically sort submissions by name -->
-            <input type="hidden" name="_template" value="table" />
+          <!-- Automatically sort submissions by name -->
+          <input type="hidden" name="_template" value="table" />
 
-            <!-- You could add this to clearly identify the source of feedback -->
-            <input type="hidden" name="_source" value="game-website" />
+          <!-- You could add this to clearly identify the source of feedback -->
+          <input type="hidden" name="_source" value="game-website" />
 
-            <div class="form-group">
-              <label for="name">Name</label>
-              <input type="text" id="name" name="name" required />
-            </div>
-            <div class="form-group">
-              <label for="email">Email</label>
-              <input type="email" id="email" name="email" required />
-            </div>
-            <div class="form-group">
-              <label for="message">Message</label>
-              <textarea id="message" name="message" required></textarea>
-            </div>
-            <button type="submit" class="submit-btn">Send Feedback</button>
-          </form>
-        </div>
+          <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name" required />
+          </div>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required />
+          </div>
+          <div class="form-group">
+            <label for="message">Message</label>
+            <textarea id="message" name="message" required></textarea>
+          </div>
+          <button type="submit" class="submit-btn">Send Feedback</button>
+        </form>
       </div>
     </div>
 
     <!-- Game Scripts -->
     <script type="module" src="js/main.js"></script>
     <script src="js/fix-proximity.js"></script>
+    <script src="js/side-menu.js"></script>
 
     <!-- Form submission script - Optimized to avoid unnecessary code execution -->
     <script>
@@ -385,6 +443,152 @@
             this.reset();
           });
       }
+    </script>
+
+    <!-- Direct script to make side menu feedback button functional -->
+    <script>
+      // Make sure this runs after DOM is ready
+      document.addEventListener("DOMContentLoaded", function () {
+        const sideMenuFeedbackBtn = document.getElementById(
+          "side-menu-feedback-btn"
+        );
+        const feedbackModal = document.getElementById("feedbackModal");
+        const closeModalBtn = document.querySelector(".close-modal");
+
+        if (sideMenuFeedbackBtn && feedbackModal) {
+          console.log("Feedback button and modal found, adding click handler");
+
+          sideMenuFeedbackBtn.addEventListener("click", function () {
+            console.log("Side menu feedback button clicked");
+
+            // Close the side menu
+            const sideMenu = document.querySelector(".side-menu");
+            const sideMenuOverlay =
+              document.querySelector(".side-menu-overlay");
+            const menuToggle = document.getElementById("menu-toggle");
+
+            if (sideMenu) sideMenu.classList.remove("active");
+            if (sideMenuOverlay) sideMenuOverlay.classList.remove("active");
+            if (menuToggle) menuToggle.classList.remove("active");
+            document.body.classList.remove("menu-open");
+
+            // Open feedback modal - direct approach
+            feedbackModal.style.display = "flex";
+            feedbackModal.style.visibility = "visible";
+            feedbackModal.style.opacity = "1";
+            feedbackModal.style.pointerEvents = "auto";
+            feedbackModal.classList.add("active");
+            window.isModalOpen = true;
+
+            console.log("Feedback modal should be open now");
+          });
+        } else {
+          console.error("Feedback button or modal not found!", {
+            button: sideMenuFeedbackBtn,
+            modal: feedbackModal,
+          });
+        }
+
+        // Add click handler for the close button
+        if (closeModalBtn) {
+          closeModalBtn.addEventListener("click", function () {
+            console.log("Close button clicked");
+            closeModal();
+          });
+
+          // Also close when clicking outside the modal content
+          feedbackModal.addEventListener("click", function (e) {
+            if (e.target === feedbackModal) {
+              closeModal();
+            }
+          });
+        }
+
+        // Global close modal function
+        function closeModal() {
+          if (feedbackModal) {
+            feedbackModal.style.display = "none";
+            feedbackModal.style.visibility = "hidden";
+            feedbackModal.style.opacity = "0";
+            feedbackModal.style.pointerEvents = "none";
+            feedbackModal.classList.remove("active");
+            window.isModalOpen = false;
+            console.log("Modal closed");
+          }
+        }
+
+        // Close with ESC key
+        document.addEventListener("keydown", function (e) {
+          if (
+            e.key === "Escape" &&
+            feedbackModal.classList.contains("active")
+          ) {
+            closeModal();
+          }
+        });
+      });
+    </script>
+
+    <!-- Debugging script -->
+    <script>
+      console.log("==== INITIAL PAGE LOAD DEBUG ====");
+      // Check if hamburger menu element exists
+      const hamburgerMenu = document.getElementById("menu-toggle");
+      console.log("Hamburger menu element exists:", !!hamburgerMenu);
+
+      if (hamburgerMenu) {
+        console.log(
+          "Hamburger dimensions:",
+          "width:",
+          hamburgerMenu.offsetWidth,
+          "height:",
+          hamburgerMenu.offsetHeight
+        );
+
+        // Check computed styles
+        const style = window.getComputedStyle(hamburgerMenu);
+        console.log(
+          "Hamburger computed styles:",
+          "display:",
+          style.display,
+          "visibility:",
+          style.visibility,
+          "opacity:",
+          style.opacity,
+          "position:",
+          style.position
+        );
+
+        // Check if lines exist
+        const lines = hamburgerMenu.querySelectorAll(".hamburger-line");
+        console.log("Hamburger lines found:", lines.length);
+
+        // Check line styles if they exist
+        if (lines.length > 0) {
+          const lineStyle = window.getComputedStyle(lines[0]);
+          console.log(
+            "First line computed styles:",
+            "display:",
+            lineStyle.display,
+            "background-color:",
+            lineStyle.backgroundColor,
+            "height:",
+            lineStyle.height,
+            "width:",
+            lineStyle.width
+          );
+        }
+      }
+
+      // Check if CSS variables are set correctly
+      const rootStyle = window.getComputedStyle(document.documentElement);
+      console.log(
+        "CSS variables:",
+        "--text-color:",
+        rootStyle.getPropertyValue("--text-color"),
+        "--hamburger-color:",
+        rootStyle.getPropertyValue("--hamburger-color")
+      );
     </script>
   </body>
 </html>

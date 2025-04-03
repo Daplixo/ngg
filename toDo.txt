@@ -1,9 +1,11 @@
-Fix styling of the Feedback form. 
+Fix styling of the Feedback form. [done]
 
 Re design footer. 
 
-make buttons consistent inside the game container.
+make buttons consistent inside the game container. [done]
 
-fix styling for the retart game dropdown button.
+fix styling for the retart game dropdown button. [done]
 
-change the color graidient style in proximity meter.
+change the color graidient style in proximity meter. [done]
+
+add a navigation side bar.

@@ -1,10 +1,10 @@
 /* Footer Styles */
 .footer {
   width: 100%;
-  background-color: var(--footer-bg);
-  border-top: 1px solid var(--border-color);
+  /* Remove background-color */
+  /* Remove border-top */
   padding: 0.3rem 0;
-  transition: background-color 0.3s, border-color 0.3s;
+  transition: color 0.3s;
   position: fixed;
   bottom: 0;
   left: 0;
@@ -17,9 +17,8 @@
   margin: 0 auto;
   padding: 0 0.75rem; /* Reduce overall horizontal padding */
   display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  justify-content: space-between;
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
 }
 
 /* Left column */
@@ -34,13 +33,19 @@
 
 .author-info {
   margin: 0;
+  text-align: center; /* Center text */
   
   h3 {
     margin: 0;
     color: var(--author-text);
     font-size: 0.875rem;
     font-weight: 600;
-    transition: color 0.3s;
+    opacity: 0.7; /* Make text slightly transparent for subtlety */
+    transition: color 0.3s, opacity 0.3s;
+    
+    &:hover {
+      opacity: 1;
+    }
   }
 }
 
@@ -191,13 +196,8 @@
     font-size: 0.8rem;
   }
   
-  .social-icon {
-    width: 16px;
-    height: 16px;
-  }
-  
   body {
-    padding-bottom: 40px;
+    padding-bottom: 35px;
   }
 }
 
@@ -221,7 +221,7 @@
   }
   
   body {
-    padding-bottom: 38px;
+    padding-bottom: 30px;
   }
   
   /* Further reduce button sizes */
@@ -235,13 +235,13 @@
 
 /* Responsive adjustments for footer padding - consolidated to avoid duplication */
 body {
-  padding-bottom: 70px; /* Default padding based on footer height */
+  padding-bottom: 40px; /* Reduced padding with transparent footer */
   
   @media (max-width: 480px) {
-    padding-bottom: 90px; /* More padding for smaller screens */
+    padding-bottom: 35px;
   }
   
   @media (max-height: 450px) {
-    padding-bottom: 60px; /* Less padding for landscape mode */
+    padding-bottom: 30px;
   }
 }

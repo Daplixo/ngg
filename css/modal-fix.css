@@ -5,20 +5,15 @@
   left: 0;
   width: 100%;
   height: 100%;
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 10000;
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
 }
 
 #feedbackModal.active {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
+  display: flex;
 }
 
 .modal-content {
@@ -49,6 +44,11 @@
 /* Dark mode fix for the close button */
 [data-theme="dark"] .close-modal {
   color: var(--close-btn, #aaaaaa);
+}
+
+/* Consistent button styling */
+.submit-btn {
+  border-radius: 6px !important;
 }
 
 @media (max-width: 768px) {
@@ -86,4 +86,18 @@
   min-height: 400px; /* Maintain minimum height */
   max-height: calc(100vh - 160px); /* Increased from 180px to give more space */
   /* Don't specify a width here as it's handled in the SCSS */
+}
+
+/* Ensure the modal has proper z-index */
+.modal-wrapper {
+  z-index: 10000;
+}
+
+/* Remove inner container nesting for cleaner structure */
+.modal-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

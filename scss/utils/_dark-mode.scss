@@ -59,6 +59,23 @@
   }
 }
 
+/* Hard override for dark mode background */
+[data-theme="dark"] {
+  background-color: #121212 !important;
+}
+
+[data-theme="dark"] body {
+  background-color: #121212 !important;
+}
+
+/* Fix for background not changing properly in dark mode */
+html,
+body {
+  background-color: var(--bg-color) !important;
+  color: var(--text-color);
+  transition: background-color 0.3s, color 0.3s;
+}
+
 /* Transition properties for smooth theme switching */
 html {
   transition: color 0.3s, background-color 0.3s;
@@ -95,6 +112,11 @@ button,
 .guess-chip,
 .footer,
 .game-footer,
+.side-menu,
+.side-menu-content,
+.side-menu-header,
+.side-menu-item,
+.hamburger-line,
 *[id*="theme"], *[id*="dark"], *[id*="light"] {
   transition: color 0.3s, background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
 }

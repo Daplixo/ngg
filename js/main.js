@@ -136,6 +136,114 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Make sure modals are closed on load
     UIManager.ensureModalsClosed();
+
+    // Debug CSS loading status
+    console.log("==== CSS/SCSS LOADING DEBUG ====");
+    const allStylesheets = document.styleSheets;
+    console.log("Total stylesheets:", allStylesheets.length);
+    
+    // Check if hamburger CSS is loaded
+    let hamburgerStyleFound = false;
+    let hamburgerRules = [];
+    
+    try {
+        for (let i = 0; i < allStylesheets.length; i++) {
+            try {
+                const rules = allStylesheets[i].cssRules;
+                for (let j = 0; j < rules.length; j++) {
+                    if (rules[j].selectorText && 
+                        (rules[j].selectorText.includes('.hamburger-menu') ||
+                         rules[j].selectorText.includes('.hamburger-line'))) {
+                        hamburgerStyleFound = true;
+                        hamburgerRules.push(rules[j].cssText);
+                    }
+                }
+            } catch (e) {
+                console.log("Couldn't access rules for stylesheet", i, "due to CORS");
+            }
+        }
+    } catch (e) {
+        console.error("Error inspecting stylesheets:", e);
+    }
+    
+    console.log("Hamburger menu CSS found:", hamburgerStyleFound);
+    if (hamburgerRules.length > 0) {
+        console.log("Hamburger CSS rules found:", hamburgerRules);
+    }
+    
+    // Debug DOM structure
+    console.log("==== DOM STRUCTURE DEBUG ====");
+    const hamburgerBtn = document.getElementById('menu-toggle');
+    console.log("Hamburger button:", hamburgerBtn);
+    
+    if (hamburgerBtn) {
+        console.log("Hamburger button styles:", window.getComputedStyle(hamburgerBtn));
+        const lines = hamburgerBtn.querySelectorAll('.hamburger-line');
+        console.log("Hamburger lines found:", lines.length);
+        
+        lines.forEach((line, i) => {
+            console.log(`Line ${i+1} styles:`, window.getComputedStyle(line));
+        });
+    }
+    
+    // Initialize the side menu
+    setupSideMenu();
+    
+    // Call this function after DOM is loaded
+    fixThemeIcons();
+
+    // Setup event listeners for feedback buttons (both in footer and side menu)
+    const feedbackBtn = document.getElementById('feedbackBtn');
+    const sideMenuFeedbackBtn = document.getElementById('side-menu-feedback-btn');
+    const feedbackModal = document.getElementById('feedbackModal');
+    
+    if (feedbackBtn) {
+        feedbackBtn.addEventListener('click', function() {
+            console.log("Footer feedback button clicked");
+            if (feedbackModal) {
+                // Use the modal's active class approach
+                feedbackModal.classList.add('active');
+                window.isModalOpen = true;
+                console.log("Modal should be open:", window.isModalOpen);
+            }
+        });
+    }
+    
+    // Ensure side menu feedback button works
+    if (sideMenuFeedbackBtn) {
+        console.log("Side menu feedback button found:", sideMenuFeedbackBtn);
+        
+        // Remove any existing event listeners
+        sideMenuFeedbackBtn.removeEventListener('click', handleSideMenuFeedback);
+        
+        // Add a new event listener with a named function for easier debugging
+        sideMenuFeedbackBtn.addEventListener('click', handleSideMenuFeedback);
+    }
+
+    // Separate function for the side menu feedback handler
+    function handleSideMenuFeedback() {
+        console.log("Side menu feedback button clicked");
+        
+        // Close the side menu
+        const sideMenu = document.querySelector('.side-menu');
+        const sideMenuOverlay = document.querySelector('.side-menu-overlay');
+        const menuToggle = document.getElementById('menu-toggle');
+        
+        if (sideMenu) sideMenu.classList.remove('active');
+        if (sideMenuOverlay) sideMenuOverlay.classList.remove('active');
+        if (menuToggle) menuToggle.classList.remove('active');
+        document.body.classList.remove('menu-open');
+        
+        // Open feedback modal directly
+        if (feedbackModal) {
+            console.log("Opening feedback modal");
+            feedbackModal.classList.add('active');
+            window.isModalOpen = true;
+            console.log("Modal should be open:", window.isModalOpen);
+        } else {
+            console.error("Feedback modal not found!");
+        }
+    }
 });
 
 // Update UI to match the loaded game state
@@ -246,7 +354,7 @@ function updatePlayAgainButtonText() {
     }
 }
 
-// Setup dropdown menu functionality - Complete rewrite for reliability
+// Setup dropdown menu functionality - Refined for better maintainability
 function setupDropdownMenu() {
     console.log("Setting up dropdown menu");
     
@@ -263,53 +371,15 @@ function setupDropdownMenu() {
     const existingArrows = document.querySelectorAll('.dropdown-arrow');
     existingArrows.forEach(arrow => arrow.remove());
     
-    // Create a completely new arrow element
+    // Create a completely new arrow element - simpler design
     const dropdownArrow = document.createElement('span');
     dropdownArrow.className = 'dropdown-arrow';
-    dropdownArrow.innerHTML = '▼';
     dropdownArrow.setAttribute('id', 'dropdown-arrow');
+    dropdownArrow.setAttribute('aria-label', 'Toggle dropdown menu');
+    dropdownArrow.setAttribute('tabindex', '0');
     
-    // Direct style application for maximum reliability
-    dropdownArrow.style.cssText = `
-        position: absolute !important;
-        right: 5px !important;
-        top: 50% !important;
-        transform: translateY(-50%) !important;
-        width: 26px !important;
-        height: 26px !important;
-        background-color: rgba(0, 0, 0, 0.6) !important;
-        border-radius: 50% !important;
-        color: white !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        font-size: 12px !important;
-        cursor: pointer !important;
-        z-index: 9999 !important;
-        border: 1px solid rgba(255, 255, 255, 0.4) !important;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
-        pointer-events: auto !important;
-        user-select: none !important;
-    `;
-    
-    // Add arrow to DOM - append to container for reliable positioning
+    // Position the arrow - append to container for proper positioning
     dropdownContainer.appendChild(dropdownArrow);
-    
-    // Position the arrow
-    dropdownArrow.style.position = 'absolute';
-    dropdownArrow.style.right = '10px';
-    
-    // Fix button styling to ensure text is centered
-    playAgainBtn.style.position = 'relative';
-    playAgainBtn.style.width = '100%';
-    playAgainBtn.style.paddingRight = '36px';
-    playAgainBtn.style.paddingLeft = '36px'; // Match right padding for visual centering
-    playAgainBtn.style.textAlign = 'center';
-    playAgainBtn.style.justifyContent = 'center';
-    playAgainBtn.style.display = 'flex';
-    playAgainBtn.style.alignItems = 'center';
-    
-    console.log("Arrow added:", dropdownArrow);
     
     // CRITICAL FIX: Separate click handling completely from the button
     // Use a simple flag to track dropdown state
@@ -371,6 +441,14 @@ function setupDropdownMenu() {
             dropdownContainer.classList.remove('active');
         };
     }
+    
+    // Add keyboard accessibility
+    dropdownArrow.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            this.click();
+        }
+    });
 }
 
 // Add this new function to ensure dropdown arrow visibility
@@ -454,12 +532,10 @@ function initFeedbackModal() {
     // Also handle form submission
     const form = modal.querySelector('form');
     if (form) {
-        form.addEventListener('submit', () => {
-            // Reset the flag after form is submitted
-            setTimeout(() => {
-                window.isModalOpen = false;
-            }, 500);
-        });
+        // Reset the flag after form is submitted
+        setTimeout(() => {
+            window.isModalOpen = false;
+        }, 500);
     }
 }
 
@@ -480,11 +556,11 @@ function initTheme() {
     
     // Set initial icon visibility
     if (savedTheme === 'dark') {
-        moonIcon.style.display = 'none';
-        sunIcon.style.display = 'block';
+        moonIcon.style.opacity = '0';
+        sunIcon.style.opacity = '1';
     } else {
-        moonIcon.style.display = 'block';
-        sunIcon.style.display = 'none';
+        moonIcon.style.opacity = '1';
+        sunIcon.style.opacity = '0';
     }
     
     themeToggle.addEventListener('click', () => {
@@ -497,11 +573,11 @@ function initTheme() {
         
         // Toggle icon visibility
         if (nextTheme === 'dark') {
-            moonIcon.style.display = 'none';
-            sunIcon.style.display = 'block';
+            moonIcon.style.opacity = '0';
+            sunIcon.style.opacity = '1';
         } else {
-            moonIcon.style.display = 'block';
-            sunIcon.style.display = 'none';
+            moonIcon.style.opacity = '1';
+            sunIcon.style.opacity = '0';
         }
         
         // Save user preference
@@ -600,3 +676,121 @@ window.checkForSavedGame = function() {
     UIManager.updateRestoreButtonVisibility();
     return result;
 };
+
+// Setup side menu functionality
+function setupSideMenu() {
+    console.log("Setting up side menu...");
+    
+    const menuToggle = document.getElementById('menu-toggle');
+    const sideMenu = document.querySelector('.side-menu');
+    const sideMenuOverlay = document.querySelector('.side-menu-overlay');
+    const sideMenuClose = document.querySelector('.side-menu-close');
+    
+    console.log("Menu toggle element:", menuToggle);
+    console.log("Side menu element:", sideMenu);
+    console.log("Side menu overlay element:", sideMenuOverlay);
+    console.log("Side menu close element:", sideMenuClose);
+    
+    if (!menuToggle || !sideMenu || !sideMenuOverlay || !sideMenuClose) {
+        console.error("Side menu elements not found");
+        return;
+    }
+    
+    console.log("Side menu setup initialized");
+    
+    // Toggle menu when hamburger is clicked - Fix the event handler
+    menuToggle.onclick = function(e) {
+        e.preventDefault(); // Prevent default button behavior
+        console.log("Menu toggle clicked");
+        
+        const isMenuOpen = sideMenu.classList.contains('active');
+        
+        // Toggle classes
+        sideMenu.classList.toggle('active');
+        sideMenuOverlay.classList.toggle('active');
+        menuToggle.classList.toggle('active');
+        document.body.classList.toggle('menu-open');
+        
+        // Update ARIA attributes
+        menuToggle.setAttribute('aria-expanded', !isMenuOpen);
+        
+        // Log for debugging
+        console.log("Side menu active:", sideMenu.classList.contains('active'));
+        console.log("Menu toggle active:", menuToggle.classList.contains('active'));
+    };
+    
+    // Close menu when X is clicked - Fix the event handler
+    sideMenuClose.onclick = function() {
+        sideMenu.classList.remove('active');
+        sideMenuOverlay.classList.remove('active');
+        menuToggle.classList.remove('active');
+        document.body.classList.remove('menu-open');
+        menuToggle.setAttribute('aria-expanded', 'false');
+    };
+    
+    // Close menu when overlay is clicked - Fix the event handler
+    sideMenuOverlay.onclick = function() {
+        sideMenu.classList.remove('active');
+        sideMenuOverlay.classList.remove('active');
+        menuToggle.classList.remove('active');
+        document.body.classList.remove('menu-open');
+        menuToggle.setAttribute('aria-expanded', 'false');
+    };
+    
+    // Close menu on ESC key press
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && sideMenu.classList.contains('active')) {
+            sideMenu.classList.remove('active');
+            sideMenuOverlay.classList.remove('active');
+            menuToggle.classList.remove('active');
+            document.body.classList.remove('menu-open');
+            menuToggle.setAttribute('aria-expanded', 'false');
+        }
+    });
+}
+
+// Add this to the initTheme function or create a new function
+
+function fixThemeIcons() {
+    const moonIcon = document.getElementById('moon-icon');
+    const sunIcon = document.getElementById('sun-icon');
+    
+    if (!moonIcon || !sunIcon) return;
+    
+    // Set initial styles directly
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+    
+    if (currentTheme === 'dark') {
+        // Dark mode - sun icon visible
+        moonIcon.style.opacity = '0';
+        sunIcon.style.opacity = '1';
+        sunIcon.setAttribute('stroke', 'white');
+    } else {
+        // Light mode - moon icon visible
+        moonIcon.style.opacity = '1'; 
+        moonIcon.setAttribute('stroke', '#333');
+        sunIcon.style.opacity = '0';
+    }
+    
+    // Add this to the theme toggle event listener
+    document.getElementById('theme-toggle').addEventListener('click', function() {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        
+        if (nextTheme === 'dark') {
+            // Switching to dark mode - sun icon visible
+            setTimeout(() => {
+                moonIcon.style.opacity = '0';
+                sunIcon.style.opacity = '1';
+                sunIcon.setAttribute('stroke', 'white');
+            }, 50);
+        } else {
+            // Switching to light mode - moon icon visible
+            setTimeout(() => {
+                moonIcon.style.opacity = '1';
+                moonIcon.setAttribute('stroke', '#333');
+                sunIcon.style.opacity = '0';
+            }, 50);
+        }
+    });
+}

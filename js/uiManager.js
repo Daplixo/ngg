@@ -456,5 +456,20 @@ export const UIManager = {
             modal.classList.remove('active');
             window.isModalOpen = false;
         }
+    },
+
+    toggleModal(modal) {
+        if (!modal) return;
+        
+        // Toggle the active class to show/hide the modal
+        if (modal.classList.contains('active')) {
+            modal.classList.remove('active');
+            window.isModalOpen = false;
+        } else {
+            modal.classList.add('active');
+            window.isModalOpen = true;
+        }
+        
+        console.log("Modal toggled:", modal.id, window.isModalOpen);
     }
 };

@@ -11,7 +11,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  display: flex;
+  display: none; /* Change to none initially */
   align-items: center;
   justify-content: center;
   background-color: var(--modal-overlay-bg);
@@ -25,6 +25,45 @@
     opacity: 1;
     visibility: visible;
     pointer-events: auto; /* Re-enable pointer events when visible */
+    display: flex; /* Show when active */
+    z-index: 9999;
+  }
+  
+  /* Ensure modal content receives pointer events */
+  .modal-content {
+    position: relative;
+    background-color: var(--modal-bg);
+    border-radius: 6px;
+    padding: 2rem;
+    width: 80%;
+    max-width: 600px;
+    pointer-events: auto;
+    z-index: 10000;
+    
+    /* Ensure form inputs are interactive */
+    .form-group {
+      margin-bottom: 1.5rem;
+      
+      input, textarea {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        background-color: var(--input-bg);
+        color: var(--text-color);
+        pointer-events: auto;
+      }
+    }
+    
+    .submit-btn {
+      pointer-events: auto;
+    }
+  }
+  
+  /* Fix close button */
+  .close-modal {
+    pointer-events: auto;
+    cursor: pointer;
   }
 }
 

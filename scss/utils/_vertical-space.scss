@@ -127,21 +127,13 @@
   
   #level-indicator {
     z-index: 100;
+    right: 5px; /* Updated for right alignment */
   }
   
   #theme-toggle {
     top: 5px;
-    right: 5px;
+    left: 5px; /* Updated for left alignment */
     z-index: 100;
-  }
-  
-  #level-indicator {
-    z-index: 100;
-  }
-  
-  #theme-toggle {
-    top: 5px;
-    right: 5px;
   }
   
   .game-layout {

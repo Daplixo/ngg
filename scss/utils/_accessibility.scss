@@ -59,6 +59,12 @@ input[type="reset"],
   }
 }
 
+/* For dropdown arrow specifically */
+.dropdown-arrow:focus-visible {
+  outline: 2px solid var(--btn-primary);
+  outline-offset: 2px;
+}
+
 /* Ensure no animations for users who prefer reduced motion */
 @media (prefers-reduced-motion: reduce) {
   * {

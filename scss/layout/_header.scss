@@ -42,6 +42,97 @@
       box-shadow: none;
       margin: 0;
     }
+    
+    #theme-toggle {
+      position: relative;
+      top: auto;
+      right: auto;
+      background: transparent;
+      border-radius: 0;
+      padding: 0;
+      box-shadow: none;
+      width: auto;
+      height: 32px;
+      min-width: 0;
+      
+      svg, img {
+        color: var(--text-color);
+        stroke: var(--text-color);
+      }
+      
+      &:hover {
+        background: transparent;
+        opacity: 0.8;
+      }
+    }
+
+    #menu-toggle {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      width: 22px; 
+      height: 18px; 
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      margin-right: 12px; /* Add margin for spacing */
+      
+      .hamburger-line {
+        display: block;
+        width: 100%;
+        height: 2px;
+        background-color: var(--text-color);
+        border-radius: 2px;
+        transition: all 0.3s ease;
+        margin-bottom: 5px; /* Increased spacing between lines */
+        
+        /* Critical fix for line rendering */
+        border: none !important;
+        opacity: 1 !important;
+        transform: none !important; /* Ensure no transforms are applied initially */
+      }
+      
+      .hamburger-line:last-child {
+        margin-bottom: 0; /* Remove margin from last line */
+      }
+    }
+
+    /* Direct styling for menu-toggle as a fallback if hamburger-menu class styles aren't applied */
+    #menu-toggle {
+      position: relative;
+      display: flex !important; /* Force display flex */
+      flex-direction: column !important;
+      justify-content: space-between !important;
+      width: 22px !important; 
+      height: 18px !important;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      margin-right: 12px;
+      
+      /* Direct styling for hamburger lines as a fallback */
+      .hamburger-line {
+        display: block !important;
+        width: 100% !important;
+        height: 2px !important;
+        min-height: 2px !important;
+        background-color: currentColor !important;
+        border-radius: 2px;
+        margin-bottom: 5px !important;
+        
+        /* Critical fix for line rendering */
+        border: none !important;
+        opacity: 1 !important;
+        transform: none !important; /* Ensure no transforms are applied initially */
+      }
+      
+      .hamburger-line:last-child {
+        margin-bottom: 0 !important;
+      }
+    }
   }
   
   .header-center {
@@ -71,12 +162,12 @@
       border-radius: 0;
       padding: 0;
       box-shadow: none;
-      width: auto;
+      width: auto;// Fixed space after var
       height: 32px;
       min-width: 0;
       
       svg, img {
-        color: var(--text-color);
+        color: var (--text-color);
         stroke: var(--text-color);
         filter: none !important;
       }

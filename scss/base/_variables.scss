@@ -1,7 +1,7 @@
 // Theme variables
 :root {
   /* Light theme (default) */
-  --bg-color: #ffffff;
+  --bg-color: #e9ecef; /* Modified to use a light gray instead of pure white for better contrast */
   --text-color: #333333;
   --card-bg: #ffffff;
   --border-color: #e1e4e8;
@@ -73,6 +73,18 @@
   
   /* Modal colors */
   --modal-overlay-bg: rgba(0, 0, 0, 0.5);
+
+  /* Side Menu colors */
+  --side-menu-bg: var(--card-bg);
+  --side-menu-text: var(--text-color);
+  --side-menu-border: var(--border-color);
+  --side-menu-shadow: rgba(0, 0, 0, 0.1);
+  --side-menu-overlay: rgba(0, 0, 0, 0.5);
+
+  /* Hamburger Menu colors */
+  --hamburger-color: var(--text-color);
+  --hamburger-hover-opacity: 0.8;
+  --hamburger-active-color: var(--text-color);
 }
 
 [data-theme="dark"] {
@@ -112,6 +124,18 @@
   --key-btn-color: #e0e0e0;
   --key-btn-hover: #444444;
   /* Keep key-clear and key-enter the same as light theme */
+
+  /* Side Menu colors - dark mode */
+  --side-menu-bg: var(--card-bg);
+  --side-menu-text: var(--text-color);
+  --side-menu-border: var(--border-color);
+  --side-menu-shadow: rgba(0, 0, 0, 0.3);
+  --side-menu-overlay: rgba(0, 0, 0, 0.7);
+
+  /* Hamburger Menu colors - dark mode */
+  --hamburger-color: var(--text-color);
+  --hamburger-hover-opacity: 0.8;
+  --hamburger-active-color: var(--text-color);
 }
 
 // Animation durations
