@@ -48,5 +48,8 @@
 @import 'utils/vertical-space';
 @import 'utils/theme-variables'; // Correct path for theme variables
 
+// Import the container fix
+@import 'container-fix';
+
 // 9. Vendor & Browser Specifics
 @import 'utils/vendor';

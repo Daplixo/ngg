@@ -35,8 +35,7 @@ body {
 
 .game-layout {
   display: flex;
-  width: 100%;
-  max-width: 800px; /* Further reduced from 900px to match original width */
+  // Remove the fixed max-width here - it's now in _container-fix.scss
   margin: 0 auto;
   min-height: 400px;
   height: 530px; /* Slightly reduced height to account for header */
@@ -51,7 +50,7 @@ body {
   padding-top: 10px; /* Reduced top padding since we now have a header */
   padding-bottom: 1rem;
   width: 100%;
-  max-width: 800px; /* Reduced from 920px to match game-layout */
+  // Remove the fixed max-width here - it's now in _container-fix.scss
   margin: 0 auto; /* Center the container */
 }
 
@@ -105,12 +104,17 @@ body {
 /* For very large screens, avoid excessive width */
 @media (min-width: 1600px) {
   #controls {
-    max-width: 500px; /* Slightly wider on very large screens */
+    max-width: 400px; // Further reduced
   }
   
   #range-info {
     font-size: 1.1rem; /* Slightly larger text on big screens */
     padding: 6px 12px;
+  }
+  
+  /* Add constraint for the game-layout on very large displays */
+  .game-layout {
+    max-width: 580px; // Hard limit on very large screens - reduced
   }
 }
 

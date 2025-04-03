@@ -1,0 +1,41 @@
+/* Game container width fix for larger screens */
+
+// Set a more appropriate max-width for game layout
+.game-layout {
+  max-width: 570px; // Further reduced for a more compact look
+  width: 100%;
+  margin: 0 auto;
+  
+  // Maintain aspect ratio better on larger screens but still keep it compact
+  @media (min-width: 1200px) {
+    max-width: 580px; // Further reduced
+  }
+  
+  // Slightly smaller on medium-sized screens
+  @media (max-width: 992px) {
+    max-width: 550px;
+  }
+}
+
+// Ensure the game container matches the layout
+#game-container {
+  max-width: 580px; // Further reduced
+  width: 90%; // Slightly reduced for better appearance
+  padding: 0.5rem;
+  
+  @media (max-width: 768px) {
+    width: 100%;
+  }
+}
+
+// Ensure the content area isn't too wide either
+.game-content {
+  max-width: 100%;
+}
+
+// Maintain proper column widths
+.proximity-column {
+  width: 25%;
+  min-width: 70px;
+  max-width: 90px; // Reduced from 100px
+}

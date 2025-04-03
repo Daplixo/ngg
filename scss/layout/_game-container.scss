@@ -5,6 +5,7 @@
   min-height: 80vh;
   padding: 1rem;
   margin: 0 auto;
+  // Remove the max-width here as it's now in _container-fix.scss
 }
 
 /* Game Controls Container */
@@ -37,6 +38,8 @@
   width: 100%;
   padding: 0 15px;
   box-sizing: border-box;
+  max-width: 500px; // Reduced max-width for large screens
+  margin: 0 auto;
 }
 
 .game-container {

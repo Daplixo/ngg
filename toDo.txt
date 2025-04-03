@@ -1,1 +1,7 @@
-Fix styling of the Feedback form.'
+Fix styling of the Feedback form. 
+
+Re design footer. 
+
+make buttons consistent inside the game container.
+
+fix styling for the retart game dropdown button.

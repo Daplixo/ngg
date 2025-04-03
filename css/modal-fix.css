@@ -85,4 +85,5 @@
   height: auto; /* Allow height to adjust naturally */
   min-height: 400px; /* Maintain minimum height */
   max-height: calc(100vh - 160px); /* Increased from 180px to give more space */
+  /* Don't specify a width here as it's handled in the SCSS */
 }
