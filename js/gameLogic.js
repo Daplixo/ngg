@@ -236,17 +236,11 @@ export class GameLogic {
         // Also reset past guesses display
         UIManager.updatePastGuesses();
         
-        // Fix: Always check keyboard visibility when game is active
-        if (window.innerWidth <= 768 && !gameState.gameOver && !gameState.hasWon) {
-            UIManager.showCustomKeyboard();
-        } else {
-            UIManager.hideCustomKeyboard();
-        }
+        // Always show keyboard regardless of game state
+        UIManager.showCustomKeyboard();
         
-        // Show keyboard again if conditions are met
-        if (!gameState.gameOver && !gameState.hasWon) {
-            UIManager.showCustomKeyboard();
-        }
+        // Remove conditional checks to display keyboard
+        // Always display the keyboard for UI consistency
     }
 
     static startGameMode() {

@@ -1,0 +1,58 @@
+// This file should be removed for production as it's only for debugging
+// Import all the CSS directly from the old file to ensure full compatibility
+
+// 1. Variables and Base
+@import 'base/variables';
+@import 'base/_reset';
+
+// 2. Direct import of old CSS (uncomment this line to test with the original CSS)
+// @import '../css/styles - Copy.css';
+
+// 3. Our organized SCSS structure
+@import './utils/mixins';
+@import 'base/base';
+@import 'layout/layout';
+@import 'layout/game-container';
+@import 'layout/header';
+@import 'layout/footer';
+@import 'components/level-indicator';
+@import 'components/range-info';
+@import 'components/controls';
+@import 'components/buttons';
+@import 'components/forms';
+@import 'components/modals';
+@import 'components/feedback';
+@import 'components/attempts';
+@import 'components/notifications';
+@import 'features/proximity-meter';
+@import 'features/past-guesses';
+@import 'features/last-guess';
+@import 'features/custom-keyboard';
+@import 'ui/dropdown';
+@import 'ui/modal';
+@import 'ui/theme-toggle';
+@import 'pages/game';
+@import 'pages/high-scores';
+@import 'utils/animations';
+@import 'utils/helpers';
+@import 'utils/dark-mode';
+@import 'utils/accessibility';
+@import 'utils/media-queries';
+@import 'utils/vendor';
+
+// 4. Critical overrides if needed
+.game-layout {
+  display: flex !important;
+  width: 100% !important;
+  max-width: 1000px !important;
+  margin: 0 auto !important;
+  min-height: 400px !important;
+  height: 550px !important;
+  border-radius: 10px !important;
+  overflow: hidden !important;
+  background-color: var(--card-bg) !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+  transition: background-color 0.3s !important;
+}
+
+// Add any critical styles here that aren't working

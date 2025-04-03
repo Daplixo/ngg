@@ -1,15 +1,27 @@
-/* Updated Level indicator and Theme Toggle Button styles */
+/* Level indicator styles */
 #level-indicator {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  background: var(--btn-primary);
-  color: white;
-  padding: 5px 12px;
-  border-radius: 15px;
-  font-size: 0.9rem;
-  font-weight: bold;
-  transition: background-color 0.3s;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: color 0.3s;
+  display: flex;
+  align-items: center;
+  
+  /* Original button-style positioning - this will be overridden by the header styles when in header */
+  &.standalone {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: var(--btn-primary);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 16px;
+    height: 32px;
+    justify-content: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    width: auto;
+    min-width: 32px;
+    max-width: max-content;
+  }
 }
 
 .level-indicator {
@@ -51,6 +63,28 @@
         color: var(--star-filled);
       }
     }
+  }
+}
+
+/* Mobile responsive styles to match theme toggle and attempts counter */
+@media (max-width: $breakpoint-md) {
+  #level-indicator {
+    font-size: 0.75rem;
+    
+    &.standalone {
+      padding: 4px 10px;
+      top: 8px;
+      left: 8px;
+      height: 28px;
+    }
+  }
+}
+
+/* Very small screens */
+@media (max-width: $breakpoint-xs) {
+  #level-indicator.standalone {
+    padding: 3px 8px;
+    font-size: 0.7rem;
   }
 }
 

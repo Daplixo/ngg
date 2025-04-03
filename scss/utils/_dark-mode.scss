@@ -2,6 +2,36 @@
 
 /* Ensure dark mode text color is always applied correctly */
 [data-theme="dark"] {
+  --bg-color: #121212;
+  --text-color: #f1f1f1;
+  --card-bg: #1e1e1e;
+  --border-color: #333;
+  --btn-primary: #4d6fed;
+  --btn-hover: #3a5bd9;
+  --footer-bg: #1e1e1e;
+  --proximity-column-bg: #262626;
+  --range-info-bg: #333;
+  --range-info-text: #e0e0e0;
+  --input-border: #444;
+  --input-bg: #262626;
+  --feedback-light: #f1f1f1;
+  --feedback-error-color: #ff6b6b;
+  --close-btn: #e0e0e0;
+  --modal-bg: #262626;
+  --attempts-color: #e0e0e0;
+  --author-text: #e0e0e0;
+  --social-icon: #e0e0e0;
+  --feedback-btn-bg: #4d6fed;
+  --feedback-btn-hover: #3a5bd9;
+  --donate-btn-bg: #2eb82e;
+  --donate-btn-hover: #248f24;
+  --proximity-meter-bg: #333;
+  --proximity-far-color: #e74c3c;
+  --proximity-medium-far-color: #e67e22;
+  --proximity-medium-color: #f1c40f;
+  --proximity-close-color: #27ae60;
+  --proximity-very-close-color: #2ecc71;
+
   color: var(--text-color);
   
   h1, h2, h3, h4, h5, h6 {
@@ -40,6 +70,35 @@ html {
   transition: color 0.3s, background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
 }
 
+/* Dark mode specific style overrides */
+
+/* Target transition elements for smooth theme changes */
+body,
+#game-container,
+.game-content,
+#proximity-container,
+#proximity-fill,
+#proximity-labels,
+#range-info,
+#userGuess,
+button,
+.dropdown-menu,
+.dropdown-option,
+.modal-content,
+.form-group input,
+.form-group textarea,
+.close-modal,
+#feedback,
+#attempts,
+#past-guesses-title,
+#past-guesses,
+.guess-chip,
+.footer,
+.game-footer,
+*[id*="theme"], *[id*="dark"], *[id*="light"] {
+  transition: color 0.3s, background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+
 /* Ensure proper contrast for links in dark mode */
 [data-theme="dark"] {
   a:not(.btn):not(.button):not([class*="btn-"]) {
@@ -63,5 +122,30 @@ html {
     input, select, textarea {
       border-width: 1px; /* Ensure borders are visible enough */
     }
+  }
+}
+
+/* Specific contrast improvements for dark mode */
+[data-theme="dark"] {
+  .key-btn {
+    background-color: var(--key-btn-bg);
+    color: var(--key-btn-color);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+    
+    &:hover {
+      background-color: var(--key-btn-hover);
+    }
+    
+    &::before {
+      opacity: 0.2;
+    }
+  }
+  
+  .modal-content {
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+  }
+  
+  .dropdown-menu {
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
   }
 }

@@ -1,0 +1,165 @@
+/* Vertical space optimization for smaller screens */
+
+/* Optimize vertical space on screens with less height */
+@media (max-height: 800px) {
+  .game-header {
+    padding: 6px 12px;
+  }
+  
+  #game-container {
+    padding-top: 5px;
+    padding-bottom: 0.5rem;
+    min-height: auto;
+  }
+  
+  .game-layout {
+    min-height: auto;
+    height: auto;
+    max-height: calc(100vh - 150px); /* Account for header */
+  }
+  
+  .proximity-column {
+    padding: 10px 0;
+  }
+  
+  #proximity-container.vertical {
+    flex: 0.6;
+  }
+  
+  #last-guess-container {
+    flex: 0.2;
+    height: 80px;
+  }
+  
+  .proximity-label {
+    padding: 5px;
+  }
+  
+  #range-info {
+    margin: 0.5rem 0;
+    padding: 6px 10px;
+  }
+  
+  #controls {
+    margin-bottom: 0.75rem;
+  }
+  
+  #past-guesses-container {
+    margin: 0.5rem 0;
+  }
+  
+  .game-controls {
+    margin: 5px auto;
+  }
+  
+  #custom-keyboard {
+    margin-top: 0.5rem;
+  }
+  
+  .keyboard-row {
+    margin-bottom: 5px;
+  }
+}
+
+/* Even more compact for very small heights */
+@media (max-height: 650px) {
+  .game-header {
+    padding: 4px 10px;
+  }
+  
+  .header-item {
+    height: 26px;
+  }
+  
+  .key-btn {
+    width: 42px;
+    height: 42px;
+  }
+  
+  #feedback {
+    margin: 0.25rem 0;
+    min-height: 1.2rem;
+  }
+  
+  #range-info {
+    font-size: 0.9rem;
+  }
+  
+  #past-guesses-title {
+    margin-bottom: 0.25rem;
+  }
+  
+  .game-layout {
+    max-height: calc(100vh - 130px); /* Account for smaller header */
+  }
+
+  #level-indicator, 
+  #theme-toggle,
+  #attempts {
+    height: 28px;
+    padding: 4px 10px;
+    font-size: 0.75rem;
+    width: auto;
+    max-width: max-content;
+  }
+  
+  #attempts-container {
+    margin-top: 8px;
+  }
+}
+
+/* Extreme space saving for very small screens */
+@media (max-height: 550px) {
+  .game-header {
+    padding: 3px 8px;
+  }
+  
+  .header-item {
+    height: 24px;
+  }
+  
+  #attempts-container {
+    position: absolute;
+    top: 10px;
+    right: 50px;
+    z-index: 100;
+  }
+  
+  #level-indicator {
+    z-index: 100;
+  }
+  
+  #theme-toggle {
+    top: 5px;
+    right: 5px;
+  }
+  
+  .game-layout {
+    max-height: calc(100vh - 110px); /* Account for smallest header */
+    border-radius: 5px;
+  }
+  
+  #past-guesses-container {
+    max-height: 50px;
+    overflow-y: auto;
+  }
+
+  #attempts-container {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    margin-top: 0;
+  }
+  
+  #level-indicator, 
+  #theme-toggle,
+  #attempts {
+    height: 24px;
+    padding: 2px 8px;
+    font-size: 0.7rem;
+    width: auto;
+    max-width: max-content;
+  }
+}

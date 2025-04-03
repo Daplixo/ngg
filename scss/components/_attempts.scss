@@ -1,57 +1,77 @@
-/* New styles for attempts counter outside the game box - more compact version */
+/* Attempts counter styles */
 #attempts-container {
-  text-align: center;
-  width: 100%;
-  max-width: 400px; /* Reduced from 1000px to make it less wide overall */
-  margin: 0 auto;
   position: relative;
   z-index: 2;
-  margin-top: 10px; /* Add top margin to match the level of night mode toggle */
+  display: flex;
+  justify-content: center;
+  transition: opacity 0.3s;
+  
+  /* When not in header */
+  &.standalone {
+    text-align: center;
+    width: 100%;
+    max-width: 350px;
+    margin: 10px auto 0;
+  }
 }
 
 #attempts {
-  display: inline-block;
-  background-color: var(--card-bg);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  padding: 4px 12px;
-  border-radius: 16px;
-  margin: 0 0 -12px 0; /* Reduced negative margin */
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   font-weight: 600;
-  color: var(--attempts-color);
-  transition: color 0.3s, background-color 0.3s;
-  border: 1px solid var(--border-color);
-  width: auto; /* Ensure it takes only the width it needs */
-  max-width: 120px; /* Add maximum width to prevent excessive width */
-  white-space: nowrap; /* Keep text on one line */
-  overflow: hidden; /* Prevent text overflow */
-  text-overflow: ellipsis; /* Show ellipsis if text overflows */
+  transition: color 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  /* When not in header */
+  &.standalone {
+    background-color: var(--btn-primary);
+    color: white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    padding: 6px 12px;
+    border-radius: 16px;
+    height: 32px;
+    width: auto;
+    min-width: 32px;
+    max-width: max-content;
+  }
 }
 
-/* Mobile adjustments for attempts badge */
+/* Responsive styles */
 @media (max-width: $breakpoint-md) {
-  #attempts-container {
-    max-width: 300px; /* Even smaller on mobile devices */
-    margin-top: 8px; /* Slightly reduce top margin on mobile */
+  #attempts-container.standalone {
+    max-width: 300px;
+    margin-top: 8px;
   }
   
   #attempts {
     font-size: 0.75rem;
-    padding: 3px 10px;
-    margin: 0 0 -10px 0;
-    max-width: 100px; /* Smaller maximum width on mobile */
+    
+    &.standalone {
+      padding: 4px 10px;
+      height: 28px;
+    }
   }
 }
 
-/* Very small screens */
 @media (max-width: $breakpoint-xs) {
+  #attempts-container.standalone {
+    max-width: 220px;
+  }
+  
+  #attempts.standalone {
+    padding: 3px 8px;
+    font-size: 0.7rem;
+  }
+}
+
+/* Space adjustments */
+@media (max-height: 600px) {
   #attempts-container {
-    max-width: 220px; /* Further reduced for very small screens */
+    margin-top: 6px;
   }
   
   #attempts {
-    padding: 2px 8px;
-    font-size: 0.7rem;
-    max-width: 90px; /* Even smaller on very small devices */
+    margin-bottom: -10px;
   }
 }

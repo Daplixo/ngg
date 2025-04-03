@@ -1,7 +1,70 @@
 /* Media Queries for responsive design */
 
+/* Very small screens */
+@mixin xs-screen {
+  @media (max-width: $breakpoint-xs) {
+    @content;
+  }
+}
+
+/* Small screens/phones */
+@mixin sm-screen {
+  @media (max-width: $breakpoint-sm) {
+    @content;
+  }
+}
+
+/* Medium screens/tablets */
+@mixin md-screen {
+  @media (max-width: $breakpoint-md) {
+    @content;
+  }
+}
+
+/* Large screens/desktops */
+@mixin lg-screen {
+  @media (max-width: $breakpoint-lg) {
+    @content;
+  }
+}
+
+/* Extra large screens */
+@mixin xl-screen {
+  @media (min-width: $breakpoint-xl) {
+    @content;
+  }
+}
+
+/* Low height screens */
+@mixin low-height {
+  @media (max-height: 600px) {
+    @content;
+  }
+}
+
+/* Very low height screens */
+@mixin very-low-height {
+  @media (max-height: 450px) {
+    @content;
+  }
+}
+
+/* Print styles */
+@mixin print {
+  @media print {
+    @content;
+  }
+}
+
+/* High contrast mode */
+@mixin high-contrast {
+  @media (prefers-contrast: high) {
+    @content;
+  }
+}
+
 /* Extra small devices - Small phones */
-@media (max-width: $breakpoint-xs) {
+@include xs-screen {
   #game-container {
     padding: 0.5rem;
   }
@@ -34,7 +97,7 @@
 }
 
 /* Small devices - Large phones */
-@media (min-width: $breakpoint-xs + 1) and (max-width: $breakpoint-sm) {
+@include sm-screen {
   .game-layout {
     min-height: 400px;
     height: 480px;
@@ -42,14 +105,14 @@
 }
 
 /* Medium devices - Tablets */
-@media (min-width: $breakpoint-sm + 1) and (max-width: $breakpoint-md) {
+@include md-screen {
   .game-layout {
     height: 500px;
   }
 }
 
 /* Large devices - Desktops */
-@media (min-width: $breakpoint-md + 1) and (max-width: $breakpoint-lg) {
+@include lg-screen {
   #game-container {
     padding: 1.5rem;
   }
@@ -60,14 +123,14 @@
 }
 
 /* Extra large devices - Large desktops */
-@media (min-width: $breakpoint-xl) {
+@include xl-screen {
   #game-container {
     padding: 2rem;
   }
   
   .game-layout {
     height: 550px;
-    max-width: 1100px;
+    max-width: 800px; /* Reduced to match the new container width */
   }
   
   h2 {
@@ -84,7 +147,7 @@
 }
 
 /* Very short screens (landscape on mobile) */
-@media (max-height: 600px) {
+@include low-height {
   #game-container {
     padding: 0.25rem;
     min-height: 70vh;
@@ -106,7 +169,7 @@
 }
 
 /* Print styles */
-@media print {
+@include print {
   #theme-toggle,
   #custom-keyboard,
   .dropdown-container,
@@ -133,5 +196,133 @@
   
   h2 {
     color: black !important;
+  }
+}
+
+/* Fix for iOS Safari height issues */
+@media screen and (max-height: 667px) and (min-width: 375px) {
+  #game-container {
+    min-height: 70vh;
+  }
+}
+
+/* Landscape mode for phones */
+@media (max-height: 450px) and (orientation: landscape) {
+  #game-container {
+    min-height: 70vh;
+    padding: 0.5rem;
+  }
+  
+  .footer {
+    padding: 0.1rem 0;
+  }
+  
+  body {
+    padding-bottom: 30px;
+  }
+}
+
+/* Print styles - hide unnecessary elements when printing */
+@media print {
+  .footer, 
+  #theme-toggle, 
+  .level-indicator,
+  .action-buttons,
+  .game-controls {
+    display: none !important;
+  }
+  
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  
+  h2 {
+    color: black !important;
+  }
+}
+
+/* High contrast mode overrides */
+@include high-contrast {
+  .guess-chip {
+    border: 1px solid #000 !important;
+  }
+  
+  input, button {
+    border: 1px solid #000 !important;
+  }
+  
+  #range-info {
+    border: 1px solid #666 !important;
+  }
+  
+  button {
+    outline: 1px solid #000 !important;
+  }
+  
+  h2 {
+    color: black !important;
+  }
+}
+
+/* Additional mobile-specific adjustments */
+@media (max-width: $breakpoint-md) {
+  /* Ensure proximity column is visible */
+  .proximity-column {
+    width: 25%;
+    display: flex !important;
+    flex-direction: column;
+    justify-content: space-between;
+    visibility: visible !important;
+    padding: 10px 0;
+  }
+  
+  /* Fix layout on small screens */
+  .game-layout {
+    display: flex !important;
+    flex-direction: row !important;
+  }
+  
+  /* Make sure the proximity meter components are visible */
+  #proximity-container,
+  #proximity-meter,
+  #proximity-fill {
+    display: block !important;
+    visibility: visible !important;
+  }
+  
+  /* Adjust height of the proximity container area */
+  #proximity-container.vertical {
+    flex: 1 !important;
+    min-height: 200px !important;
+    display: flex !important;
+  }
+}
+
+/* Very small screens - further optimizations */
+@media (max-width: $breakpoint-sm) {
+  .proximity-column {
+    width: 25%; /* Keep the 25% width */
+    padding: 8px 0;
+    display: flex !important;
+    visibility: visible !important;
+  }
+  
+  .proximity-label {
+    font-size: 0.65rem;
+    padding: 5px 2px;
+  }
+  
+  #proximity-container.vertical {
+    width: 20px;
+    min-height: 150px !important;
+    display: flex !important;
+    visibility: visible !important;
+  }
+  
+  #proximity-container.vertical #proximity-meter {
+    width: 8px;
+    display: block !important;
+    visibility: visible !important;
   }
 }

@@ -103,6 +103,13 @@ button {
       background-color: var(--btn-continue-hover);
     }
   }
+  
+  text-align: center !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  width: 100% !important;
+  overflow: visible !important;
 }
 
 #continueBtn {
@@ -208,6 +215,10 @@ button {
   background-color: var(--feedback-btn-bg);
   border-color: var(--feedback-btn-bg);
   
+  .btn-icon {
+    margin-right: -2px !important; /* Use negative margin to pull text closer to icon */
+  }
+  
   &:hover {
     background-color: var(--feedback-btn-hover);
     border-color: var(--feedback-btn-hover);
@@ -217,6 +228,7 @@ button {
 .donate-btn {
   background-color: var(--donate-btn-bg) !important;
   border-color: var(--donate-btn-bg) !important;
+  color: white !important; /* Force white text color with !important to override any conflicting styles */
   
   &:hover {
     background-color: var(--donate-btn-hover) !important;
@@ -237,6 +249,10 @@ button {
     width: 12px !important;
     height: 12px !important;
     margin-right: 5px !important;
+  }
+  
+  #feedbackBtn .btn-icon {
+    margin-right: -2px !important; /* Keep the same negative margin on mobile */
   }
 }
 

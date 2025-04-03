@@ -1,11 +1,45 @@
 /* Base styles for the game */
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--body-bg);
+  transition: background-color 0.3s ease;
+  padding-bottom: 70px; /* Space for footer */
+}
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 $spacing-medium;
+}
+
+.game-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 15px 20px; /* Reduced top padding because we now have a header */
+  position: relative;
+}
+
+.content-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 100vh;
+  width: 100%;
+}
+
 .game-layout {
   display: flex;
   width: 100%;
-  max-width: 1000px;
+  max-width: 800px; /* Further reduced from 900px to match original width */
   margin: 0 auto;
   min-height: 400px;
-  height: 550px; /* Add fixed height */
+  height: 530px; /* Slightly reduced height to account for header */
   border-radius: 10px;
   overflow: hidden;
   background-color: var(--card-bg);
@@ -13,17 +47,28 @@
   transition: background-color 0.3s;
 }
 
+#game-container {
+  padding-top: 10px; /* Reduced top padding since we now have a header */
+  padding-bottom: 1rem;
+  width: 100%;
+  max-width: 800px; /* Reduced from 920px to match game-layout */
+  margin: 0 auto; /* Center the container */
+}
+
 /* Proximity Column */
 .proximity-column {
   width: 25%;
+  min-width: 80px; /* Ensure minimum width */
   background-color: var(--proximity-column-bg);
   border-right: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
-  padding: 20px 0;
+  justify-content: space-between; /* This spaces out children evenly */
+  padding: 0; /* Remove vertical padding that creates space */
   position: relative;
   transition: background-color 0.3s;
-  height: 100%; /* Ensure full height */
+  height: 100%; /* Take full height */
+  align-items: center; /* Center items horizontally */
 }
 
 /* Game Content */
@@ -69,53 +114,65 @@
   }
 }
 
-body {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  background-color: var(--body-bg);
-  transition: background-color 0.3s ease;
-}
-
-.container {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 $spacing-medium;
-}
-
-.game-wrapper {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 20px 15px;
-  position: relative;
-}
-
-.content-wrapper {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  min-height: 100vh;
-  width: 100%;
-}
-
 /* Responsive adjustments */
 @media screen and (max-width: $breakpoint-md) {
   .game-wrapper {
-    padding: 15px 10px;
+    padding: 8px 10px 15px;
+  }
+  
+  .game-layout {
+    min-height: 380px;
+    height: 480px;
+    display: flex !important;
+    flex-direction: row !important;
+  }
+  
+  .proximity-column {
+    width: 25% !important; /* Keep the same proportions */
+    min-width: 60px !important; /* Ensure minimum width */
+    padding: 0; /* Remove padding that creates space */
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    visibility: visible !important;
+    height: 100% !important;
+    align-items: center !important;
+  }
+  
+  .game-content {
+    padding: 15px;
+    width: 75% !important;
+    flex: 1 !important;
   }
 }
 
 @media screen and (max-width: $breakpoint-sm) {
   .game-wrapper {
-    padding: 10px 5px;
+    padding: 6px 5px 10px;
+  }
+  
+  .game-layout {
+    min-height: 350px;
+    height: 450px;
+    display: flex !important;
+  }
+  
+  .proximity-column {
+    width: 25% !important;
+    min-width: 50px !important;
+    padding: 0; /* Remove padding that creates space */
+    display: flex !important;
+    visibility: visible !important;
+    height: 100% !important;
+  }
+  
+  .game-content {
+    padding: 10px;
+    width: 75% !important;
   }
 }
 
-@media screen and (max-height: 600px) {
+@media (max-height: 600px) {
   .game-wrapper {
     padding-top: 10px;
     padding-bottom: 5px;

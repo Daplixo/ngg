@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta
@@ -80,53 +80,69 @@
       href="assets/icons/icon-512.png"
     />
 
-    <!-- Styles -->
-    <link rel="stylesheet" href="css/styles.css" />
+    <!-- Styles - Updated order for better cascade -->
+    <link rel="stylesheet" href="css/styles.min.css" />
+    <link rel="stylesheet" href="css/modal-fix.css" />
+
+    <!-- Remove the temporary fallback after verifying the compiled CSS works properly -->
+    <!-- <link rel="stylesheet" href="css/styles.css"> -->
   </head>
 
   <body>
-    <!-- Theme Toggle Button - Fixed with inline styles -->
-    <button id="theme-toggle" aria-label="Toggle dark/light mode">
-      <!-- Moon icon (inline SVG) -->
-      <svg
-        id="moon-icon"
-        xmlns="http://www.w3.org/2000/svg"
-        width="16"
-        height="16"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="white"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      >
-        <path d="M21 12.79A9 9 0 1 1 11.21 3 A7 7 0 0 0 21 12.79z"></path>
-      </svg>
+    <!-- Game Header with Level, Attempts and Theme Toggle -->
+    <header class="game-header">
+      <div class="header-left header-item">
+        <div id="level-indicator">Level 1</div>
+      </div>
 
-      <!-- Sun icon (inline SVG) -->
-      <svg
-        id="sun-icon"
-        xmlns="http://www.w3.org/2000/svg"
-        width="16"
-        height="16"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="white"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      >
-        <circle cx="12" cy="12" r="5"></circle>
-        <line x1="12" y1="1" x2="12" y2="3"></line>
-        <line x1="12" y1="21" x2="12" y2="23"></line>
-        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-        <line x1="1" y1="12" x2="3" y2="12"></line>
-        <line x1="21" y1="12" x2="23" y2="12"></line>
-        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-      </svg>
-    </button>
+      <div class="header-center header-item">
+        <div id="attempts">Attempts: 0/3</div>
+      </div>
+
+      <div class="header-right header-item">
+        <button id="theme-toggle" aria-label="Toggle dark/light mode">
+          <!-- Moon icon (inline SVG) -->
+          <svg
+            id="moon-icon"
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 A7 7 0 0 0 21 12.79z"></path>
+          </svg>
+
+          <!-- Sun icon (inline SVG) -->
+          <svg
+            id="sun-icon"
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+        </button>
+      </div>
+    </header>
 
     <!-- Win & Game Over Notifications -->
     <div id="notifications-container">
@@ -134,10 +150,10 @@
       <div id="gameOverNotification"></div>
     </div>
 
-    <!-- Attempts counter - moved outside and above game box -->
-    <div id="attempts-container">
+    <!-- Remove the standalone attempts counter since it's now in the header -->
+    <!-- <div id="attempts-container">
       <p id="attempts"></p>
-    </div>
+    </div> -->
 
     <div id="game-container">
       <!-- Two-column layout for game -->
@@ -151,36 +167,13 @@
             </div>
           </div>
           <div class="proximity-label bottom">Far Away</div>
-          <!-- Updated last guess section with navigation -->
-          <div id="last-guess-container">
-            <button
-              id="prev-guess-btn"
-              class="guess-nav-btn"
-              aria-label="Newer guess"
-              title="Newer guess"
-            >
-              ▲
-            </button>
-            <div id="last-guess-display">
-              <div id="last-guess"></div>
-              <div id="guess-index" style="display: none"></div>
-            </div>
-            <button
-              id="next-guess-btn"
-              class="guess-nav-btn"
-              aria-label="Older guess"
-              title="Older guess"
-            >
-              ▼
-            </button>
-          </div>
+          <!-- Removed the last guess container section entirely -->
         </div>
 
         <!-- Right column with game UI (75%) -->
         <div class="game-content">
           <!-- Game UI -->
           <div id="game-ui">
-            <div id="level-indicator">Level 1</div>
             <h3 id="range-info">Guess the number (1-10)</h3>
 
             <div id="controls">
@@ -316,33 +309,82 @@
     </footer>
 
     <!-- Feedback Modal -->
-    <div id="feedbackModal" class="modal">
-      <div class="modal-content">
-        <span class="close-modal">&times;</span>
-        <h2>Send Feedback</h2>
-        <form
-          id="feedbackForm"
-          action="https://formsubmit.co/aashugfx@gmail.com"
-          method="POST"
-        >
-          <div class="form-group">
-            <label for="name">Name</label>
-            <input type="text" id="name" name="name" required />
-          </div>
-          <div class="form-group">
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" required />
-          </div>
-          <div class="form-group">
-            <label for="message">Message</label>
-            <textarea id="message" name="message" required></textarea>
-          </div>
-          <button type="submit" class="submit-btn">Send Feedback</button>
-        </form>
+    <div id="feedbackModal" class="modal-wrapper">
+      <div class="modal-container">
+        <div class="modal-content">
+          <span class="close-modal">&times;</span>
+          <h2>Send Feedback</h2>
+          <form
+            id="feedbackForm"
+            action="https://formsubmit.co/aashugfx@gmail.com"
+            method="POST"
+          >
+            <!-- Anti-spam honeypot field -->
+            <input type="text" name="_honey" style="display: none" />
+
+            <!-- Disable captcha -->
+            <input type="hidden" name="_captcha" value="false" />
+
+            <!-- Add a subject field for better organization -->
+            <input
+              type="hidden"
+              name="_subject"
+              value="Number Guessing Game Feedback"
+            />
+
+            <!-- Automatically sort submissions by name -->
+            <input type="hidden" name="_template" value="table" />
+
+            <!-- You could add this to clearly identify the source of feedback -->
+            <input type="hidden" name="_source" value="game-website" />
+
+            <div class="form-group">
+              <label for="name">Name</label>
+              <input type="text" id="name" name="name" required />
+            </div>
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input type="email" id="email" name="email" required />
+            </div>
+            <div class="form-group">
+              <label for="message">Message</label>
+              <textarea id="message" name="message" required></textarea>
+            </div>
+            <button type="submit" class="submit-btn">Send Feedback</button>
+          </form>
+        </div>
       </div>
     </div>
 
     <!-- Game Scripts -->
     <script type="module" src="js/main.js"></script>
+    <script src="js/fix-proximity.js"></script>
+
+    <!-- Form submission script - Optimized to avoid unnecessary code execution -->
+    <script>
+      // Only add event listener if we're in a development environment
+      if (
+        window.location.hostname === "localhost" ||
+        window.location.hostname === "127.0.0.1"
+      ) {
+        document
+          .getElementById("feedbackForm")
+          .addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            // Get form data and handle the submission
+            const formData = new FormData(this);
+            const name = formData.get("name");
+            console.log("Form submitted:", Object.fromEntries(formData));
+
+            // Show success message and close modal
+            alert("Thank you for your feedback, " + name + "!");
+            document.getElementById("feedbackModal").style.display = "none";
+
+            // Reset form
+            this.reset();
+          });
+      }
+    </script>
   </body>
 </html>

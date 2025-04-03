@@ -1,0 +1,71 @@
+// Flexbox
+@mixin flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+// Media queries - Updated to use consistent breakpoint variables
+@mixin xs-screen {
+  @media (max-width: $breakpoint-xs) {
+    @content;
+  }
+}
+
+@mixin sm-screen {
+  @media (max-width: $breakpoint-sm) {
+    @content;
+  }
+}
+
+@mixin md-screen {
+  @media (max-width: $breakpoint-md) {
+    @content;
+  }
+}
+
+@mixin lg-screen {
+  @media (max-width: $breakpoint-lg) {
+    @content;
+  }
+}
+
+@mixin xl-screen {
+  @media (min-width: $breakpoint-xl) {
+    @content;
+  }
+}
+
+// For backward compatibility
+@mixin mobile {
+  @media (max-width: $breakpoint-sm) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media (min-width: $breakpoint-sm + 1) and (max-width: $breakpoint-md) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media (min-width: $breakpoint-md + 1) {
+    @content;
+  }
+}
+
+// Button styles
+@mixin button-base {
+  padding: $spacing-small $spacing-medium;
+  border-radius: $border-radius;
+  font-family: $base-font-family;
+  font-size: $base-font-size;
+  cursor: pointer;
+  transition: all $transition-speed ease;
+}

@@ -25,8 +25,26 @@
   gap: 6px; /* Reduced from 8px to 6px */
   max-width: 100%;
   overflow-x: auto;
-  padding: 0.25rem 0; /* Reduced padding from 0.5rem to 0.25rem */
-  min-height: 40px; /* Ensure consistent minimum height */
+  padding-bottom: 4px; /* Add space for scrollbar */
+  scrollbar-width: thin; /* For Firefox */
+  
+  /* Custom scrollbar for webkit browsers */
+  &::-webkit-scrollbar {
+    height: 4px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+  }
+  
+  [data-theme="dark"] &::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
 }
 
 .guess-chip {

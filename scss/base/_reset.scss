@@ -1,0 +1,71 @@
+/* Basic CSS Reset */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-color);
+  min-height: 100vh;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  overflow-y: auto;
+  color: var(--text-color);
+  transition: background-color 0.3s, color 0.3s;
+  padding-bottom: 70px; /* Space for footer */
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin-top: 0;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+p {
+  margin-top: 0;
+}
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+}
+
+input, button, textarea, select {
+  font: inherit;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Fix potential bottom spacing issues */
+#game-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  min-height: calc(100vh - 70px); /* Account for footer */
+  padding: 1rem;
+  margin: 0 auto;
+  overflow: hidden; /* Prevent scrolling */
+}
+
+.game-layout {
+  overflow: hidden; /* Prevent container scrolling */
+}
+
+/* For very small devices or landscape mode */
+@media (max-height: 500px) {
+  #game-container {
+    min-height: calc(100vh - 40px); /* Less space for footer */
+  }
+}

@@ -20,25 +20,51 @@
   margin: -1px;
   overflow: hidden;
   clip: rect(0, 0, 0, 0);
-  border: 0;
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Visually hidden but focusable for keyboard users */
+.sr-only-focusable:not(:focus) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
 }
 
 /* Text alignments */
 .text-center {
-  text-align: center;
+  text-align: center !important;
 }
 
 .text-left {
-  text-align: left;
+  text-align: left !important;
 }
 
 .text-right {
-  text-align: right;
+  text-align: right !important;
 }
 
 /* Display helpers */
 .hidden {
   display: none !important;
+}
+
+.block {
+  display: block !important;
+}
+
+.inline-block {
+  display: inline-block !important;
+}
+
+.flex {
+  display: flex !important;
 }
 
 .invisible {
@@ -96,15 +122,33 @@
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.1);
-  border-radius: 6px;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
 }
 
 [data-theme="dark"] .custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 /* Make game content use custom scrollbar */
 .game-content {
   @extend .custom-scrollbar;
+}
+
+/* Add styling for scrollbar to make it less intrusive */
+.game-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.game-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.game-content::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.15);
+  border-radius: 3px;
+}
+
+[data-theme="dark"] .game-content::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.15);
 }

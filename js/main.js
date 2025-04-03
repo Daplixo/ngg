@@ -7,7 +7,7 @@ import { GameLogic } from './gameLogic.js';
 window.isModalOpen = false;
 
 // Shake animation function - make it global
-window.addShake = function(element) {
+window.addShake = (element) => {
   if (!element) return;
   
   // Add the class to trigger the animation
@@ -25,7 +25,7 @@ window.addShake = function(element) {
 }
 
 // Function to play wrong sound with volume control - make it global
-window.playWrongSound = function(isGameOver = false) {
+window.playWrongSound = (isGameOver = false) => {
     // Use the improved AudioManager method instead of the old implementation
     AudioManager.playBeep(isGameOver);
 };
@@ -133,6 +133,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize guess navigation
     UIManager.initGuessNavigation();
+
+    // Make sure modals are closed on load
+    UIManager.ensureModalsClosed();
 });
 
 // Update UI to match the loaded game state
@@ -376,13 +379,10 @@ function ensureDropdownArrowVisible() {
     setupDropdownMenu();
 }
 
-// Update keyboard visibility based on game state and device
+// Update keyboard visibility to always show keyboard regardless of game state
 function updateKeyboardVisibility() {
-    if (gameState.gameOver || gameState.hasWon) {
-        UIManager.hideCustomKeyboard();
-    } else {
-        UIManager.showCustomKeyboard();
-    }
+    // Always show keyboard, regardless of game state
+    UIManager.showCustomKeyboard();
 }
 
 // Add our sound and animation effects without disrupting existing code
@@ -420,52 +420,47 @@ function addSoundAndAnimationEffects() {
 
 // Initialize feedback modal
 function initFeedbackModal() {
-    // Get modal elements
     const modal = document.getElementById('feedbackModal');
-    const feedbackBtn = document.getElementById('feedbackBtn');
-    const closeModalBtn = document.querySelector('.close-modal');
-    const form = document.getElementById('feedbackForm');
-
-    // Show modal when feedback button is clicked
-    feedbackBtn.addEventListener('click', () => {
-        // Set flag to prevent game input focus
+    const btn = document.getElementById('feedbackBtn');
+    const closeBtn = document.querySelector('.close-modal');
+    
+    if (!modal || !btn) return;
+    
+    // Ensure modal is closed by default
+    modal.classList.remove('active');
+    window.isModalOpen = false;
+    
+    btn.addEventListener('click', () => {
+        modal.classList.add('active');
         window.isModalOpen = true;
-        modal.classList.add('show');
-        
-        // Optional: Focus on the first form field after modal opens
-        setTimeout(() => {
-            const nameInput = document.getElementById('name');
-            if (nameInput) nameInput.focus();
-        }, 100);
     });
-
-    // Hide modal when close button is clicked
-    closeModalBtn.addEventListener('click', () => {
-        modal.classList.remove('show');
-        // Reset flag when modal is closed
-        setTimeout(() => {
+    
+    // Close modal when clicking the close button
+    if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+            modal.classList.remove('active');
             window.isModalOpen = false;
-        }, 300); // Wait for modal animation to complete
-    });
-
-    // Hide modal when clicking outside of it
-    window.addEventListener('click', (event) => {
-        if (event.target === modal) {
-            modal.classList.remove('show');
-            // Reset flag when modal is closed
-            setTimeout(() => {
-                window.isModalOpen = false;
-            }, 300); // Wait for modal animation to complete
+        });
+    }
+    
+    // Close modal when clicking outside the modal content
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.classList.remove('active');
+            window.isModalOpen = false;
         }
     });
     
     // Also handle form submission
-    form.addEventListener('submit', () => {
-        // Reset the flag after form is submitted
-        setTimeout(() => {
-            window.isModalOpen = false;
-        }, 500);
-    });
+    const form = modal.querySelector('form');
+    if (form) {
+        form.addEventListener('submit', () => {
+            // Reset the flag after form is submitted
+            setTimeout(() => {
+                window.isModalOpen = false;
+            }, 500);
+        });
+    }
 }
 
 // Initialize theme - simplified version using DOM attributes
@@ -479,8 +474,8 @@ function initTheme() {
         return;
     }
     
-    // Check if user has previously chosen a theme
-    const savedTheme = localStorage.getItem('theme') || 'light';
+    // Check if user has previously chosen a theme, otherwise use dark as default
+    const savedTheme = localStorage.getItem('theme') || 'dark';
     document.documentElement.setAttribute('data-theme', savedTheme);
     
     // Set initial icon visibility
@@ -550,7 +545,6 @@ function initCustomKeyboard() {
     keyButtons.forEach(button => {
         button.addEventListener('click', (e) => {
             e.preventDefault();
-            
             const keyValue = button.getAttribute('data-key');
             console.log("Key pressed:", keyValue);
             
@@ -577,13 +571,6 @@ function initCustomKeyboard() {
     userGuessInput.addEventListener('click', (e) => {
         e.preventDefault();
         userGuessInput.blur(); // Remove focus to hide any keyboard
-        
-        // Optional: Visual feedback to show the input is active
-        userGuessInput.classList.add('active-input');
-        
-        setTimeout(() => {
-            userGuessInput.classList.remove('active-input');
-        }, 300);
     });
     
     // Also add keyboard support for physical keyboards

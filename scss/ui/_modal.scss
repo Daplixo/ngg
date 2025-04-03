@@ -1,121 +1,147 @@
-/* Modal base styles for all screen sizes */
-.modal {
+/*
+ * Note: This file seems to be a duplicate of components/_modals.scss.
+ * We're defining it here to match the import in main.scss, but consider
+ * removing one of these duplicates in the future and updating main.scss.
+ */
+
+/* Modal wrapper */
+.modal-wrapper {
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
   width: 100%;
   height: 100%;
-  background-color: var(--modal-overlay-bg);
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: var(--modal-overlay-bg);
   z-index: $z-index-modal;
-  box-sizing: border-box;
-  padding: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  pointer-events: none; /* Ensure it doesn't intercept clicks when hidden */
   
-  /* Make sure the modal is hidden when not active */
-  &:not(.show) {
-    display: none;
-  }
-  
-  /* Fix the display property when modal is shown */
-  &.show {
-    display: flex;
+  &.active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto; /* Re-enable pointer events when visible */
   }
 }
 
-.modal-content {
+/* Modal container */
+.modal-container {
   background-color: var(--modal-bg);
   border-radius: $border-radius-large;
+  padding: 24px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  position: relative;
-  box-sizing: border-box;
-  width: 500px;
-  max-width: 90%;
-  padding: 2rem;
-  margin: 0 auto;
-  left: auto;
-  right: auto;
-  transition: background-color 0.3s;
+  transform: translateY(-20px);
+  transition: transform 0.3s ease;
+  
+  .modal-wrapper.active & {
+    transform: translateY(0);
+  }
   
   h2 {
-    font-size: 1.5rem;
-    margin: 0 0 1.5rem 0;
+    color: var(--modal-title);
+    margin-bottom: 20px;
     text-align: center;
-    color: var(--modal-text);
     font-weight: 600;
-    transition: color 0.3s;
-  }
-}
-
-.form-group {
-  margin-bottom: 1.5rem;
-  
-  label {
-    font-size: 1rem;
-    margin-bottom: 0.5rem;
-    display: block;
-    color: var(--form-label);
-    font-weight: 500;
   }
   
-  input,
-  textarea {
-    width: 100%;
-    font-size: 1rem;
-    padding: 0.75rem 1rem;
-    border-radius: $border-radius-medium;
-    border: 1px solid var(--border-color);
-    box-sizing: border-box;
-    transition: border-color 0.2s ease, background-color 0.3s, color 0.3s;
-    background-color: var(--input-bg);
-    color: var(--text-color);
+  p {
+    margin-bottom: 16px;
+    line-height: 1.6;
+  }
+  
+  .form-row {
+    margin-bottom: 16px;
     
-    &:focus {
-      border-color: var(--btn-primary);
-      outline: none;
-      box-shadow: 0 0 0 2px rgba(77, 111, 237, 0.2);
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: var(--form-label);
+    }
+    
+    input, textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: $border-radius-medium;
+      font-size: 1rem;
+      background-color: var(--input-bg);
+      color: var(--text-color);
+      transition: border-color 0.2s ease, background-color 0.3s, color 0.3s;
+      
+      &:focus {
+        border-color: var(--btn-primary);
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(77, 111, 237, 0.2);
+      }
+    }
+    
+    textarea {
+      min-height: 120px;
+      resize: vertical;
     }
   }
   
-  textarea {
-    height: 150px;
-    resize: none;
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 20px;
   }
-}
-
-.submit-btn {
-  width: 100%;
-  min-height: 48px;
-  font-size: 1rem;
-  border-radius: $border-radius-medium;
-  background-color: var(--btn-primary);
-  color: white;
-  font-weight: 600;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
   
-  &:hover {
-    background-color: var(--btn-hover);
+  .btn-cancel, .btn-confirm {
+    min-width: 100px;
   }
 }
 
-.close-modal {
+/* Modal close button */
+.modal-close {
   position: absolute;
-  right: 20px;
-  top: 15px;
-  font-size: 28px;
-  background: transparent;
+  top: 16px;
+  right: 16px;
+  width: 32px;
+  height: 32px;
+  border-radius: $border-radius-circle;
+  background: none;
   border: none;
-  width: 36px;
-  height: 36px;
+  font-size: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
+  color: var(--close-btn);
   cursor: pointer;
+  transition: background-color 0.2s;
+  
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    
+    [data-theme="dark"] & {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+  }
+}
+
+/* Close button styling */
+.close-modal {
+  position: absolute;
+  top: 10px;
+  right: 16px;
+  font-size: 28px;
+  font-weight: bold;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   z-index: 2;
   color: var(--close-btn);
   padding: 0;
@@ -123,85 +149,77 @@
   transition: color 0.2s ease;
   
   &:hover {
-    color: darken(#555, 20%);
+    color: var(--close-btn-hover); /* Use variable instead of hardcoded color */
   }
 }
 
-/* Media query overrides for smaller screens */
+/* Responsive adjustments */
 @media (max-width: $breakpoint-md) {
-  .modal-content {
-    padding: 1.5rem;
-    max-width: 95%;
+  .modal-container {
+    padding: 20px;
+    width: 95%;
+    
+    h2 {
+      font-size: 1.3rem;
+      margin-bottom: 16px;
+    }
+    
+    .form-row {
+      margin-bottom: 12px;
+      
+      input, textarea {
+        padding: 8px 10px;
+        font-size: 0.95rem;
+      }
+    }
+    
+    .modal-actions {
+      margin-top: 16px;
+    }
   }
   
-  .form-group {
-    margin-bottom: 1rem;
+  .modal-close {
+    top: 12px;
+    right: 12px;
+    width: 28px;
+    height: 28px;
+    font-size: 18px;
+  }
+
+  .modal-content {
+    width: 90%;
+    max-width: 500px;
+    padding: 1.5rem;
   }
 
   .form-group input,
   .form-group textarea {
-    padding: 0.6rem 0.8rem;
-    font-size: 0.95rem;
+    font-size: 1rem;
+    padding: 0.75rem;
   }
 
   .form-group textarea {
-    height: 120px;
+    height: 130px;
   }
 
   .submit-btn {
-    min-height: 44px;
-    font-size: 0.95rem;
+    min-height: 46px;
   }
 
   .close-modal {
-    right: 15px;
-    top: 10px;
-    font-size: 24px;
-    width: 32px;
-    height: 32px;
+    right: 16px;
+    top: 12px;
+    font-size: 26px;
   }
 }
 
-/* Very small screens */
-@media (max-width: $breakpoint-xs) {
-  .modal-content {
-    padding: 1.2rem;
-  }
-
-  .modal-content h2 {
-    font-size: 1.3rem;
-    margin-bottom: 1.2rem;
-  }
-
-  .form-group {
-    margin-bottom: 0.8rem;
-  }
-
-  .form-group label {
-    font-size: 0.9rem;
-    margin-bottom: 0.3rem;
-  }
-
-  .form-group input,
-  .form-group textarea {
-    padding: 0.5rem 0.6rem;
-    font-size: 0.9rem;
-  }
-
-  .form-group textarea {
-    height: 100px;
-  }
-
-  .submit-btn {
-    min-height: 40px;
-    font-size: 0.9rem;
-  }
-
-  .close-modal {
-    right: 10px;
-    top: 8px;
-    font-size: 22px;
-    width: 28px;
-    height: 28px;
+@media (max-width: $breakpoint-sm) {
+  .modal-container {
+    padding: 16px;
+    
+    h2 {
+      font-size: 1.2rem;
+      margin-bottom: 14px;
+    }
   }
 }

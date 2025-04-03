@@ -1,26 +1,31 @@
 /* The user feedback area */
 #feedback {
-  min-height: 20px;
-  margin: 0.5rem 0 0;
-  font-size: 0.9375rem;
-  line-height: 1.3;
-  color: var(--feedback-error-color); /* Use variable for consistency */
-  font-weight: 600;
+  height: 20px; /* Fixed height to prevent layout shifting */
+  margin: 0.5rem 0;
+  font-size: 0.95rem;
+  line-height: 1.2;
   text-align: center;
+  font-weight: 500;
+  transition: color 0.2s ease;
+  color: var(--feedback-light);
   width: 100%;
 }
 
 /* Feedback state classes */
 .game-over {
-  color: red !important;
-  font-size: 1.2rem;
-  font-weight: bold;
+  color: var(--feedback-error-color) !important;
+  font-weight: 600 !important;
 }
 
 .win-message {
-  color: green !important;
-  font-size: 1.2rem;
-  font-weight: bold;
+  color: var(--success-color) !important;
+  font-weight: 600 !important;
+}
+
+/* Style for errors */
+.error-text {
+  color: var(--feedback-error-color);
+  font-weight: 500;
 }
 
 /* Dark mode override */
@@ -31,7 +36,14 @@
 /* Mobile adjustments */
 @media (max-width: $breakpoint-md) {
   #feedback {
+    font-size: 0.9rem;
     margin: 0.25rem 0 0;
-    font-size: 0.875rem;
+    height: 18px;
+  }
+}
+
+@media (max-width: $breakpoint-sm) {
+  #feedback {
+    font-size: 0.85rem;
   }
 }

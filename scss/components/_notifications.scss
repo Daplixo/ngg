@@ -17,11 +17,20 @@
 #winNotification, #gameOverNotification {
   display: none;
   padding: 12px 24px;
-  border-radius: $border-radius-medium;
+  border-radius: 8px;
   font-weight: bold;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   pointer-events: auto;
   color: #fff;
+  
+  &.show {
+    display: block;
+    animation: slideDown 0.3s ease-out;
+  }
+  
+  &.hide {
+    animation: fadeOut 0.3s ease-out forwards;
+  }
 }
 
 /* Win notification */
