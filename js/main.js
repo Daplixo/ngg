@@ -2,6 +2,7 @@ import { gameState } from './gameState.js';
 import { AudioManager } from './audioManager.js';
 import { UIManager } from './uiManager.js';
 import { GameLogic } from './gameLogic.js';
+import { UserProfileUI } from './userProfileUI.js';
 
 // Add a global flag to track modal state
 window.isModalOpen = false;
@@ -31,217 +32,228 @@ window.playWrongSound = (isGameOver = false) => {
 };
 
 // Initialize game when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    // Get DOM elements
-    UIManager.elements = {
-        levelIndicator: document.getElementById('level-indicator'),
-        rangeInfo: document.getElementById('range-info'),
-        userGuess: document.getElementById('userGuess'),
-        submitGuessBtn: document.getElementById('submitGuessBtn'),
-        feedback: document.getElementById('feedback'),
-        attempts: document.getElementById('attempts'),
-        continueBtn: document.getElementById('continueBtn'),
-        playAgainBtn: document.getElementById('playAgainBtn'),
-        restartBtn: document.getElementById('restartBtn'),
-        winNotification: document.getElementById('winNotification'),
-        gameOverNotification: document.getElementById('gameOverNotification'),
-        customKeyboard: document.getElementById("custom-keyboard"),
-        lastGuess: document.getElementById("last-guess"),
-        lastGuessIndex: document.getElementById("guess-index"),
-        prevGuessBtn: document.getElementById("prev-guess-btn"),
-        nextGuessBtn: document.getElementById("next-guess-btn"),
-        // Remove the restoreBtn reference since it's no longer in the HTML
-        // restoreBtn: document.getElementById('restoreBtn')
-    };
-    
-    // Try to load saved game state first, if that fails, initialize a new game
-    const savedStateLoaded = gameState.loadState();
-    
-    // Initialize audio system early
-    AudioManager.init();
-    AudioManager.preloadSounds();
-    
-    if (!savedStateLoaded) {
-        // No saved state, initialize a new game
-        gameState.reset(true);
-    } else {
-        // Saved state loaded, update UI to match
-        updateUIFromSavedState();
-    }
-    
-    // Add sound and animation effects
-    addSoundAndAnimationEffects();
+document.addEventListener('DOMContentLoaded', async () => {
+    // Initialize user profile first
+    const profileUI = new UserProfileUI();
+    await profileUI.init();
 
-    // Initialize theme
-    initTheme();
-
-    // Focus the input field immediately
-    UIManager.elements.userGuess.focus();
-    
-    // Set up event listeners
-    setupEventListeners();
-    
-    // Update the Play Again button text immediately based on game state
-    updatePlayAgainButtonText();
-
-    // Initialize feedback modal
-    initFeedbackModal();
-
-    // Initialize custom keyboard for mobile
-    initCustomKeyboard();
-
-    // Update UI elements including showing attempts
-    UIManager.updateAttempts();
-    
-    // Set visibility of the custom keyboard based on game state and device
-    updateKeyboardVisibility();
-    
-    // Show a notification about the restored game if state was loaded
-    if (savedStateLoaded) {
-        if (gameState.gameOver) {
-            UIManager.showGameOverNotification(`Game restored. The number was ${gameState.randomNumber}`);
-            UIManager.showPlayAgainButton();
-        } else if (gameState.hasWon) {
-            if (gameState.waitingForNextLevel) {
-                UIManager.showWinNotification(`Game restored. You completed Level ${gameState.level}!`);
-                UIManager.elements.continueBtn.style.display = "inline-block";
-            } else if (gameState.finalWin) {
-                UIManager.showWinNotification(`Game restored. You completed all levels!`);
-                UIManager.elements.continueBtn.style.display = "inline-block";
-            }
-        } else {
-            // Show a temporary notification about the restored game
-            const tempNotification = document.createElement('div');
-            tempNotification.textContent = "Game restored!"; // Updated to simpler message
-            tempNotification.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#4d6fed;color:white;padding:10px 20px;border-radius:5px;z-index:1000;';
-            document.body.appendChild(tempNotification);
-            setTimeout(() => {
-                tempNotification.style.opacity = '0';
-                tempNotification.style.transition = 'opacity 0.5s';
-                setTimeout(() => tempNotification.remove(), 500);
-            }, 3000);
-        }
-    }
-
-    // Update restore button visibility at startup
-    UIManager.updateRestoreButtonVisibility();
-    
-    // Add event listeners to resume audio context on interaction
-    document.addEventListener('click', () => AudioManager.resumeAudio());
-    document.addEventListener('touchstart', () => AudioManager.resumeAudio());
-    document.addEventListener('keydown', () => AudioManager.resumeAudio());
-
-    // Initialize guess navigation
-    UIManager.initGuessNavigation();
-
-    // Make sure modals are closed on load
-    UIManager.ensureModalsClosed();
-
-    // Debug CSS loading status
-    console.log("==== CSS/SCSS LOADING DEBUG ====");
-    const allStylesheets = document.styleSheets;
-    console.log("Total stylesheets:", allStylesheets.length);
-    
-    // Check if hamburger CSS is loaded
-    let hamburgerStyleFound = false;
-    let hamburgerRules = [];
-    
-    try {
-        for (let i = 0; i < allStylesheets.length; i++) {
-            try {
-                const rules = allStylesheets[i].cssRules;
-                for (let j = 0; j < rules.length; j++) {
-                    if (rules[j].selectorText && 
-                        (rules[j].selectorText.includes('.hamburger-menu') ||
-                         rules[j].selectorText.includes('.hamburger-line'))) {
-                        hamburgerStyleFound = true;
-                        hamburgerRules.push(rules[j].cssText);
-                    }
-                }
-            } catch (e) {
-                console.log("Couldn't access rules for stylesheet", i, "due to CORS");
-            }
-        }
-    } catch (e) {
-        console.error("Error inspecting stylesheets:", e);
-    }
-    
-    console.log("Hamburger menu CSS found:", hamburgerStyleFound);
-    if (hamburgerRules.length > 0) {
-        console.log("Hamburger CSS rules found:", hamburgerRules);
-    }
-    
-    // Debug DOM structure
-    console.log("==== DOM STRUCTURE DEBUG ====");
-    const hamburgerBtn = document.getElementById('menu-toggle');
-    console.log("Hamburger button:", hamburgerBtn);
-    
-    if (hamburgerBtn) {
-        console.log("Hamburger button styles:", window.getComputedStyle(hamburgerBtn));
-        const lines = hamburgerBtn.querySelectorAll('.hamburger-line');
-        console.log("Hamburger lines found:", lines.length);
+    // Only proceed with game initialization after profile setup
+    if (profileUI.userProfile.hasProfile()) {
+        // Initialize user profile
+        const profileUI = new UserProfileUI();
+        profileUI.init();
         
-        lines.forEach((line, i) => {
-            console.log(`Line ${i+1} styles:`, window.getComputedStyle(line));
-        });
-    }
+        // Get DOM elements
+        UIManager.elements = {
+            levelIndicator: document.getElementById('level-indicator'),
+            rangeInfo: document.getElementById('range-info'),
+            userGuess: document.getElementById('userGuess'),
+            submitGuessBtn: document.getElementById('submitGuessBtn'),
+            feedback: document.getElementById('feedback'),
+            attempts: document.getElementById('attempts'),
+            continueBtn: document.getElementById('continueBtn'),
+            playAgainBtn: document.getElementById('playAgainBtn'),
+            restartBtn: document.getElementById('restartBtn'),
+            winNotification: document.getElementById('winNotification'),
+            gameOverNotification: document.getElementById('gameOverNotification'),
+            customKeyboard: document.getElementById("custom-keyboard"),
+            lastGuess: document.getElementById("last-guess"),
+            lastGuessIndex: document.getElementById("guess-index"),
+            prevGuessBtn: document.getElementById("prev-guess-btn"),
+            nextGuessBtn: document.getElementById("next-guess-btn"),
+            // Remove the restoreBtn reference since it's no longer in the HTML
+            // restoreBtn: document.getElementById('restoreBtn')
+        };
+        
+        // Try to load saved game state first, if that fails, initialize a new game
+        const savedStateLoaded = gameState.loadState();
+        
+        // Initialize audio system early
+        AudioManager.init();
+        AudioManager.preloadSounds();
+        
+        if (!savedStateLoaded) {
+            // No saved state, initialize a new game
+            gameState.reset(true);
+        } else {
+            // Saved state loaded, update UI to match
+            updateUIFromSavedState();
+        }
+        
+        // Add sound and animation effects
+        addSoundAndAnimationEffects();
     
-    // Initialize the side menu
-    setupSideMenu();
+        // Initialize theme
+        initTheme();
     
-    // Call this function after DOM is loaded
-    fixThemeIcons();
-
-    // Setup event listeners for feedback buttons (both in footer and side menu)
-    const feedbackBtn = document.getElementById('feedbackBtn');
-    const sideMenuFeedbackBtn = document.getElementById('side-menu-feedback-btn');
-    const feedbackModal = document.getElementById('feedbackModal');
+        // Focus the input field immediately
+        UIManager.elements.userGuess.focus();
+        
+        // Set up event listeners
+        setupEventListeners();
+        
+        // Update the Play Again button text immediately based on game state
+        updatePlayAgainButtonText();
     
-    if (feedbackBtn) {
-        feedbackBtn.addEventListener('click', function() {
-            console.log("Footer feedback button clicked");
+        // Initialize feedback modal
+        initFeedbackModal();
+    
+        // Initialize custom keyboard for mobile
+        initCustomKeyboard();
+    
+        // Update UI elements including showing attempts
+        UIManager.updateAttempts();
+        
+        // Set visibility of the custom keyboard based on game state and device
+        updateKeyboardVisibility();
+        
+        // Show a notification about the restored game if state was loaded
+        if (savedStateLoaded) {
+            if (gameState.gameOver) {
+                UIManager.showGameOverNotification(`Game restored. The number was ${gameState.randomNumber}`);
+                UIManager.showPlayAgainButton();
+            } else if (gameState.hasWon) {
+                if (gameState.waitingForNextLevel) {
+                    UIManager.showWinNotification(`Game restored. You completed Level ${gameState.level}!`);
+                    UIManager.elements.continueBtn.style.display = "inline-block";
+                } else if (gameState.finalWin) {
+                    UIManager.showWinNotification(`Game restored. You completed all levels!`);
+                    UIManager.elements.continueBtn.style.display = "inline-block";
+                }
+            } else {
+                // Show a temporary notification about the restored game
+                const tempNotification = document.createElement('div');
+                tempNotification.textContent = "Game restored!"; // Updated to simpler message
+                tempNotification.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#4d6fed;color:white;padding:10px 20px;border-radius:5px;z-index:1000;';
+                document.body.appendChild(tempNotification);
+                setTimeout(() => {
+                    tempNotification.style.opacity = '0';
+                    tempNotification.style.transition = 'opacity 0.5s';
+                    setTimeout(() => tempNotification.remove(), 500);
+                }, 3000);
+            }
+        }
+    
+        // Update restore button visibility at startup
+        UIManager.updateRestoreButtonVisibility();
+        
+        // Add event listeners to resume audio context on interaction
+        document.addEventListener('click', () => AudioManager.resumeAudio());
+        document.addEventListener('touchstart', () => AudioManager.resumeAudio());
+        document.addEventListener('keydown', () => AudioManager.resumeAudio());
+    
+        // Initialize guess navigation
+        UIManager.initGuessNavigation();
+    
+        // Make sure modals are closed on load
+        UIManager.ensureModalsClosed();
+    
+        // Debug CSS loading status
+        console.log("==== CSS/SCSS LOADING DEBUG ====");
+        const allStylesheets = document.styleSheets;
+        console.log("Total stylesheets:", allStylesheets.length);
+        
+        // Check if hamburger CSS is loaded
+        let hamburgerStyleFound = false;
+        let hamburgerRules = [];
+        
+        try {
+            for (let i = 0; i < allStylesheets.length; i++) {
+                try {
+                    const rules = allStylesheets[i].cssRules;
+                    for (let j = 0; j < rules.length; j++) {
+                        if (rules[j].selectorText && 
+                            (rules[j].selectorText.includes('.hamburger-menu') ||
+                             rules[j].selectorText.includes('.hamburger-line'))) {
+                            hamburgerStyleFound = true;
+                            hamburgerRules.push(rules[j].cssText);
+                        }
+                    }
+                } catch (e) {
+                    console.log("Couldn't access rules for stylesheet", i, "due to CORS");
+                }
+            }
+        } catch (e) {
+            console.error("Error inspecting stylesheets:", e);
+        }
+        
+        console.log("Hamburger menu CSS found:", hamburgerStyleFound);
+        if (hamburgerRules.length > 0) {
+            console.log("Hamburger CSS rules found:", hamburgerRules);
+        }
+        
+        // Debug DOM structure
+        console.log("==== DOM STRUCTURE DEBUG ====");
+        const hamburgerBtn = document.getElementById('menu-toggle');
+        console.log("Hamburger button:", hamburgerBtn);
+        
+        if (hamburgerBtn) {
+            console.log("Hamburger button styles:", window.getComputedStyle(hamburgerBtn));
+            const lines = hamburgerBtn.querySelectorAll('.hamburger-line');
+            console.log("Hamburger lines found:", lines.length);
+            
+            lines.forEach((line, i) => {
+                console.log(`Line ${i+1} styles:`, window.getComputedStyle(line));
+            });
+        }
+        
+        // Initialize the side menu
+        setupSideMenu();
+        
+        // Call this function after DOM is loaded
+        fixThemeIcons();
+    
+        // Setup event listeners for feedback buttons (both in footer and side menu)
+        const feedbackBtn = document.getElementById('feedbackBtn');
+        const sideMenuFeedbackBtn = document.getElementById('side-menu-feedback-btn');
+        const feedbackModal = document.getElementById('feedbackModal');
+        
+        if (feedbackBtn) {
+            feedbackBtn.addEventListener('click', function() {
+                console.log("Footer feedback button clicked");
+                if (feedbackModal) {
+                    // Use the modal's active class approach
+                    feedbackModal.classList.add('active');
+                    window.isModalOpen = true;
+                    console.log("Modal should be open:", window.isModalOpen);
+                }
+            });
+        }
+        
+        // Ensure side menu feedback button works
+        if (sideMenuFeedbackBtn) {
+            console.log("Side menu feedback button found:", sideMenuFeedbackBtn);
+            
+            // Remove any existing event listeners
+            sideMenuFeedbackBtn.removeEventListener('click', handleSideMenuFeedback);
+            
+            // Add a new event listener with a named function for easier debugging
+            sideMenuFeedbackBtn.addEventListener('click', handleSideMenuFeedback);
+        }
+    
+        // Separate function for the side menu feedback handler
+        function handleSideMenuFeedback() {
+            console.log("Side menu feedback button clicked");
+            
+            // Close the side menu
+            const sideMenu = document.querySelector('.side-menu');
+            const sideMenuOverlay = document.querySelector('.side-menu-overlay');
+            const menuToggle = document.getElementById('menu-toggle');
+            
+            if (sideMenu) sideMenu.classList.remove('active');
+            if (sideMenuOverlay) sideMenuOverlay.classList.remove('active');
+            if (menuToggle) menuToggle.classList.remove('active');
+            document.body.classList.remove('menu-open');
+            
+            // Open feedback modal directly
             if (feedbackModal) {
-                // Use the modal's active class approach
+                console.log("Opening feedback modal");
                 feedbackModal.classList.add('active');
                 window.isModalOpen = true;
                 console.log("Modal should be open:", window.isModalOpen);
+            } else {
+                console.error("Feedback modal not found!");
             }
-        });
-    }
-    
-    // Ensure side menu feedback button works
-    if (sideMenuFeedbackBtn) {
-        console.log("Side menu feedback button found:", sideMenuFeedbackBtn);
-        
-        // Remove any existing event listeners
-        sideMenuFeedbackBtn.removeEventListener('click', handleSideMenuFeedback);
-        
-        // Add a new event listener with a named function for easier debugging
-        sideMenuFeedbackBtn.addEventListener('click', handleSideMenuFeedback);
-    }
-
-    // Separate function for the side menu feedback handler
-    function handleSideMenuFeedback() {
-        console.log("Side menu feedback button clicked");
-        
-        // Close the side menu
-        const sideMenu = document.querySelector('.side-menu');
-        const sideMenuOverlay = document.querySelector('.side-menu-overlay');
-        const menuToggle = document.getElementById('menu-toggle');
-        
-        if (sideMenu) sideMenu.classList.remove('active');
-        if (sideMenuOverlay) sideMenuOverlay.classList.remove('active');
-        if (menuToggle) menuToggle.classList.remove('active');
-        document.body.classList.remove('menu-open');
-        
-        // Open feedback modal directly
-        if (feedbackModal) {
-            console.log("Opening feedback modal");
-            feedbackModal.classList.add('active');
-            window.isModalOpen = true;
-            console.log("Modal should be open:", window.isModalOpen);
-        } else {
-            console.error("Feedback modal not found!");
         }
     }
 });

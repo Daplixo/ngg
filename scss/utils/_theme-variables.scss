@@ -73,9 +73,24 @@
   
   /* Modal colors */
   --modal-overlay-bg: rgba(0, 0, 0, 0.5);
+  --modal-z-index: 100000;
+  --modal-content-z-index: 100001;
+  --form-z-index: 100002;
+  --form-input-z-index: 100003;
+
+  /* Profile specific z-index */
+  --profile-section-z-index: 1;
+  --profile-header-z-index: 2;
 
   /* Header background color */
   --header-bg: #f5f5f5;
+
+  /* Profile specific colors */
+  --profile-border: var(--border-color);
+  --profile-stat-bg: var(--proximity-column-bg);
+  --profile-picture-border: var(--btn-primary);
+  --profile-text: var(--text-color);
+  --profile-subtext: rgba(var(--text-color-rgb), 0.8);
 }
 
 [data-theme="dark"] {
@@ -116,8 +131,18 @@
   --key-btn-hover: #444444;
   /* Keep key-clear and key-enter the same as light theme */
 
+  /* Dark theme modal overlay */
+  --modal-overlay-bg: rgba(0, 0, 0, 0.7);
+
   /* Header background color */
   --header-bg: #1e1e1e;
+
+  /* Profile dark mode colors */
+  --profile-border: var(--border-color);
+  --profile-stat-bg: var(--card-bg);
+  --profile-picture-border: var(--btn-primary);
+  --profile-text: var(--text-color);
+  --profile-subtext: rgba(var(--text-color-rgb), 0.7);
 }
 
 /* Fix for background not changing properly in dark mode */
