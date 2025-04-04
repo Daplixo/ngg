@@ -1,0 +1,75 @@
+/* Server Sync Styles */
+
+.server-sync-option {
+    margin: 1rem 0;
+    padding: 0.5rem;
+    border-radius: 8px;
+    background-color: rgba(var(--primary-rgb), 0.1);
+}
+
+.server-sync-option label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.sync-fields {
+    padding: 0.5rem 0;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.server-sync-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    padding: 0.5rem;
+    width: 100%;
+    border: none;
+    border-radius: 8px;
+    background-color: var(--primary-color);
+    color: white;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.server-sync-btn:hover {
+    background-color: var(--primary-dark);
+}
+
+.server-account-buttons {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.server-account-buttons button {
+    flex: 1;
+    font-size: 0.9rem;
+}
+
+/* Login/Register status indicator */
+.sync-status {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+.sync-status.online {
+    background-color: #4CAF50;
+}
+
+.sync-status.offline {
+    background-color: #9e9e9e;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}

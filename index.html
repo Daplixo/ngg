@@ -83,6 +83,7 @@
     <!-- Styles - Updated order for better cascade -->
     <link rel="stylesheet" href="css/styles.min.css" />
     <link rel="stylesheet" href="css/modal-fix.css" />
+    <link rel="stylesheet" href="css/server-sync.css" />
 
     <!-- Remove the temporary fallback after verifying the compiled CSS works properly -->
     <!-- <link rel="stylesheet" href="css/styles.css"> -->
@@ -115,58 +116,130 @@
 
       <!-- Side menu content -->
       <div class="side-menu-content">
-        <!-- Theme Toggle - Updated structure -->
-        <div class="side-menu-item">
-          <button
-            id="theme-toggle"
-            class="side-menu-button"
-            aria-label="Toggle dark/light mode"
-          >
-            <div class="icon-container">
-              <!-- Moon icon (inline SVG) -->
-              <svg
-                id="moon-icon"
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path
-                  d="M21 12.79A9 9 0 1 1 11.21 3 A7 7 0 0 0 21 12.79z"
-                ></path>
-              </svg>
+        <!-- Theme Toggle button has been moved to settings dropdown -->
 
-              <!-- Sun icon (inline SVG) -->
-              <svg
-                id="sun-icon"
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <circle cx="12" cy="12" r="5"></circle>
-                <line x1="12" y1="1" x2="12" y2="3"></line>
-                <line x1="12" y1="21" x2="12" y2="23"></line>
-                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                <line x1="1" y1="12" x2="3" y2="12"></line>
-                <line x1="21" y1="12" x2="23" y2="12"></line>
-                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-              </svg>
-            </div>
-            <span>Theme</span>
+        <!-- Settings Dropdown Button -->
+        <div class="side-menu-item settings-container">
+          <button
+            id="settings-button"
+            class="side-menu-button settings-toggle"
+            aria-label="Game settings"
+            aria-expanded="false"
+            aria-controls="settings-dropdown"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="12" cy="12" r="3"></circle>
+              <path
+                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"
+              ></path>
+            </svg>
+            <span>Settings</span>
+            <svg
+              class="dropdown-chevron"
+              xmlns="http://www.w3.org/2000/svg"
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
           </button>
+          <div id="settings-dropdown" class="settings-dropdown">
+            <!-- Theme Toggle Option -->
+            <div
+              class="settings-option"
+              id="theme-toggle"
+              onclick="window.toggleTheme(); return false;"
+            >
+              <div class="theme-option-content">
+                <div class="icon-container">
+                  <!-- Moon icon (inline SVG) -->
+                  <svg
+                    id="moon-icon"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      d="M21 12.79A9 9 0 1 1 11.21 3 A7 7 0 0 0 21 12.79z"
+                    ></path>
+                  </svg>
+
+                  <!-- Sun icon (inline SVG) -->
+                  <svg
+                    id="sun-icon"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                  </svg>
+                </div>
+                <span>Theme</span>
+              </div>
+            </div>
+
+            <!-- Delete Account Button -->
+            <div class="settings-option" id="delete-account-btn">
+              <div class="theme-option-content">
+                <div class="icon-container">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M3 6h18"></path>
+                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                    <line x1="10" y1="11" x2="10" y2="17"></line>
+                    <line x1="14" y1="11" x2="14" y2="17"></line>
+                  </svg>
+                </div>
+                <span>Delete Account</span>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- Added Feedback Button -->
@@ -503,6 +576,13 @@
     <script type="module" src="js/main.js"></script>
     <script src="js/fix-proximity.js"></script>
     <script src="js/side-menu.js"></script>
+    <script src="js/profile.js"></script>
+    <!-- Direct menu fix script (non-module for immediate execution) -->
+    <script src="js/menu-fix.js"></script>
+    <!-- Auto-fix for MongoDB connectivity issues -->
+    <script type="module" src="js/autofix.js"></script>
+    <!-- Debug helper for MongoDB connectivity issues -->
+    <script type="module" src="js/debug.js"></script>
 
     <!-- Form submission script - Optimized to avoid unnecessary code execution -->
     <script>
@@ -675,6 +755,43 @@
         "--hamburger-color:",
         rootStyle.getPropertyValue("--hamburger-color")
       );
+    </script>
+
+    <!-- Emergency Menu Toggle Fix -->
+    <script>
+      // Direct menu toggle script - guaranteed to fix menu button
+      document.addEventListener("DOMContentLoaded", function () {
+        // Apply direct event handling to menu toggle
+        const menuToggle = document.getElementById("menu-toggle");
+        const sideMenu = document.querySelector(".side-menu");
+        const sideMenuOverlay = document.querySelector(".side-menu-overlay");
+
+        if (menuToggle && sideMenu && sideMenuOverlay) {
+          console.log("Adding last-resort menu toggle handler");
+
+          // Add direct onclick handler
+          menuToggle.onclick = function (e) {
+            e.preventDefault();
+            console.log("EMERGENCY: Menu toggle button clicked");
+
+            // Toggle side menu and overlay
+            if (sideMenu.classList.contains("active")) {
+              sideMenu.classList.remove("active");
+              sideMenuOverlay.classList.remove("active");
+              menuToggle.classList.remove("active");
+              document.body.classList.remove("menu-open");
+            } else {
+              sideMenu.classList.add("active");
+              sideMenuOverlay.classList.add("active");
+              menuToggle.classList.add("active");
+              document.body.classList.add("menu-open");
+            }
+          };
+
+          // Make sure the menu button is properly styled
+          menuToggle.style.cursor = "pointer";
+        }
+      });
     </script>
   </body>
 </html>

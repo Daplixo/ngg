@@ -3,6 +3,7 @@ import { AudioManager } from './audioManager.js';
 import { UIManager } from './uiManager.js';
 import { GameLogic } from './gameLogic.js';
 import { UserProfileUI } from './userProfileUI.js';
+import { initKeyboard } from './keyboard.js';
 
 // Add a global flag to track modal state
 window.isModalOpen = false;
@@ -32,236 +33,134 @@ window.playWrongSound = (isGameOver = false) => {
 };
 
 // Initialize game when DOM is loaded
-document.addEventListener('DOMContentLoaded', async () => {
-    // Initialize user profile first
-    const profileUI = new UserProfileUI();
-    await profileUI.init();
+document.addEventListener('DOMContentLoaded', async function() {
+    console.log('DOM fully loaded');
 
-    // Only proceed with game initialization after profile setup
-    if (profileUI.userProfile.hasProfile()) {
-        // Initialize user profile
-        const profileUI = new UserProfileUI();
-        profileUI.init();
+    // CRITICAL FIX: Initialize game first, then try profile
+    try {
+        // Initialize the game
+        initializeGame();
         
-        // Get DOM elements
-        UIManager.elements = {
-            levelIndicator: document.getElementById('level-indicator'),
-            rangeInfo: document.getElementById('range-info'),
-            userGuess: document.getElementById('userGuess'),
-            submitGuessBtn: document.getElementById('submitGuessBtn'),
-            feedback: document.getElementById('feedback'),
-            attempts: document.getElementById('attempts'),
-            continueBtn: document.getElementById('continueBtn'),
-            playAgainBtn: document.getElementById('playAgainBtn'),
-            restartBtn: document.getElementById('restartBtn'),
-            winNotification: document.getElementById('winNotification'),
-            gameOverNotification: document.getElementById('gameOverNotification'),
-            customKeyboard: document.getElementById("custom-keyboard"),
-            lastGuess: document.getElementById("last-guess"),
-            lastGuessIndex: document.getElementById("guess-index"),
-            prevGuessBtn: document.getElementById("prev-guess-btn"),
-            nextGuessBtn: document.getElementById("next-guess-btn"),
-            // Remove the restoreBtn reference since it's no longer in the HTML
-            // restoreBtn: document.getElementById('restoreBtn')
-        };
-        
-        // Try to load saved game state first, if that fails, initialize a new game
-        const savedStateLoaded = gameState.loadState();
-        
-        // Initialize audio system early
-        AudioManager.init();
-        AudioManager.preloadSounds();
-        
-        if (!savedStateLoaded) {
-            // No saved state, initialize a new game
-            gameState.reset(true);
-        } else {
-            // Saved state loaded, update UI to match
-            updateUIFromSavedState();
-        }
-        
-        // Add sound and animation effects
-        addSoundAndAnimationEffects();
-    
-        // Initialize theme
-        initTheme();
-    
-        // Focus the input field immediately
-        UIManager.elements.userGuess.focus();
-        
-        // Set up event listeners
-        setupEventListeners();
-        
-        // Update the Play Again button text immediately based on game state
-        updatePlayAgainButtonText();
-    
-        // Initialize feedback modal
-        initFeedbackModal();
-    
-        // Initialize custom keyboard for mobile
-        initCustomKeyboard();
-    
-        // Update UI elements including showing attempts
-        UIManager.updateAttempts();
-        
-        // Set visibility of the custom keyboard based on game state and device
-        updateKeyboardVisibility();
-        
-        // Show a notification about the restored game if state was loaded
-        if (savedStateLoaded) {
-            if (gameState.gameOver) {
-                UIManager.showGameOverNotification(`Game restored. The number was ${gameState.randomNumber}`);
-                UIManager.showPlayAgainButton();
-            } else if (gameState.hasWon) {
-                if (gameState.waitingForNextLevel) {
-                    UIManager.showWinNotification(`Game restored. You completed Level ${gameState.level}!`);
-                    UIManager.elements.continueBtn.style.display = "inline-block";
-                } else if (gameState.finalWin) {
-                    UIManager.showWinNotification(`Game restored. You completed all levels!`);
-                    UIManager.elements.continueBtn.style.display = "inline-block";
-                }
-            } else {
-                // Show a temporary notification about the restored game
-                const tempNotification = document.createElement('div');
-                tempNotification.textContent = "Game restored!"; // Updated to simpler message
-                tempNotification.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#4d6fed;color:white;padding:10px 20px;border-radius:5px;z-index:1000;';
-                document.body.appendChild(tempNotification);
-                setTimeout(() => {
-                    tempNotification.style.opacity = '0';
-                    tempNotification.style.transition = 'opacity 0.5s';
-                    setTimeout(() => tempNotification.remove(), 500);
-                }, 3000);
+        // Wait a moment before initializing profile to avoid blocking
+        setTimeout(async () => {
+            try {
+                const profileUI = new UserProfileUI();
+                await profileUI.init();
+                console.log("Profile UI initialized successfully");
+            } catch (error) {
+                console.error("Failed to initialize profile UI:", error);
             }
-        }
-    
-        // Update restore button visibility at startup
-        UIManager.updateRestoreButtonVisibility();
-        
-        // Add event listeners to resume audio context on interaction
-        document.addEventListener('click', () => AudioManager.resumeAudio());
-        document.addEventListener('touchstart', () => AudioManager.resumeAudio());
-        document.addEventListener('keydown', () => AudioManager.resumeAudio());
-    
-        // Initialize guess navigation
-        UIManager.initGuessNavigation();
-    
-        // Make sure modals are closed on load
-        UIManager.ensureModalsClosed();
-    
-        // Debug CSS loading status
-        console.log("==== CSS/SCSS LOADING DEBUG ====");
-        const allStylesheets = document.styleSheets;
-        console.log("Total stylesheets:", allStylesheets.length);
-        
-        // Check if hamburger CSS is loaded
-        let hamburgerStyleFound = false;
-        let hamburgerRules = [];
-        
+        }, 500);
+    } catch (e) {
+        console.error("Critical initialization error:", e);
+        // Last resort emergency game init
         try {
-            for (let i = 0; i < allStylesheets.length; i++) {
-                try {
-                    const rules = allStylesheets[i].cssRules;
-                    for (let j = 0; j < rules.length; j++) {
-                        if (rules[j].selectorText && 
-                            (rules[j].selectorText.includes('.hamburger-menu') ||
-                             rules[j].selectorText.includes('.hamburger-line'))) {
-                            hamburgerStyleFound = true;
-                            hamburgerRules.push(rules[j].cssText);
-                        }
-                    }
-                } catch (e) {
-                    console.log("Couldn't access rules for stylesheet", i, "due to CORS");
-                }
-            }
-        } catch (e) {
-            console.error("Error inspecting stylesheets:", e);
-        }
-        
-        console.log("Hamburger menu CSS found:", hamburgerStyleFound);
-        if (hamburgerRules.length > 0) {
-            console.log("Hamburger CSS rules found:", hamburgerRules);
-        }
-        
-        // Debug DOM structure
-        console.log("==== DOM STRUCTURE DEBUG ====");
-        const hamburgerBtn = document.getElementById('menu-toggle');
-        console.log("Hamburger button:", hamburgerBtn);
-        
-        if (hamburgerBtn) {
-            console.log("Hamburger button styles:", window.getComputedStyle(hamburgerBtn));
-            const lines = hamburgerBtn.querySelectorAll('.hamburger-line');
-            console.log("Hamburger lines found:", lines.length);
-            
-            lines.forEach((line, i) => {
-                console.log(`Line ${i+1} styles:`, window.getComputedStyle(line));
-            });
-        }
-        
-        // Initialize the side menu
-        setupSideMenu();
-        
-        // Call this function after DOM is loaded
-        fixThemeIcons();
-    
-        // Setup event listeners for feedback buttons (both in footer and side menu)
-        const feedbackBtn = document.getElementById('feedbackBtn');
-        const sideMenuFeedbackBtn = document.getElementById('side-menu-feedback-btn');
-        const feedbackModal = document.getElementById('feedbackModal');
-        
-        if (feedbackBtn) {
-            feedbackBtn.addEventListener('click', function() {
-                console.log("Footer feedback button clicked");
-                if (feedbackModal) {
-                    // Use the modal's active class approach
-                    feedbackModal.classList.add('active');
-                    window.isModalOpen = true;
-                    console.log("Modal should be open:", window.isModalOpen);
-                }
-            });
-        }
-        
-        // Ensure side menu feedback button works
-        if (sideMenuFeedbackBtn) {
-            console.log("Side menu feedback button found:", sideMenuFeedbackBtn);
-            
-            // Remove any existing event listeners
-            sideMenuFeedbackBtn.removeEventListener('click', handleSideMenuFeedback);
-            
-            // Add a new event listener with a named function for easier debugging
-            sideMenuFeedbackBtn.addEventListener('click', handleSideMenuFeedback);
-        }
-    
-        // Separate function for the side menu feedback handler
-        function handleSideMenuFeedback() {
-            console.log("Side menu feedback button clicked");
-            
-            // Close the side menu
-            const sideMenu = document.querySelector('.side-menu');
-            const sideMenuOverlay = document.querySelector('.side-menu-overlay');
-            const menuToggle = document.getElementById('menu-toggle');
-            
-            if (sideMenu) sideMenu.classList.remove('active');
-            if (sideMenuOverlay) sideMenuOverlay.classList.remove('active');
-            if (menuToggle) menuToggle.classList.remove('active');
-            document.body.classList.remove('menu-open');
-            
-            // Open feedback modal directly
-            if (feedbackModal) {
-                console.log("Opening feedback modal");
-                feedbackModal.classList.add('active');
-                window.isModalOpen = true;
-                console.log("Modal should be open:", window.isModalOpen);
-            } else {
-                console.error("Feedback modal not found!");
-            }
+            GameLogic.initGame();
+        } catch (innerError) {
+            console.error("Emergency initialization also failed:", innerError);
         }
     }
+    
+    // Handle the delete account button
+    setupDeleteAccount();
+    
+    // Initialize theme toggle
+    fixThemeIcons();
+    
+    // Set up theme toggle function globally
+    window.toggleTheme = function() {
+        const html = document.documentElement;
+        const currentTheme = html.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        
+        html.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        
+        // Update theme icons
+        fixThemeIcons();
+    };
+    
+    // Set up side menu
+    setupSideMenu();
+    
+    // Initialize feedback modal
+    initFeedbackModal();
 });
 
-// Update UI to match the loaded game state
+// Handle delete account
+function setupDeleteAccount() {
+    const deleteAccountBtn = document.getElementById('delete-account-btn');
+    if (deleteAccountBtn) {
+        deleteAccountBtn.addEventListener('click', async function() {
+            if (confirm('Are you sure you want to delete your account? This cannot be undone.')) {
+                try {
+                    const profileUI = new UserProfileUI();
+                    const profile = profileUI.userProfile.getProfile();
+                    
+                    // Delete from server if connected
+                    if (profile && profile.syncedWithServer) {
+                        try {
+                            await profileUI.api.deleteAccount();
+                        } catch (error) {
+                            console.error('Error deleting server account:', error);
+                        }
+                    }
+                    
+                    // Delete local profile
+                    profileUI.userProfile.deleteProfile();
+                    
+                    // Show the profile setup again
+                    await profileUI.showProfileSetup();
+                    profileUI.initProfileSection();
+                    
+                    // Reset game state
+                    GameLogic.restoreGame();
+                    
+                    alert('Account deleted successfully!');
+                } catch (error) {
+                    console.error('Error during account deletion:', error);
+                    alert('Failed to delete account: ' + error.message);
+                }
+            }
+        });
+    }
+}
+
+// Initialize the game
+function initializeGame() {
+    console.log('Initializing game...');
+    
+    // Initialize keyboard
+    initKeyboard();
+    
+    // Reset or load game state
+    const hasSavedGame = gameState.loadState();
+    if (!hasSavedGame) {
+        // Start a new game if no saved game
+        GameLogic.initGame();
+    } else {
+        // Update UI from saved state
+        updateUIFromSavedState();
+    }
+    
+    // Setup event listeners
+    setupEventListeners();
+    
+    // Show keyboard
+    UIManager.showCustomKeyboard();
+    
+    console.log('Game initialization complete');
+}
+
+// CRITICAL FIX: Combined and improved updateUIFromSavedState function
 function updateUIFromSavedState() {
+    console.log("Updating UI from saved state");
+    
+    // Update basic UI elements
     UIManager.updateRangeInfo();
     UIManager.updateAttempts();
+    UIManager.updateLevelIndicator();
+    UIManager.updatePastGuesses();
     
     // Update proximity meter if there are past guesses
     if (gameState.pastGuesses.length > 0) {
@@ -272,105 +171,116 @@ function updateUIFromSavedState() {
             1,
             gameState.maxNumber
         );
-        UIManager.updatePastGuesses();
     }
     
     // Set up UI based on game state
     if (gameState.gameOver || gameState.hasWon) {
-        UIManager.hideCustomKeyboard();
-        // Always show the Play Again button with updated text
+        // Always show the Play Again button with the appropriate text
         UIManager.showPlayAgainButton();
         
         if (gameState.waitingForNextLevel || gameState.finalWin) {
             UIManager.elements.continueBtn.style.display = "inline-block";
+            UIManager.transformPlayAgainToContinue(gameState.finalWin ? "Play Again" : "Continue");
         }
     } else {
         // Ensure Play Again button is shown with "Restart Level" text even for active games
         UIManager.showPlayAgainButton();
     }
     
-    // Always check if we should show the restore button at the end
-    UIManager.updateRestoreButtonVisibility();
+    // Show keyboard for all states
+    UIManager.showCustomKeyboard();
 }
 
 // Set up event listeners for game controls
 function setupEventListeners() {
-    // Set submit button click event
-    UIManager.elements.submitGuessBtn.addEventListener('click', () => {
-        GameLogic.checkGuess(UIManager.elements.userGuess.value);
-        UIManager.elements.userGuess.value = '';
-        UIManager.elements.userGuess.focus();
-    });
-
-    // Set continue button click event
-    UIManager.elements.continueBtn.addEventListener('click', () => {
-        GameLogic.continueNextLevel();
-    });
-
-    // Set play again button click event with arrow preservation
-    UIManager.elements.playAgainBtn.addEventListener('click', (e) => {
-        // Only process if we clicked the button itself, not the arrow
-        if (!e.target.classList.contains('dropdown-arrow')) {
-            console.log("Button clicked (not arrow)");
-            if (UIManager.elements.playAgainBtn.classList.contains('continue-mode')) {
-                GameLogic.continueNextLevel();
-            } else {
-                GameLogic.playAgain();
-            }
-            
-            // IMPORTANT: Ensure dropdown arrow remains visible after action
-            setTimeout(ensureDropdownArrowVisible, 50);
-        } else {
-            console.log("Arrow click detected, not triggering button action");
-        }
-    });
-
-    // Set restart button click event
-    UIManager.elements.restartBtn.addEventListener('click', () => {
-        GameLogic.restartGame();
-    });
-
-    // Set up the reset game button in the dropdown menu
+    console.log("Setting up event listeners");
+    
+    // Clear existing event listeners by cloning elements
+    cloneAndReplaceElement('submitGuessBtn');
+    cloneAndReplaceElement('continueBtn');
+    cloneAndReplaceElement('playAgainBtn');
+    cloneAndReplaceElement('resetGameBtn');
+    cloneAndReplaceElement('userGuess');
+    
+    // Add fresh event listeners to the new elements
+    const submitGuessBtn = document.getElementById('submitGuessBtn');
+    const userGuessInput = document.getElementById('userGuess');
+    const continueBtn = document.getElementById('continueBtn');
+    const playAgainBtn = document.getElementById('playAgainBtn');
     const resetGameBtn = document.getElementById('resetGameBtn');
+    
+    if (submitGuessBtn && userGuessInput) {
+        submitGuessBtn.addEventListener('click', () => {
+            GameLogic.checkGuess(userGuessInput.value);
+            userGuessInput.value = '';
+            userGuessInput.focus();
+        });
+    }
+
+    if (continueBtn) {
+        continueBtn.addEventListener('click', () => {
+            GameLogic.continueNextLevel();
+        });
+    }
+
+    if (playAgainBtn) {
+        playAgainBtn.addEventListener('click', (e) => {
+            // Only process if we clicked the button itself, not the arrow
+            if (!e.target.classList.contains('dropdown-arrow')) {
+                if (playAgainBtn.classList.contains('continue-mode')) {
+                    GameLogic.continueNextLevel();
+                } else {
+                    GameLogic.playAgain();
+                }
+                
+                // Ensure dropdown arrow remains visible after action
+                setTimeout(() => setupDropdownMenu(), 50);
+            }
+        });
+    }
+
     if (resetGameBtn) {
         resetGameBtn.addEventListener('click', () => {
-            GameLogic.restoreGame(); // This method performs the reset
+            GameLogic.restoreGame();
             
-            // IMPORTANT: Ensure dropdown arrow remains visible after action
-            setTimeout(ensureDropdownArrowVisible, 50);
+            // Close dropdown menu after reset
+            const dropdownContainer = document.querySelector('.dropdown-container');
+            if (dropdownContainer) {
+                dropdownContainer.classList.remove('active');
+            }
         });
-    } else {
-        console.error("Reset Game button not found in dropdown");
     }
 
-    // Set keypress event for enter key
-    UIManager.elements.userGuess.addEventListener('keypress', (event) => {
-        if (event.key === 'Enter') {
-            GameLogic.handleKeyPress(event);
-        }
-    });
+    if (userGuessInput) {
+        userGuessInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                GameLogic.handleKeyPress(event);
+            }
+        });
+    }
 
-    // Set up dropdown functionality
+    // Set up dropdown menu
     setupDropdownMenu();
+    
+    console.log("Event listeners set up successfully");
 }
 
-// Function to update the Play Again button text based on game state
-function updatePlayAgainButtonText() {
-    const playAgainBtn = UIManager.elements.playAgainBtn;
-    if (playAgainBtn) {
-        if (gameState.gameOver || gameState.hasWon) {
-            playAgainBtn.textContent = "Play Again";
-        } else {
-            playAgainBtn.textContent = "Restart Level";
+// Helper function to clone and replace an element to remove existing event listeners
+function cloneAndReplaceElement(id) {
+    const element = document.getElementById(id);
+    if (element) {
+        const clone = element.cloneNode(true);
+        if (element.parentNode) {
+            element.parentNode.replaceChild(clone, element);
         }
     }
 }
 
-// Setup dropdown menu functionality - Refined for better maintainability
+// Setup dropdown menu functionality
 function setupDropdownMenu() {
     console.log("Setting up dropdown menu");
     
-    const playAgainBtn = UIManager.elements.playAgainBtn;
+    const playAgainBtn = document.getElementById('playAgainBtn');
     const dropdownContainer = document.querySelector('.dropdown-container');
     const dropdownMenu = document.querySelector('.dropdown-menu');
     
@@ -383,26 +293,23 @@ function setupDropdownMenu() {
     const existingArrows = document.querySelectorAll('.dropdown-arrow');
     existingArrows.forEach(arrow => arrow.remove());
     
-    // Create a completely new arrow element - simpler design
+    // Create a completely new arrow element
     const dropdownArrow = document.createElement('span');
     dropdownArrow.className = 'dropdown-arrow';
     dropdownArrow.setAttribute('id', 'dropdown-arrow');
     dropdownArrow.setAttribute('aria-label', 'Toggle dropdown menu');
     dropdownArrow.setAttribute('tabindex', '0');
     
-    // Position the arrow - append to container for proper positioning
+    // Position the arrow
     dropdownContainer.appendChild(dropdownArrow);
     
-    // CRITICAL FIX: Separate click handling completely from the button
     // Use a simple flag to track dropdown state
     let dropdownActive = false;
     
-    // Clear any existing click handlers on the arrow by using a direct click assignment
+    // Clear any existing click handlers on the arrow
     dropdownArrow.onclick = function(e) {
         e.preventDefault();
         e.stopPropagation();
-        
-        console.log("Arrow clicked directly");
         
         // Toggle dropdown state
         dropdownActive = !dropdownActive;
@@ -415,25 +322,9 @@ function setupDropdownMenu() {
         }
     };
     
-    // Make sure clicking the button itself doesn't trigger the arrow
-    playAgainBtn.onclick = function(e) {
-        // Only process if we clicked the button itself, not the arrow
-        if (e.target !== dropdownArrow && !dropdownArrow.contains(e.target)) {
-            console.log("Button clicked (not arrow)");
-            if (playAgainBtn.classList.contains('continue-mode')) {
-                GameLogic.continueNextLevel();
-            } else {
-                GameLogic.playAgain();
-            }
-        } else {
-            console.log("Arrow click intercepted");
-            e.stopPropagation();
-        }
-    };
-    
-    // Close dropdown when clicking elsewhere
+    // Setup click handlers for the entire document
     document.addEventListener('click', function(event) {
-        // Close only if we're not clicking the arrow or inside the dropdown
+        // Close dropdown when clicking elsewhere
         if (dropdownActive && 
             event.target !== dropdownArrow && 
             !dropdownArrow.contains(event.target) && 
@@ -448,7 +339,7 @@ function setupDropdownMenu() {
     const resetGameBtn = document.getElementById('resetGameBtn');
     if (resetGameBtn) {
         resetGameBtn.onclick = function() {
-            GameLogic.restoreGame(); // This method performs the reset
+            GameLogic.restoreGame(); 
             dropdownActive = false;
             dropdownContainer.classList.remove('active');
         };
@@ -463,64 +354,38 @@ function setupDropdownMenu() {
     });
 }
 
-// Add this new function to ensure dropdown arrow visibility
-function ensureDropdownArrowVisible() {
-    // Always just re-create the dropdown setup for maximum reliability
-    setupDropdownMenu();
-}
-
-// Update keyboard visibility to always show keyboard regardless of game state
-function updateKeyboardVisibility() {
-    // Always show keyboard, regardless of game state
-    UIManager.showCustomKeyboard();
-}
-
-// Add our sound and animation effects without disrupting existing code
-function addSoundAndAnimationEffects() {
-    // Keep input field focused at all times, unless modal is open
-    function keepInputFocused() {
-        // Skip refocusing if modal is open
-        if (window.isModalOpen) return;
-        
-        const inputElement = document.getElementById('userGuess');
-        if (inputElement && !gameState.gameOver && !gameState.hasWon) {
-            inputElement.focus();
-        }
-    }
-    
-    // Add focus event handlers
-    window.addEventListener('click', function() {
-        // Short delay to ensure clicks on buttons are processed first
-        // And skip if modal is open
-        if (!window.isModalOpen) {
-            setTimeout(keepInputFocused, 50);
-        }
-    });
-    
-    // Set interval to keep checking focus
-    setInterval(function() {
-        if (!window.isModalOpen) {
-            keepInputFocused();
-        }
-    }, 1000);
-    
-    // Initial focus
-    setTimeout(keepInputFocused, 500);
-}
+// Make setupDropdownMenu available globally for other modules
+window.setupDropdownMenu = setupDropdownMenu;
 
 // Initialize feedback modal
 function initFeedbackModal() {
     const modal = document.getElementById('feedbackModal');
-    const btn = document.getElementById('feedbackBtn');
+    const sideMenuFeedbackBtn = document.getElementById('side-menu-feedback-btn');
     const closeBtn = document.querySelector('.close-modal');
     
-    if (!modal || !btn) return;
+    if (!modal || !sideMenuFeedbackBtn) return;
     
     // Ensure modal is closed by default
     modal.classList.remove('active');
+    modal.style.display = "none";
     window.isModalOpen = false;
     
-    btn.addEventListener('click', () => {
+    sideMenuFeedbackBtn.addEventListener('click', () => {
+        // Close the side menu
+        const sideMenu = document.querySelector('.side-menu');
+        const sideMenuOverlay = document.querySelector('.side-menu-overlay');
+        const menuToggle = document.getElementById('menu-toggle');
+
+        if (sideMenu) sideMenu.classList.remove('active');
+        if (sideMenuOverlay) sideMenuOverlay.classList.remove('active');
+        if (menuToggle) menuToggle.classList.remove('active');
+        document.body.classList.remove('menu-open');
+        
+        // Open feedback modal
+        modal.style.display = "flex";
+        modal.style.visibility = "visible";
+        modal.style.opacity = "1";
+        modal.style.pointerEvents = "auto";
         modal.classList.add('active');
         window.isModalOpen = true;
     });
@@ -528,166 +393,29 @@ function initFeedbackModal() {
     // Close modal when clicking the close button
     if (closeBtn) {
         closeBtn.addEventListener('click', () => {
-            modal.classList.remove('active');
-            window.isModalOpen = false;
+            closeModal(modal);
         });
     }
     
     // Close modal when clicking outside the modal content
     modal.addEventListener('click', (e) => {
         if (e.target === modal) {
-            modal.classList.remove('active');
-            window.isModalOpen = false;
-        }
-    });
-    
-    // Also handle form submission
-    const form = modal.querySelector('form');
-    if (form) {
-        // Reset the flag after form is submitted
-        setTimeout(() => {
-            window.isModalOpen = false;
-        }, 500);
-    }
-}
-
-// Initialize theme - simplified version using DOM attributes
-function initTheme() {
-    const themeToggle = document.getElementById('theme-toggle');
-    const moonIcon = document.getElementById('moon-icon');
-    const sunIcon = document.getElementById('sun-icon');
-    
-    if (!themeToggle || !moonIcon || !sunIcon) {
-        console.error('Theme toggle elements not found!');
-        return;
-    }
-    
-    // Check if user has previously chosen a theme, otherwise use dark as default
-    const savedTheme = localStorage.getItem('theme') || 'dark';
-    document.documentElement.setAttribute('data-theme', savedTheme);
-    
-    // Set initial icon visibility
-    if (savedTheme === 'dark') {
-        moonIcon.style.opacity = '0';
-        sunIcon.style.opacity = '1';
-    } else {
-        moonIcon.style.opacity = '1';
-        sunIcon.style.opacity = '0';
-    }
-    
-    themeToggle.addEventListener('click', () => {
-        // Toggle theme
-        const currentTheme = document.documentElement.getAttribute('data-theme');
-        const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
-        
-        // Apply theme
-        document.documentElement.setAttribute('data-theme', nextTheme);
-        
-        // Toggle icon visibility
-        if (nextTheme === 'dark') {
-            moonIcon.style.opacity = '0';
-            sunIcon.style.opacity = '1';
-        } else {
-            moonIcon.style.opacity = '1';
-            sunIcon.style.opacity = '0';
-        }
-        
-        // Save user preference
-        localStorage.setItem('theme', nextTheme);
-    });
-}
-
-// Initialize the custom number keyboard for mobile devices
-function initCustomKeyboard() {
-    const customKeyboard = document.getElementById('custom-keyboard');
-    const userGuessInput = document.getElementById('userGuess');
-    
-    if (!customKeyboard || !userGuessInput) {
-        console.error("Keyboard elements not found");
-        return;
-    }
-    
-    // Make input readonly to prevent virtual keyboard
-    userGuessInput.setAttribute('readonly', true);
-    
-    // Get all keyboard buttons and ensure their appearance
-    const keyButtons = customKeyboard.querySelectorAll('.key-btn');
-    
-    // Ensure proper styling for function keys
-    const clearBtn = customKeyboard.querySelector('.key-clear');
-    const enterBtn = customKeyboard.querySelector('.key-enter');
-    
-    if (clearBtn) {
-        clearBtn.style.fontSize = '0.8rem';
-        clearBtn.style.backgroundColor = '#e74c3c';
-        clearBtn.style.color = 'white';
-    }
-    
-    if (enterBtn) {
-        enterBtn.style.fontSize = '0.8rem';
-        enterBtn.style.backgroundColor = '#2ecc71';
-        enterBtn.style.color = 'white';
-    }
-    
-    // Add click handlers to all keyboard buttons
-    keyButtons.forEach(button => {
-        button.addEventListener('click', (e) => {
-            e.preventDefault();
-            const keyValue = button.getAttribute('data-key');
-            console.log("Key pressed:", keyValue);
-            
-            // Handle different key types
-            if (keyValue === 'clear') {
-                userGuessInput.value = '';
-            } else if (keyValue === 'enter') {
-                console.log("Submitting guess:", userGuessInput.value);
-                GameLogic.checkGuess(userGuessInput.value);
-                userGuessInput.value = '';
-            } else {
-                // Don't add more digits than needed
-                if (userGuessInput.value.length < 5) {
-                    userGuessInput.value += keyValue;
-                }
-            }
-            
-            // Keep the input focused
-            userGuessInput.focus();
-        });
-    });
-    
-    // Prevent default click behavior on input
-    userGuessInput.addEventListener('click', (e) => {
-        e.preventDefault();
-        userGuessInput.blur(); // Remove focus to hide any keyboard
-    });
-    
-    // Also add keyboard support for physical keyboards
-    document.addEventListener('keydown', (e) => {
-        // Make sure we're not in a modal or something
-        if (window.isModalOpen) return;
-        
-        // Numbers 0-9
-        if (/^[0-9]$/.test(e.key) && userGuessInput.value.length < 5) {
-            userGuessInput.value += e.key;
-        }
-        // Backspace/Delete to clear
-        else if (e.key === 'Backspace' || e.key === 'Delete') {
-            userGuessInput.value = userGuessInput.value.slice(0, -1);
-        }
-        // Clear entire input with Escape
-        else if (e.key === 'Escape') {
-            userGuessInput.value = '';
+            closeModal(modal);
         }
     });
 }
 
-// Add a function to manually test for a saved game
-window.checkForSavedGame = function() {
-    const result = gameState.hasSavedGame();
-    console.log("Has saved game:", result);
-    UIManager.updateRestoreButtonVisibility();
-    return result;
-};
+// Close modal helper
+function closeModal(modal) {
+    if (!modal) return;
+    
+    modal.style.display = "none";
+    modal.style.visibility = "hidden";
+    modal.style.opacity = "0";
+    modal.style.pointerEvents = "none";
+    modal.classList.remove('active');
+    window.isModalOpen = false;
+}
 
 // Setup side menu functionality
 function setupSideMenu() {
@@ -698,22 +426,14 @@ function setupSideMenu() {
     const sideMenuOverlay = document.querySelector('.side-menu-overlay');
     const sideMenuClose = document.querySelector('.side-menu-close');
     
-    console.log("Menu toggle element:", menuToggle);
-    console.log("Side menu element:", sideMenu);
-    console.log("Side menu overlay element:", sideMenuOverlay);
-    console.log("Side menu close element:", sideMenuClose);
-    
     if (!menuToggle || !sideMenu || !sideMenuOverlay || !sideMenuClose) {
         console.error("Side menu elements not found");
         return;
     }
     
-    console.log("Side menu setup initialized");
-    
-    // Toggle menu when hamburger is clicked - Fix the event handler
+    // Toggle menu when hamburger is clicked
     menuToggle.onclick = function(e) {
-        e.preventDefault(); // Prevent default button behavior
-        console.log("Menu toggle clicked");
+        e.preventDefault();
         
         const isMenuOpen = sideMenu.classList.contains('active');
         
@@ -725,13 +445,9 @@ function setupSideMenu() {
         
         // Update ARIA attributes
         menuToggle.setAttribute('aria-expanded', !isMenuOpen);
-        
-        // Log for debugging
-        console.log("Side menu active:", sideMenu.classList.contains('active'));
-        console.log("Menu toggle active:", menuToggle.classList.contains('active'));
     };
     
-    // Close menu when X is clicked - Fix the event handler
+    // Close menu when X is clicked
     sideMenuClose.onclick = function() {
         sideMenu.classList.remove('active');
         sideMenuOverlay.classList.remove('active');
@@ -740,7 +456,7 @@ function setupSideMenu() {
         menuToggle.setAttribute('aria-expanded', 'false');
     };
     
-    // Close menu when overlay is clicked - Fix the event handler
+    // Close menu when overlay is clicked
     sideMenuOverlay.onclick = function() {
         sideMenu.classList.remove('active');
         sideMenuOverlay.classList.remove('active');
@@ -761,15 +477,14 @@ function setupSideMenu() {
     });
 }
 
-// Add this to the initTheme function or create a new function
-
+// Initialize theme icons
 function fixThemeIcons() {
     const moonIcon = document.getElementById('moon-icon');
     const sunIcon = document.getElementById('sun-icon');
     
     if (!moonIcon || !sunIcon) return;
     
-    // Set initial styles directly
+    // Set initial styles based on current theme
     const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
     
     if (currentTheme === 'dark') {
@@ -783,26 +498,33 @@ function fixThemeIcons() {
         moonIcon.setAttribute('stroke', '#333');
         sunIcon.style.opacity = '0';
     }
-    
-    // Add this to the theme toggle event listener
-    document.getElementById('theme-toggle').addEventListener('click', function() {
-        const currentTheme = document.documentElement.getAttribute('data-theme');
-        const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+}
+
+// REMAINING HELPER FUNCTIONS (keep only the ones actually used)
+function ensureDropdownArrowVisible() {
+    setupDropdownMenu();
+}
+
+// Add our sound and animation effects without disrupting existing code
+function addSoundAndAnimationEffects() {
+    const keepInputFocused = () => {
+        if (window.isModalOpen) return;
         
-        if (nextTheme === 'dark') {
-            // Switching to dark mode - sun icon visible
-            setTimeout(() => {
-                moonIcon.style.opacity = '0';
-                sunIcon.style.opacity = '1';
-                sunIcon.setAttribute('stroke', 'white');
-            }, 50);
-        } else {
-            // Switching to light mode - moon icon visible
-            setTimeout(() => {
-                moonIcon.style.opacity = '1';
-                moonIcon.setAttribute('stroke', '#333');
-                sunIcon.style.opacity = '0';
-            }, 50);
+        const inputElement = document.getElementById('userGuess');
+        if (inputElement && !gameState.gameOver && !gameState.hasWon) {
+            inputElement.focus();
+        }
+    };
+    
+    window.addEventListener('click', () => {
+        if (!window.isModalOpen) {
+            setTimeout(keepInputFocused, 50);
         }
     });
+    
+    setInterval(() => {
+        if (!window.isModalOpen) keepInputFocused();
+    }, 1000);
+    
+    setTimeout(keepInputFocused, 500);
 }

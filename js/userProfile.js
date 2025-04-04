@@ -27,19 +27,32 @@ export class UserProfile {
         const profile = this.getProfile();
         if (profile) {
             profile.gamesPlayed = (profile.gamesPlayed || 0) + 1;
-            profile.bestLevel = Math.max(profile.bestLevel || 1, gameData.level);
+            
+            // Only update best level if the current level is higher
+            if (gameData.level > (profile.bestLevel || 1)) {
+                profile.bestLevel = gameData.level;
+            }
+            
             this.saveProfile(profile);
+            
+            return true;
         }
+        return false;
     }
 
     validateProfile(profileData) {
-        const { name, age } = profileData;
-        if (!name || name.trim().length < 2) {
-            throw new Error('Name must be at least 2 characters long');
+        const { nickname, name } = profileData;
+        if (!nickname || nickname.trim().length < 2) {
+            throw new Error('Nickname must be at least 2 characters long');
         }
-        const numAge = parseInt(age);
-        if (isNaN(numAge) || numAge < 1 || numAge > 120) {
-            throw new Error('Please enter a valid age between 1 and 120');
+        if (nickname.trim().length > 20) {
+            throw new Error('Nickname must be at most 20 characters long');
+        }
+        if (!name || name.trim().length < 2) {
+            throw new Error('Username must be at least 2 characters long');
+        }
+        if (name.trim().length > 20) {
+            throw new Error('Username must be at most 20 characters long');
         }
         return true;
     }
@@ -51,6 +64,7 @@ export class UserProfile {
     deleteProfile() {
         try {
             localStorage.removeItem(this.storageKey);
+            console.log('Profile deleted from local storage');
             return true;
         } catch (error) {
             console.error('Error deleting profile:', error);
