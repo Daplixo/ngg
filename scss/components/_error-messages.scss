@@ -1,0 +1,105 @@
+/* Error and validation messages that appear below the input */
+.error-message-container {
+  min-height: 24px;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  
+  .error-message {
+    font-size: 0.8rem;
+    font-weight: 500;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    visibility: hidden;
+    display: inline-block;
+    max-width: 300px;
+    padding: 0 8px;
+    
+    &.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    &.incorrect-guess {
+      color: var(--error-message-color, #e74c3c);
+    }
+    
+    &.invalid-input {
+      color: var(--warning-message-color, #e67e22);
+    }
+    
+    /* Add a small icon before the text */
+    &.incorrect-guess::before,
+    &.invalid-input::before {
+      content: "!";
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      margin-right: 5px;
+      font-size: 0.7rem;
+      font-weight: bold;
+    }
+    
+    &.incorrect-guess::before {
+      background-color: var(--error-message-color, #e74c3c);
+      color: white;
+    }
+    
+    &.invalid-input::before {
+      background-color: var(--warning-message-color, #e67e22);
+      color: white;
+    }
+  }
+}
+
+/* Shake animation for input field */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+.shake {
+  animation: shake 0.6s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+/* Responsive adjustments */
+@media (max-width: $breakpoint-md) {
+  .error-message-container .error-message {
+    font-size: 0.75rem;
+    max-width: 250px;
+  }
+}
+
+@media (max-width: $breakpoint-sm) {
+  .error-message-container {
+    min-height: 20px;
+    margin-top: 3px;
+    margin-bottom: 8px;
+    
+    .error-message {
+      font-size: 0.7rem;
+      max-width: 220px;
+      
+      &.incorrect-guess::before,
+      &.invalid-input::before {
+        width: 14px;
+        height: 14px;
+        font-size: 0.65rem;
+      }
+    }
+  }
+}
+
+@media (max-width: $breakpoint-xs) {
+  .error-message-container .error-message {
+    font-size: 0.65rem;
+    max-width: 190px;
+  }
+}

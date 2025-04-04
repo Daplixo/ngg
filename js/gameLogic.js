@@ -33,7 +33,9 @@ export const GameLogic = {
         
         // Validate input
         if (isNaN(numericGuess) || numericGuess < 1 || numericGuess > gameState.maxNumber) {
-            UIManager.setFeedback(`Please enter a number between 1 and ${gameState.maxNumber}.`, "error");
+            // MODIFIED: Use shorter error message
+            this.showErrorMessage("Invalid input", 'invalid-input');
+            
             if (window.addShake) {
                 window.addShake(UIManager.elements.userGuess);
             }
@@ -73,6 +75,9 @@ export const GameLogic = {
         console.log("Correct guess!");
         gameState.hasWon = true;
         
+        // Clear any error messages
+        this.clearErrorMessage();
+        
         // Update user profile statistics
         try {
             const userProfile = new UserProfile();
@@ -86,14 +91,26 @@ export const GameLogic = {
         // Check if this is the final level
         if (gameState.level >= 3) {
             gameState.finalWin = true;
+            // Make sure to show the win notification
             UIManager.showWinNotification(`Congratulations! You've completed all levels! The number was ${gameState.randomNumber}.`);
         } else {
             gameState.waitingForNextLevel = true;
-            UIManager.showWinNotification(`Correct! The number was ${gameState.randomNumber}. Ready for level ${gameState.level + 1}?`);
+            // Simplified notification text - removed "Ready for level X?" question
+            UIManager.showWinNotification(`Correct! The number was ${gameState.randomNumber}.`);
         }
         
         // Update UI to continue mode
         UIManager.transformPlayAgainToContinue(gameState.finalWin ? "Play Again" : "Continue");
+        
+        // Make this change immediately visible
+        const playAgainBtn = document.getElementById('playAgainBtn');
+        if (playAgainBtn) {
+            playAgainBtn.textContent = gameState.finalWin ? "Play Again" : "Continue";
+            playAgainBtn.classList.add('continue-mode');
+            playAgainBtn.classList.remove('game-over');
+            playAgainBtn.style.backgroundColor = '#2eb82e';
+        }
+        
         if (UIManager.elements.continueBtn) {
             UIManager.elements.continueBtn.style.display = "inline-block";
         }
@@ -105,11 +122,20 @@ export const GameLogic = {
     handleIncorrectGuess(guess) {
         // Determine if guess is too high or too low
         const isHigher = guess > gameState.randomNumber;
-        const message = isHigher ? "Too high!" : "Too low!";
         
-        // Update UI elements
-        UIManager.setFeedback(message, isHigher ? "too-high" : "too-low");
+        // Show incorrect guess message
+        // MODIFIED: Use shorter error message
+        this.showErrorMessage("Incorrect guess", 'incorrect-guess');
+        
+        // MODIFIED: Remove the text feedback message - we'll use only the proximity meter
+        // Clear any previous feedback text
+        UIManager.clearFeedback();
+        
+        // Update the proximity meter
         UIManager.updateProximityMeter(guess, gameState.randomNumber, 1, gameState.maxNumber);
+        
+        // ADDED: Update previous guess display
+        UIManager.updatePreviousGuess(guess);
         
         // Play sound effect
         if (window.playWrongSound) {
@@ -139,6 +165,15 @@ export const GameLogic = {
         
         // Update UI
         UIManager.showGameOverNotification(`Game Over! The number was ${gameState.randomNumber}.`);
+        
+        // Update UI to Play Again mode
+        const playAgainBtn = document.getElementById('playAgainBtn');
+        if (playAgainBtn) {
+            playAgainBtn.textContent = "Play Again";
+            playAgainBtn.classList.remove('continue-mode');
+            playAgainBtn.classList.add('game-over');
+        }
+        
         UIManager.showPlayAgainButton();
         
         // Save game state
@@ -147,6 +182,12 @@ export const GameLogic = {
     
     continueNextLevel() {
         console.log("Continuing to next level");
+        
+        // ADDED: Clear any existing win notification immediately
+        UIManager.hideWinNotification(true);
+        
+        // ADDED: Reset previous guess display
+        UIManager.resetPreviousGuess();
         
         if (gameState.finalWin) {
             // Complete reset if finished all levels
@@ -167,7 +208,22 @@ export const GameLogic = {
             
             // Reset UI
             UIManager.clearFeedback();
-            UIManager.restorePlayAgainButton();
+            
+            // Reset proximity meter for new level
+            UIManager.resetProximityMeter();
+            
+            // ADDED: Update attempts display immediately to reflect new maxAttempts
+            UIManager.updateAttempts();
+            
+            // BUGFIX: Explicitly restore button to "Restart Level" state
+            const playAgainBtn = document.getElementById('playAgainBtn');
+            if (playAgainBtn) {
+                playAgainBtn.textContent = "Restart Level";
+                playAgainBtn.classList.remove('continue-mode', 'game-over');
+                playAgainBtn.style.backgroundColor = '';
+                console.log("Button reset to Restart Level for new level");
+            }
+            
             UIManager.elements.continueBtn.style.display = "none";
             UIManager.updateRangeInfo();
             UIManager.updateLevelIndicator();
@@ -185,6 +241,13 @@ export const GameLogic = {
     
     playAgain() {
         console.log("Play again triggered");
+        
+        // ADDED: Hide any existing notifications immediately
+        UIManager.hideWinNotification(true);
+        UIManager.hideGameOverNotification(true);
+        
+        // ADDED: Reset previous guess display
+        UIManager.resetPreviousGuess();
         
         // If we're waiting for next level, make sure we don't restart the current one
         if (gameState.waitingForNextLevel) {
@@ -205,6 +268,9 @@ export const GameLogic = {
             // Reset but keep level parameters
             gameState.reset(false);
             
+            // Reset proximity meter for restarted level
+            UIManager.resetProximityMeter();
+            
             // Update UI for the restarted level
             UIManager.updateRangeInfo();
             this.resetUI();
@@ -216,6 +282,12 @@ export const GameLogic = {
         } else {
             // Full game restart (original behavior)
             this.restartGame(true);
+            
+            // Reset proximity meter for new game
+            UIManager.resetProximityMeter();
+            
+            // Show game restart notification
+            this.showGameRestartNotification();
         }
     },
     
@@ -233,6 +305,9 @@ export const GameLogic = {
         UIManager.updateAttempts();
         UIManager.updatePastGuesses();
         UIManager.showCustomKeyboard();
+        
+        // ADDED: Reset previous guess display
+        UIManager.resetPreviousGuess();
     },
     
     restoreGame() {
@@ -251,6 +326,17 @@ export const GameLogic = {
         UIManager.updatePastGuesses();
         UIManager.showCustomKeyboard();
         
+        // ADDED: Reset previous guess display
+        UIManager.resetPreviousGuess();
+        
+        // Reset button state
+        const playAgainBtn = document.getElementById('playAgainBtn');
+        if (playAgainBtn) {
+            playAgainBtn.textContent = "Restart Level";
+            playAgainBtn.classList.remove('continue-mode', 'game-over');
+            playAgainBtn.style.backgroundColor = '';
+        }
+        
         // Show notification
         this.showResetNotification();
     },
@@ -264,11 +350,10 @@ export const GameLogic = {
         UIManager.updateAttempts();
         
         // Reset proximity meter
-        const proximityFill = document.getElementById('proximity-fill');
-        if (proximityFill) {
-            proximityFill.style.width = '100%';
-            proximityFill.style.height = '0%';
-        }
+        UIManager.resetProximityMeter();
+        
+        // ADDED: Reset previous guess display
+        UIManager.resetPreviousGuess();
         
         if (UIManager.elements.userGuess) {
             UIManager.elements.userGuess.value = "";
@@ -277,6 +362,9 @@ export const GameLogic = {
         
         UIManager.updatePastGuesses();
         UIManager.showCustomKeyboard();
+        
+        // Clear any error messages
+        this.clearErrorMessage();
     },
     
     handleKeyPress(event) {
@@ -342,5 +430,48 @@ export const GameLogic = {
             tempNotification.style.opacity = '0';
             setTimeout(() => tempNotification.remove(), 500);
         }, 2000);
+    },
+    
+    showGameRestartNotification() {
+        // First remove existing notifications
+        const existingNotifications = document.querySelectorAll('div[data-notification-type]');
+        existingNotifications.forEach(note => note.remove());
+        
+        const tempNotification = document.createElement('div');
+        tempNotification.textContent = "Game Restarted";
+        tempNotification.setAttribute('data-notification-type', 'game-restart');
+        tempNotification.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#e67e22;color:white;padding:10px 20px;border-radius:5px;z-index:1000;';
+        document.body.appendChild(tempNotification);
+        
+        setTimeout(() => {
+            tempNotification.style.transition = 'opacity 0.5s ease';
+            tempNotification.style.opacity = '0';
+            setTimeout(() => tempNotification.remove(), 500);
+        }, 2000);
+    },
+    
+    showErrorMessage(message, type = 'incorrect-guess') {
+        const errorContainer = document.getElementById('error-message');
+        if (!errorContainer) return;
+        
+        // Set the message and make it visible
+        errorContainer.textContent = message;
+        errorContainer.className = 'error-message ' + type + ' visible';
+        
+        // Hide message after a delay
+        setTimeout(() => {
+            if (errorContainer) {
+                errorContainer.classList.remove('visible');
+            }
+        }, 3000);
+    },
+    
+    clearErrorMessage() {
+        const errorContainer = document.getElementById('error-message');
+        if (errorContainer) {
+            errorContainer.classList.remove('visible');
+            errorContainer.className = 'error-message';
+            errorContainer.textContent = '';
+        }
     }
 };

@@ -60,12 +60,30 @@
   }
 }
 
-// Button styles
+// Button styles - FIXED by adding all required properties
 @mixin button-base {
-  padding: $spacing-small $spacing-medium;
-  border-radius: $border-radius;
-  font-family: $base-font-family;
-  font-size: $base-font-size;
+  height: 42px;
+  padding: 0 16px;
+  border: none;
+  border-radius: $border-radius-medium;
+  background-color: var(--btn-primary);
+  color: #fff;
+  font-size: 0.9375rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: all $transition-speed ease;
+  transition: all 0.2s ease;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 0;
+  
+  &:active {
+    transform: scale(0.98);
+  }
+  
+  &:hover {
+    background-color: var(--btn-hover);
+  }
 }

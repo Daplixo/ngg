@@ -26,129 +26,236 @@
     // Make the function globally accessible
     window.toggleTheme = toggleTheme;
     
-    // CRITICAL FIX: Initialize side menu functionality immediately instead of waiting for DOMContentLoaded
-    // This ensures the event handlers are attached as soon as possible
+    // CRITICAL FIX: Initialize side menu functionality immediately
+    // IMPROVED FIX: Use a more reliable approach for event binding
     function initializeSideMenu() {
-        console.log("Initializing side menu functionality directly");
+        console.log("Initializing side menu functionality with improved method");
         
-        // Direct DOM manipulation for hamburger menu
+        // Get all side menu elements
         const menuToggle = document.getElementById('menu-toggle');
         const sideMenu = document.querySelector('.side-menu');
         const sideMenuOverlay = document.querySelector('.side-menu-overlay');
         const sideMenuClose = document.querySelector('.side-menu-close');
+        const sideMenuFeedbackBtn = document.getElementById('side-menu-feedback-btn');
+        const settingsButton = document.getElementById('settings-button');
+        const settingsDropdown = document.getElementById('settings-dropdown');
+        const themeToggle = document.getElementById('theme-toggle');
+        const deleteAccountBtn = document.getElementById('delete-account-btn');
         
-        if (!menuToggle || !sideMenu || !sideMenuOverlay || !sideMenuClose) {
-            console.error("Side menu elements not found, will retry later");
-            // If elements are not found, try again after a delay
-            setTimeout(initializeSideMenu, 500);
+        // Check if critical elements exist
+        if (!menuToggle || !sideMenu || !sideMenuOverlay) {
+            console.warn("Critical side menu elements not found, will retry in 300ms");
+            setTimeout(initializeSideMenu, 300);
             return;
         }
         
-        console.log("Hamburger menu elements found, attaching handlers");
+        console.log("Side menu elements found:", {
+            menuToggle: !!menuToggle,
+            sideMenu: !!sideMenu,
+            sideMenuOverlay: !!sideMenuOverlay,
+            sideMenuClose: !!sideMenuClose,
+            sideMenuFeedbackBtn: !!sideMenuFeedbackBtn,
+            settingsButton: !!settingsButton,
+            themeToggle: !!themeToggle,
+            deleteAccountBtn: !!deleteAccountBtn
+        });
         
-        // CRITICAL FIX: Use direct inline function instead of references that might be lost
-        menuToggle.onclick = function(e) {
-            e.preventDefault();
-            console.log("Menu toggle clicked");
+        // CRITICAL FIX: Reset all event listeners by cloning elements
+        // This is the most reliable way to ensure clean event handling
+        
+        // Fix main menu toggle button
+        if (menuToggle) {
+            const newMenuToggle = menuToggle.cloneNode(true);
+            menuToggle.parentNode.replaceChild(newMenuToggle, menuToggle);
             
-            // Toggle side menu and overlay
-            sideMenu.classList.toggle('active');
-            sideMenuOverlay.classList.toggle('active');
-            menuToggle.classList.toggle('active');
-            document.body.classList.toggle('menu-open');
-        };
-        
-        // CRITICAL FIX: Use direct inline function for close button
-        sideMenuClose.onclick = function() {
-            console.log("Close button clicked");
-            sideMenu.classList.remove('active');
-            sideMenuOverlay.classList.remove('active');
-            menuToggle.classList.remove('active');
-            document.body.classList.remove('menu-open');
-        };
-        
-        // CRITICAL FIX: Use direct inline function for overlay
-        sideMenuOverlay.onclick = function() {
-            console.log("Overlay clicked");
-            sideMenu.classList.remove('active');
-            sideMenuOverlay.classList.remove('active');
-            menuToggle.classList.remove('active');
-            document.body.classList.remove('menu-open');
-        };
-        
-        console.log("Side menu handlers attached successfully");
-    }
-    
-    // Run initialization immediately
-    initializeSideMenu();
-    
-    // Then also try during DOMContentLoaded as a backup
-    document.addEventListener('DOMContentLoaded', function() {
-        // Call initialization again to ensure it runs
-        initializeSideMenu();
-        
-        // Also set up settings dropdown functionality
-        const settingsToggle = document.getElementById('settings-button');
-        const settingsDropdown = document.getElementById('settings-dropdown');
-        
-        if (settingsToggle && settingsDropdown) {
-            console.log("Settings dropdown elements found");
+            // Add explicit styles to make sure it's visible and clickable
+            newMenuToggle.style.cursor = 'pointer';
+            newMenuToggle.style.pointerEvents = 'auto';
             
-            // Toggle dropdown when clicking the settings button
-            settingsToggle.addEventListener('click', function(e) {
+            // Direct event handler that's less likely to be overridden
+            newMenuToggle.onclick = function(e) {
                 e.preventDefault();
                 e.stopPropagation();
+                console.log("Menu toggle clicked", new Date().toISOString());
                 
-                // Toggle aria-expanded attribute
+                // Toggle classes directly
+                sideMenu.classList.toggle('active');
+                sideMenuOverlay.classList.toggle('active');
+                newMenuToggle.classList.toggle('active');
+                document.body.classList.toggle('menu-open');
+            };
+        }
+        
+        // Fix close button
+        if (sideMenuClose) {
+            const newSideMenuClose = sideMenuClose.cloneNode(true);
+            sideMenuClose.parentNode.replaceChild(newSideMenuClose, sideMenuClose);
+            
+            newSideMenuClose.onclick = function() {
+                console.log("Close button clicked");
+                sideMenu.classList.remove('active');
+                sideMenuOverlay.classList.remove('active');
+                document.getElementById('menu-toggle')?.classList.remove('active');
+                document.body.classList.remove('menu-open');
+            };
+        }
+        
+        // Fix overlay
+        if (sideMenuOverlay) {
+            const newSideMenuOverlay = sideMenuOverlay.cloneNode(true);
+            sideMenuOverlay.parentNode.replaceChild(newSideMenuOverlay, sideMenuOverlay);
+            
+            newSideMenuOverlay.onclick = function() {
+                console.log("Overlay clicked");
+                sideMenu.classList.remove('active');
+                newSideMenuOverlay.classList.remove('active');
+                document.getElementById('menu-toggle')?.classList.remove('active');
+                document.body.classList.remove('menu-open');
+            };
+        }
+        
+        // Fix feedback button
+        if (sideMenuFeedbackBtn) {
+            const newFeedbackBtn = sideMenuFeedbackBtn.cloneNode(true);
+            sideMenuFeedbackBtn.parentNode.replaceChild(newFeedbackBtn, sideMenuFeedbackBtn);
+            
+            newFeedbackBtn.onclick = function() {
+                console.log("Feedback button clicked");
+                
+                // Close the side menu first
+                sideMenu.classList.remove('active');
+                sideMenuOverlay.classList.remove('active');
+                document.getElementById('menu-toggle')?.classList.remove('active');
+                document.body.classList.remove('menu-open');
+                
+                // Show feedback modal
+                const feedbackModal = document.getElementById('feedbackModal');
+                if (feedbackModal) {
+                    feedbackModal.style.display = "flex";
+                    feedbackModal.style.visibility = "visible";
+                    feedbackModal.style.opacity = "1";
+                    feedbackModal.style.pointerEvents = "auto";
+                    feedbackModal.classList.add('active');
+                    window.isModalOpen = true;
+                }
+            };
+        }
+        
+        // Fix settings button and dropdown
+        if (settingsButton && settingsDropdown) {
+            const newSettingsButton = settingsButton.cloneNode(true);
+            settingsButton.parentNode.replaceChild(newSettingsButton, settingsButton);
+            
+            newSettingsButton.onclick = function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log("Settings button clicked");
+                
+                // Toggle dropdown based on aria-expanded attribute
                 const expanded = this.getAttribute('aria-expanded') === 'true';
                 this.setAttribute('aria-expanded', !expanded);
                 
-                console.log("Settings dropdown toggled:", !expanded);
-            });
-            
-            // Close dropdown when clicking outside
-            document.addEventListener('click', function(e) {
-                if (!settingsToggle.contains(e.target) && !settingsDropdown.contains(e.target)) {
-                    settingsToggle.setAttribute('aria-expanded', 'false');
+                // Actually show/hide the dropdown
+                if (expanded) {
+                    settingsDropdown.style.display = 'none';
+                } else {
+                    settingsDropdown.style.display = 'block';
                 }
-            });
-            
-            // Close dropdown when side menu closes
-            const sideMenuClose = document.querySelector('.side-menu-close');
-            
-            if (sideMenuClose) {
-                sideMenuClose.addEventListener('click', function() {
-                    settingsToggle.setAttribute('aria-expanded', 'false');
-                });
-            }
-            
-            // Also close dropdown when clicking on overlay
-            const sideMenuOverlay = document.querySelector('.side-menu-overlay');
-            if (sideMenuOverlay) {
-                sideMenuOverlay.addEventListener('click', function() {
-                    settingsToggle.setAttribute('aria-expanded', 'false');
-                });
-            }
-            
-            // Direct theme toggle attachment - simplest possible approach
-            const themeToggle = document.getElementById('theme-toggle');
-            if (themeToggle) {
-                console.log("Theme toggle found, adding direct click handler");
-                
-                // CRITICAL FIX: Use onclick instead of addEventListener
-                themeToggle.onclick = function(e) {
-                    console.log("Theme toggle clicked - using direct method");
-                    e.preventDefault();
-                    e.stopPropagation();
-                    
-                    // Call the global toggle function
-                    window.toggleTheme();
-                };
-            } else {
-                console.error("Theme toggle not found in settings dropdown");
-            }
+            };
         }
-    });
+        
+        // Fix theme toggle button
+        if (themeToggle) {
+            const newThemeToggle = themeToggle.cloneNode(true);
+            themeToggle.parentNode.replaceChild(newThemeToggle, themeToggle);
+            
+            newThemeToggle.onclick = function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log("Theme toggle clicked");
+                
+                // Call global theme toggle function
+                window.toggleTheme();
+                
+                // Close settings dropdown after action
+                const settingsButton = document.getElementById('settings-button');
+                if (settingsButton) {
+                    settingsButton.setAttribute('aria-expanded', 'false');
+                }
+                const settingsDropdown = document.getElementById('settings-dropdown');
+                if (settingsDropdown) {
+                    settingsDropdown.style.display = 'none';
+                }
+            };
+        }
+        
+        // Fix delete account button
+        if (deleteAccountBtn) {
+            const newDeleteAccountBtn = deleteAccountBtn.cloneNode(true);
+            deleteAccountBtn.parentNode.replaceChild(newDeleteAccountBtn, deleteAccountBtn);
+            
+            newDeleteAccountBtn.onclick = function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log("Delete account button clicked");
+                
+                // Show confirmation dialog
+                showDeleteConfirmation();
+                
+                // Close settings dropdown after action
+                const settingsButton = document.getElementById('settings-button');
+                if (settingsButton) {
+                    settingsButton.setAttribute('aria-expanded', 'false');
+                }
+                const settingsDropdown = document.getElementById('settings-dropdown');
+                if (settingsDropdown) {
+                    settingsDropdown.style.display = 'none';
+                }
+            };
+        }
+        
+        console.log("All side menu event handlers fixed and attached");
+    }
+    
+    // Run initialization right away
+    initializeSideMenu();
+    
+    // Also run after DOMContentLoaded as a backup
+    document.addEventListener('DOMContentLoaded', initializeSideMenu);
+    
+    // Final check after everything has loaded
+    window.addEventListener('load', initializeSideMenu);
+    
+    // Add a global function for manual execution from console if needed
+    window.fixSideMenu = initializeSideMenu;
+    
+    // ADDITIONAL CRITICAL FIX: Create an emergency retry mechanism
+    function emergencyMenuFix() {
+        console.log("Running emergency side menu fix");
+        
+        // Fix the hamburger (menu toggle) button with a direct approach
+        const menuToggle = document.getElementById('menu-toggle');
+        const sideMenu = document.querySelector('.side-menu');
+        const sideMenuOverlay = document.querySelector('.side-menu-overlay');
+        
+        if (menuToggle && sideMenu && sideMenuOverlay) {
+            // Use direct attribute without any framework/library 
+            menuToggle.setAttribute('onclick', `
+                this.classList.toggle('active');
+                document.querySelector('.side-menu').classList.toggle('active');
+                document.querySelector('.side-menu-overlay').classList.toggle('active');
+                document.body.classList.toggle('menu-open');
+                console.log('Menu toggled via emergency fix');
+                return false;
+            `);
+            
+            // Make sure it's visible
+            menuToggle.style.cssText = 'cursor: pointer; pointer-events: auto; opacity: 1; visibility: visible; display: flex;';
+        }
+    }
+    
+    // Run emergency fix after a short delay as last resort
+    setTimeout(emergencyMenuFix, 2000);
     
     // Check for saved theme on page load
     document.addEventListener('DOMContentLoaded', function() {

@@ -103,8 +103,22 @@ export const gameState = {
             this.maxNumber = 100;
             this.maxAttempts = 5;
         }
-        this.reset(false);
-        // State is saved in reset()
+        
+        // ADDED: Make sure attempts is explicitly reset to 0
+        this.attempts = 0;
+        
+        // Reset other game state properties
+        this.gameOver = false;
+        this.hasWon = false;
+        this.finalWin = false;
+        this.waitingForNextLevel = false;
+        this.randomNumber = Math.floor(Math.random() * this.maxNumber) + 1;
+        this.pastGuesses = []; // Clear past guesses
+        
+        // Save the updated state
+        this.saveState();
+        
+        console.log(`Level ${this.level} started with ${this.maxAttempts} attempts (0/${this.maxAttempts})`);
     },
     
     // Add a method to add a guess with its proximity value

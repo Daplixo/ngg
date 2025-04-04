@@ -95,12 +95,45 @@ button {
     background-color: var(--btn-play-again-hover);
   }
   
+  /* Continue mode styling */
   &.continue-mode {
     background-color: var(--btn-continue-bg);
     padding-right: 16px;
+    color: white;
+    font-weight: bold;
+    border: none;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease;
     
     &:hover {
       background-color: var(--btn-continue-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+  }
+  
+  /* Game over styling */
+  &.game-over {
+    background-color: #e74c3c;
+    color: white !important; /* Added !important to ensure text is white */
+    
+    &:hover {
+      background-color: #c0392b;
+    }
+  }
+  
+  /* Default Restart Level button styling - Gray color */
+  &:not(.continue-mode):not(.game-over) {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+    
+    &:hover {
+      background-color: #5a6268;
+      transform: translateY(-1px);
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
     }
   }
   
@@ -196,6 +229,12 @@ button {
 /* For play again / continue button dropdown arrow */
 #playAgainBtn.continue-mode + .dropdown-arrow {
   display: none;
+}
+
+/* Ensure dropdown container doesn't override button styling */
+.dropdown-container button.continue-mode {
+  background-color: var(--btn-continue-bg);
+  color: white;
 }
 
 /* Footer buttons */

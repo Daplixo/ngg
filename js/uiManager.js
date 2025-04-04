@@ -17,7 +17,8 @@ export const UIManager = {
         pastGuessesContainer: document.getElementById("past-guesses-container"),
         pastGuesses: document.getElementById("past-guesses"),
         customKeyboard: document.getElementById("custom-keyboard"),
-        restoreBtn: document.getElementById("restoreBtn")
+        restoreBtn: document.getElementById("restoreBtn"),
+        previousGuess: document.getElementById("previous-guess")
     },
 
     showGameUI() {
@@ -56,48 +57,93 @@ export const UIManager = {
     },
 
     clearFeedback() {
-        this.elements.feedback.textContent = '';
-        this.elements.feedback.className = '';
+        if (this.elements.feedback) {
+            this.elements.feedback.textContent = '';
+            this.elements.feedback.className = '';
+            this.elements.feedback.style.display = 'none'; // Always hide feedback
+        }
     },
 
     updateAttempts() {
+        // First ensure the attempts element exists
         if (!this.elements.attempts) {
-            console.error("Attempts display element not found");
-            return;
+            this.elements.attempts = document.getElementById('attempts');
+            
+            // If it still doesn't exist, create it
+            if (!this.elements.attempts) {
+                console.log("Creating attempts element dynamically");
+                const headerCenter = document.querySelector('.header-center');
+                if (headerCenter) {
+                    const attemptsElement = document.createElement('div');
+                    attemptsElement.id = 'attempts';
+                    
+                    // IMPROVED: Add styles to ensure it stays on one line
+                    attemptsElement.style.cssText = 'display: inline-block; margin: 0; white-space: nowrap;';
+                    
+                    headerCenter.appendChild(attemptsElement);
+                    this.elements.attempts = attemptsElement;
+                }
+            }
         }
         
         // Make attempts display consistent
-        this.elements.attempts.textContent = `Attempts: ${gameState.attempts}/${gameState.maxAttempts}`;
-        
-        // Ensure the container and element are visible
-        const container = document.getElementById('attempts-container');
-        if (container) {
-            container.style.display = 'block';
-            container.style.visibility = 'visible';
+        if (this.elements.attempts) {
+            const text = `Attempts: ${gameState.attempts}/${gameState.maxAttempts}`;
+            this.elements.attempts.textContent = text;
+            
+            // Also update data attribute for simplified display on very small screens
+            this.elements.attempts.setAttribute('data-count', `${gameState.attempts}/${gameState.maxAttempts}`);
+            
+            // Ensure visibility with important styling
+            this.elements.attempts.style.display = 'inline-block';
+            this.elements.attempts.style.visibility = 'visible';
+            this.elements.attempts.style.opacity = '1';
+            this.elements.attempts.style.whiteSpace = 'nowrap';
+            
+            console.log("Updated attempts display:", this.elements.attempts.textContent);
+        } else {
+            console.error("Could not create or find attempts element");
         }
-        
-        this.elements.attempts.style.display = 'inline-block';
-        this.elements.attempts.style.visibility = 'visible';
-        
-        console.log("Updated attempts display:", this.elements.attempts.textContent);
     },
 
     showWinNotification(message) {
+        if (!this.elements.winNotification) {
+            console.error("Win notification element not found");
+            return;
+        }
+        
+        // Make sure notification is visible
+        this.elements.winNotification.style.display = "block";
+        this.elements.winNotification.style.visibility = "visible";
         this.elements.winNotification.textContent = message;
         this.elements.winNotification.classList.add("show");
+        
+        // Play sound
         AudioManager.play("levelCleared");
-        // Increased to 5 seconds to give time to read the number
+        
+        // Keep notification visible for 5 seconds
         setTimeout(() => {
             this.hideWinNotification();
         }, 5000);
+        
+        console.log("Win notification displayed:", message);
     },
 
-    hideWinNotification() {
+    hideWinNotification(immediate = false) {
         const notification = this.elements.winNotification;
-        notification.classList.add("hide");
-        setTimeout(() => {
+        
+        if (immediate) {
+            // Immediately hide without transition
             notification.classList.remove("show", "hide");
-        }, 300);
+            notification.textContent = "";
+            notification.style.display = "none";
+        } else {
+            // Standard gradual hide with transition
+            notification.classList.add("hide");
+            setTimeout(() => {
+                notification.classList.remove("show", "hide");
+            }, 300);
+        }
     },
 
     showGameOverNotification(message) {
@@ -110,12 +156,21 @@ export const UIManager = {
         }, 5000);
     },
 
-    hideGameOverNotification() {
+    hideGameOverNotification(immediate = false) {
         const notification = this.elements.gameOverNotification;
-        notification.classList.add("hide");
-        setTimeout(() => {
+        
+        if (immediate) {
+            // Immediately hide without transition
             notification.classList.remove("show", "hide");
-        }, 300);
+            notification.textContent = "";
+            notification.style.display = "none";
+        } else {
+            // Standard gradual hide with transition
+            notification.classList.add("hide");
+            setTimeout(() => {
+                notification.classList.remove("show", "hide");
+            }, 300);
+        }
     },
 
     showPlayAgainButton() {
@@ -123,6 +178,7 @@ export const UIManager = {
         
         // Check if button should be in "continue" mode
         const shouldBeContinueButton = gameState.waitingForNextLevel || gameState.finalWin;
+        const isGameOver = gameState.gameOver && !gameState.waitingForNextLevel;
         
         // First update button text and style based on game state
         if (this.elements.playAgainBtn) {
@@ -132,13 +188,19 @@ export const UIManager = {
                     const buttonText = gameState.finalWin ? "Play Again" : "Continue";
                     this.transformPlayAgainToContinue(buttonText);
                 }
+            } else if (isGameOver) {
+                // Game over state
+                if (this.elements.playAgainBtn.classList.contains('continue-mode')) {
+                    this.elements.playAgainBtn.classList.remove('continue-mode');
+                }
+                this.elements.playAgainBtn.classList.add('game-over');
+                this.elements.playAgainBtn.textContent = "Play Again";
             } else {
-                // Not in continue mode
+                // Normal gameplay state - "Restart Level"
                 if (this.elements.playAgainBtn.classList.contains('continue-mode')) {
                     this.restorePlayAgainButton();
-                } else if (gameState.gameOver || gameState.hasWon) {
-                    this.elements.playAgainBtn.textContent = "Play Again";
                 } else {
+                    this.elements.playAgainBtn.classList.remove('continue-mode', 'game-over');
                     this.elements.playAgainBtn.textContent = "Restart Level";
                 }
             }
@@ -241,8 +303,11 @@ export const UIManager = {
         proximityFill.style.width = '100%';
         proximityFill.style.height = `${boundedPercentage}%`;
         
-        // New code: Set color based on proximity percentage
+        // Set color based on proximity percentage
         this.updateProximityColor(proximityFill, boundedPercentage);
+        
+        // Add a slight transition effect for smoother updates
+        proximityFill.style.transition = 'height 0.3s ease-out, background-color 0.3s ease';
         
         // Ensure the proximity meter and its fill are visible
         const proximityMeter = document.getElementById('proximity-meter');
@@ -385,8 +450,9 @@ export const UIManager = {
         playAgainBtn.textContent = buttonText; // Ensure text is explicitly set
         playAgainBtn.style.backgroundColor = '#2eb82e';
         
-        // Add the continue mode class
+        // Add the continue mode class and remove any other state classes
         playAgainBtn.classList.add('continue-mode');
+        playAgainBtn.classList.remove('game-over');
         
         // Log the change for debugging
         console.log(`Button transformed to: ${buttonText}`);
@@ -407,18 +473,24 @@ export const UIManager = {
         if (playAgainBtn.dataset.originalBg) {
             playAgainBtn.style.backgroundColor = playAgainBtn.dataset.originalBg;
         } else {
-            playAgainBtn.style.backgroundColor = '#666'; // Default color
+            playAgainBtn.style.backgroundColor = ''; // Default color from CSS
         }
         
         // Update button text based on game state
-        if (gameState.gameOver || gameState.hasWon) {
+        if (gameState.gameOver && !gameState.waitingForNextLevel) {
             playAgainBtn.textContent = "Play Again";
+            playAgainBtn.classList.add('game-over');
+            playAgainBtn.classList.remove('continue-mode');
         } else {
             playAgainBtn.textContent = "Restart Level";
+            playAgainBtn.classList.remove('game-over', 'continue-mode');
         }
         
         // Remove continue mode class
         playAgainBtn.classList.remove('continue-mode');
+        
+        // Log the change for debugging
+        console.log("Button restored to:", playAgainBtn.textContent);
         
         // Ensure dropdown setup is refreshed after button restore
         setTimeout(() => {
@@ -448,6 +520,17 @@ export const UIManager = {
         
         // Update attempts display
         this.updateAttempts();
+        
+        // ADDED: Reset previous guess display
+        this.resetPreviousGuess();
+        
+        // Clear any error messages
+        const errorMessage = document.getElementById('error-message');
+        if (errorMessage) {
+            errorMessage.classList.remove('visible');
+            errorMessage.className = 'error-message';
+            errorMessage.textContent = '';
+        }
     },
 
     ensureModalsClosed() {
@@ -471,5 +554,90 @@ export const UIManager = {
         }
         
         console.log("Modal toggled:", modal.id, window.isModalOpen);
+    },
+
+    resetProximityMeter() {
+        console.log("Resetting proximity meter");
+        
+        const proximityFill = document.getElementById('proximity-fill');
+        if (proximityFill) {
+            // Reset height to 0 (empty)
+            proximityFill.style.width = '100%';
+            proximityFill.style.height = '0%';
+            
+            // Reset color to default (far)
+            proximityFill.style.backgroundColor = 'var(--proximity-far-color)';
+            
+            // Remove any transition to make reset instant
+            proximityFill.style.transition = 'none';
+            
+            // Force reflow to apply changes immediately
+            void proximityFill.offsetWidth;
+            
+            // Restore transition for future updates
+            setTimeout(() => {
+                proximityFill.style.transition = 'height 0.3s ease-out, background-color 0.3s ease';
+            }, 50);
+        }
+    },
+
+    updatePreviousGuess(guess) {
+        // First ensure the previousGuess element exists
+        if (!this.elements.previousGuess) {
+            this.elements.previousGuess = document.getElementById('previous-guess');
+            
+            // If it still doesn't exist, create it
+            if (!this.elements.previousGuess) {
+                console.log("Creating previous guess element dynamically");
+                const headerCenter = document.querySelector('.header-center');
+                if (headerCenter) {
+                    const previousGuessElement = document.createElement('div');
+                    previousGuessElement.id = 'previous-guess';
+                    
+                    // IMPROVED: Add styles to ensure it stays on one line
+                    previousGuessElement.style.cssText = 'display: inline-block; margin: 0; white-space: nowrap;';
+                    
+                    headerCenter.appendChild(previousGuessElement);
+                    this.elements.previousGuess = previousGuessElement;
+                }
+            }
+        }
+        
+        // Update content and ensure visibility
+        if (this.elements.previousGuess) {
+            this.elements.previousGuess.textContent = `Last Guess: ${guess}`;
+            
+            // Ensure visibility with important styling
+            this.elements.previousGuess.style.display = 'inline-block';
+            this.elements.previousGuess.style.visibility = 'visible';
+            this.elements.previousGuess.style.opacity = '1';
+            this.elements.previousGuess.style.whiteSpace = 'nowrap';
+            
+            // Add highlight effect
+            this.elements.previousGuess.classList.add('highlight');
+            setTimeout(() => {
+                if (this.elements.previousGuess) {
+                    this.elements.previousGuess.classList.remove('highlight');
+                }
+            }, 1000);
+            
+            console.log("Updated previous guess display:", guess);
+        } else {
+            console.error("Could not create or find previous guess element");
+        }
+    },
+
+    resetPreviousGuess() {
+        if (!this.elements.previousGuess) {
+            this.elements.previousGuess = document.getElementById('previous-guess');
+        }
+        
+        if (this.elements.previousGuess) {
+            this.elements.previousGuess.textContent = "Last Guess: --";
+            this.elements.previousGuess.classList.remove('highlight');
+            console.log("Reset previous guess display");
+        } else {
+            console.error("Previous guess element not found for reset");
+        }
     }
 };

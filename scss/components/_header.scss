@@ -1,0 +1,191 @@
+// Header component styling
+
+.game-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: var(--card-bg);
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  z-index: 10;
+  
+  .header-item {
+    flex: 1;
+    
+    &.header-left {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+    }
+    
+    &.header-center {
+      // IMPROVED: Enforce single row with nowrap
+      display: flex !important;
+      flex-direction: row !important;
+      align-items: center !important;
+      justify-content: center !important;
+      flex-wrap: nowrap !important; // Prevent wrapping to new line
+      min-height: 60px !important;
+      padding: 10px 0 !important;
+      gap: 25px !important; // Reduce default gap for better spacing
+    }
+    
+    &.header-right {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      
+      #level-indicator {
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: var(--text-color);
+      }
+    }
+  }
+}
+
+/* Direct styling for header elements to guarantee they're applied */
+.header-center #attempts {
+  font-size: 0.9rem !important;
+  font-weight: 500 !important;
+  color: var(--text-color) !important;
+  display: inline-block !important; // Changed from block to inline-block
+  margin: 0 !important; // Reset any existing margins
+  white-space: nowrap !important; // Prevent text wrapping
+  overflow: visible !important;
+}
+
+.header-center #previous-guess {
+  font-size: 0.9rem !important;
+  font-weight: 500 !important;
+  color: var(--text-color) !important;
+  display: inline-block !important; // Changed from block to inline-block
+  margin: 0 !important; // Reset any existing margins
+  white-space: nowrap !important; // Prevent text wrapping
+  overflow: visible !important;
+  
+  &.highlight {
+    animation: pulse 1s ease !important;
+    color: var(--primary-color) !important;
+  }
+}
+
+/* Make sure these elements never wrap to a new line and always use inline-block */
+#attempts, #previous-guess {
+  display: inline-block !important;
+  white-space: nowrap !important;
+  margin: 0 !important;
+}
+
+/* Pulse animation for highlighting the previous guess */
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.9; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Enhanced mobile responsive adjustments with better text scaling */
+@media (max-width: $breakpoint-md) {
+  .game-header {
+    padding: 8px 12px;
+    
+    .header-item.header-center {
+      gap: 20px !important; // Reduced horizontal gap on mobile
+    }
+  }
+  
+  .header-center #attempts,
+  #attempts {
+    font-size: 0.8rem !important;
+  }
+  
+  .header-center #previous-guess,
+  #previous-guess {
+    font-size: 0.8rem !important;
+  }
+  
+  #level-indicator {
+    font-size: 0.8rem !important;
+  }
+}
+
+/* Small mobile devices - reduce text and gap further */
+@media (max-width: $breakpoint-sm) {
+  .game-header {
+    padding: 6px 8px;
+    
+    .header-item.header-center {
+      gap: 15px !important; // Further reduced gap for small screens
+    }
+  }
+  
+  .header-center #attempts,
+  #attempts {
+    font-size: 0.7rem !important;
+  }
+  
+  .header-center #previous-guess,
+  #previous-guess {
+    font-size: 0.7rem !important;
+  }
+  
+  #level-indicator {
+    font-size: 0.7rem !important;
+  }
+}
+
+/* Very small mobile devices - most aggressive text reduction */
+@media (max-width: 375px) {
+  .game-header {
+    padding: 4px 6px;
+    
+    .header-item.header-center {
+      gap: 10px !important; // Minimal gap for tiny screens
+    }
+  }
+  
+  .header-center #attempts,
+  #attempts {
+    font-size: 0.65rem !important;
+  }
+  
+  .header-center #previous-guess,
+  #previous-guess {
+    font-size: 0.65rem !important;
+  }
+  
+  #level-indicator {
+    font-size: 0.65rem !important;
+  }
+}
+
+/* Extra small devices - adjust text to be more compact */
+@media (max-width: 320px) {
+  .game-header .header-item.header-center {
+    gap: 6px !important;
+  }
+  
+  #attempts, #previous-guess, #level-indicator {
+    font-size: 0.6rem !important;
+  }
+  
+  /* Simplify the text on very small screens */
+  #attempts {
+    content: attr(data-count);
+  }
+}
+
+/* Adjust for landscape orientation on small height devices */
+@media (max-height: 500px) {
+  .game-header {
+    padding: 4px 8px;
+    min-height: 40px !important;
+    
+    .header-item.header-center {
+      min-height: 40px !important;
+      padding: 4px 0 !important;
+    }
+  }
+}

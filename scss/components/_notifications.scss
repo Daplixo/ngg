@@ -35,12 +35,12 @@
 
 /* Win notification */
 #winNotification {
-  background-color: var(--win-notification-bg);
+  background-color: #2eb82e;
 }
 
 /* Game over notification */
 #gameOverNotification {
-  background-color: var(--gameover-notification-bg);
+  background-color: #e74c3c;
 }
 
 /* Special notifications created dynamically */
@@ -62,6 +62,19 @@
   left: 50%;
   transform: translateX(-50%);
   background-color: #8e44ad;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  z-index: $z-index-notification;
+}
+
+/* Game restart notification */
+[data-notification-type="game-restart"] {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #e67e22; /* Orange color */
   color: white;
   padding: 10px 20px;
   border-radius: 5px;

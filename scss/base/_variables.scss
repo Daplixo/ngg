@@ -27,14 +27,14 @@
   /* Explicit color codes for buttons and UI elements */
   --btn-restart-bg: #444;
   --btn-restart-hover: #222;
-  --btn-play-again-bg: #666;
-  --btn-play-again-hover: #333;
+  --btn-play-again-bg: #6c757d; /* Gray for Restart Level */
+  --btn-play-again-hover: #5a6268; /* Hover state for Restart Level */
   --btn-restore-bg: #8e44ad;
   --btn-restore-hover: #7d3c98;
   --btn-reset-bg: #e74c3c;
   --btn-reset-hover: #c0392b;
-  --btn-continue-bg: #2eb82e;
-  --btn-continue-hover: #248f24;
+  --btn-continue-bg: #2ecc71;
+  --btn-continue-hover: #27ae60;
   --feedback-error-color: red;
   
   /* Notification colors */
@@ -85,6 +85,10 @@
   --hamburger-color: var(--text-color);
   --hamburger-hover-opacity: 0.8;
   --hamburger-active-color: var(--text-color);
+
+  /* Error message colors */
+  --error-message-color: #e74c3c;
+  --warning-message-color: #e67e22;
 }
 
 [data-theme="dark"] {
@@ -136,6 +140,10 @@
   --hamburger-color: var(--text-color);
   --hamburger-hover-opacity: 0.8;
   --hamburger-active-color: var(--text-color);
+
+  /* Error message colors - dark theme */
+  --error-message-color: #ff6b6b;
+  --warning-message-color: #ffa94d;
 }
 
 // Animation durations

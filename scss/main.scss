@@ -1,14 +1,14 @@
 // Main SCSS file that imports all partials
 
-// 1. Reset & Base & Variables
+// IMPORTANT: Import mixins before any file that uses them
 @import 'base/_reset';
 @import 'base/variables';
-@import './utils/mixins';
+@import 'utils/_mixins'; // Fix path with underscore and import before components
 @import 'base/base';
 
 // 2. Layout & Structure
 @import 'layout/layout';
-@import 'layout/header'; // Make sure this is imported
+@import 'layout/header';
 @import 'layout/game-container';
 @import 'layout/footer';
 
@@ -21,6 +21,7 @@
 @import 'components/feedback';
 @import 'components/attempts';
 @import 'components/notifications';
+@import 'components/error-messages'; // Add the new error messages component
 
 // 4. Game Features
 @import 'features/proximity-meter';

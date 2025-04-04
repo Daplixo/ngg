@@ -36,6 +36,9 @@ window.playWrongSound = (isGameOver = false) => {
 document.addEventListener('DOMContentLoaded', async function() {
     console.log('DOM fully loaded');
 
+    // CRITICAL FIX: Ensure header elements are created dynamically
+    createHeaderElements();
+
     // CRITICAL FIX: Initialize game first, then try profile
     try {
         // Initialize the game
@@ -85,6 +88,44 @@ document.addEventListener('DOMContentLoaded', async function() {
     
     // Initialize feedback modal
     initFeedbackModal();
+
+    // Function to create header elements dynamically
+    function createHeaderElements() {
+        console.log("Creating header elements dynamically");
+        
+        const headerCenter = document.querySelector('.header-center');
+        if (!headerCenter) {
+            console.error("Header center element not found");
+            return;
+        }
+        
+        // Clear any existing elements (to ensure clean state)
+        headerCenter.innerHTML = '';
+        
+        // CRITICAL FIX: Create attempts counter with optimized styling for one line
+        const attemptsElement = document.createElement('div');
+        attemptsElement.id = 'attempts';
+        attemptsElement.textContent = 'Attempts: 0/3';
+        attemptsElement.setAttribute('data-count', '0/3'); // For simplified display on very small screens
+        attemptsElement.style.cssText = 'display: inline-block; margin: 0; white-space: nowrap;';
+        headerCenter.appendChild(attemptsElement);
+        
+        // Create previous guess element - optimized for one line
+        const previousGuessElement = document.createElement('div');
+        previousGuessElement.id = 'previous-guess';
+        previousGuessElement.textContent = 'Last Guess: --';
+        previousGuessElement.style.cssText = 'display: inline-block; margin: 0; white-space: nowrap;';
+        headerCenter.appendChild(previousGuessElement);
+        
+        // Ensure header center forces items to stay on one line
+        headerCenter.style.cssText = 'display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 25px; flex-wrap: nowrap; white-space: nowrap;';
+        
+        // ADDED: Make sure UIManager has references to these elements
+        UIManager.elements.attempts = attemptsElement;
+        UIManager.elements.previousGuess = previousGuessElement;
+        
+        console.log("Header elements created dynamically with horizontal spacing");
+    }
 });
 
 // Handle delete account
@@ -153,6 +194,7 @@ function initializeGame() {
 }
 
 // CRITICAL FIX: Combined and improved updateUIFromSavedState function
+// Make sure we correctly update UI when game state changes
 function updateUIFromSavedState() {
     console.log("Updating UI from saved state");
     
@@ -179,12 +221,40 @@ function updateUIFromSavedState() {
         UIManager.showPlayAgainButton();
         
         if (gameState.waitingForNextLevel || gameState.finalWin) {
-            UIManager.elements.continueBtn.style.display = "inline-block";
-            UIManager.transformPlayAgainToContinue(gameState.finalWin ? "Play Again" : "Continue");
+            console.log("Game is waiting for next level or final win");
+            
+            // BUGFIX: Force button transformation to continue mode
+            const buttonText = gameState.finalWin ? "Play Again" : "Continue";
+            UIManager.transformPlayAgainToContinue(buttonText);
+            
+            // Ensure the button has the continue-mode class and correct style
+            const playAgainBtn = UIManager.elements.playAgainBtn;
+            if (playAgainBtn) {
+                playAgainBtn.classList.add('continue-mode');
+                playAgainBtn.classList.remove('game-over');
+                playAgainBtn.style.backgroundColor = '#2eb82e';
+                playAgainBtn.textContent = buttonText;
+                console.log("Forced button to continue mode:", buttonText);
+            }
+        } else if (gameState.gameOver) {
+            // Apply game over styling
+            const playAgainBtn = UIManager.elements.playAgainBtn;
+            if (playAgainBtn) {
+                playAgainBtn.textContent = "Play Again";
+                playAgainBtn.classList.remove('continue-mode');
+                playAgainBtn.classList.add('game-over');
+                console.log("Applied game over styling to button");
+            }
         }
     } else {
-        // Ensure Play Again button is shown with "Restart Level" text even for active games
+        // Ensure Play Again button is shown with "Restart Level" text for active games
         UIManager.showPlayAgainButton();
+        const playAgainBtn = UIManager.elements.playAgainBtn;
+        if (playAgainBtn) {
+            playAgainBtn.textContent = "Restart Level";
+            playAgainBtn.classList.remove('continue-mode', 'game-over');
+            console.log("Set button to Restart Level");
+        }
     }
     
     // Show keyboard for all states
