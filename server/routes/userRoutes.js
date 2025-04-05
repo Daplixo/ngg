@@ -3,6 +3,18 @@ const router = express.Router();
 const User = require('../models/User');
 const auth = require('../middleware/auth');
 
+// TEMPORARY: Get all users (for backend sync test)
+router.get('/', async (req, res) => {
+  try {
+    const users = await User.find().select('-password');
+    res.json(users);
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+
 // Get current user profile
 router.get('/profile', auth, async (req, res) => {
   try {
