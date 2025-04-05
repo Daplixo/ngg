@@ -1,13 +1,32 @@
 /**
  * API Connectivity Fix
  * This script helps diagnose and fix API connectivity issues
- * MODIFIED: Removed floating status indicators
+ * MODIFIED: Added early wakeup ping and better Render cold start handling
  */
 
 import { API_BASE_URL, isApiAvailable, apiConfig } from './api/apiConfig.js';
 import { apiService } from './api/apiService.js';
 
 console.log("🔍 API Connectivity Fix loaded - Silent mode");
+
+// Send a silent wakeup ping to Render immediately to warm up the backend
+(function wakeupBackend() {
+  const BACKEND_URL = 'https://number-guessing-backend-fumk.onrender.com/';
+  
+  console.log("🔥 Sending early wakeup ping to backend...");
+  
+  fetch(BACKEND_URL, { 
+    method: 'GET',
+    mode: 'no-cors', // Use no-cors to avoid CORS issues during wakeup
+    cache: 'no-store'
+  })
+  .then(() => {
+    console.log("📡 Wakeup ping sent to backend. This will help speed up the cold start.");
+  })
+  .catch(err => {
+    console.log("⚠️ Wakeup ping failed, but this is expected during cold start:", err);
+  });
+})();
 
 // Create a simple status indicator - DISABLED
 function createStatusIndicator() {
@@ -47,7 +66,7 @@ export async function checkAPIStatus(forcedCheck = false) {
       try {
         console.log(`Trying endpoint: ${endpoint}`);
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000);
+        const timeoutId = setTimeout(() => controller.abort(), 8000); // Longer timeout for cold starts
         
         const response = await fetch(endpoint, {
           method: 'GET',
@@ -70,7 +89,7 @@ export async function checkAPIStatus(forcedCheck = false) {
           console.log(`❌ Failed to connect to: ${endpoint}, status: ${response.status}`);
         }
       } catch (err) {
-        console.log(`❌ Error connecting to: ${endpoint}`, err);
+        console.log(`❌ Error connecting to: ${endpoint} - Backend might be in cold start`, err);
       }
     }
     
@@ -79,11 +98,15 @@ export async function checkAPIStatus(forcedCheck = false) {
     if (connected) {
       apiService.offlineMode = false;
       apiConfig.isOfflineMode = false;
+      console.log("✅ API connection established");
+    } else {
+      console.log("⚠️ Backend still waking up or unavailable. Will retry later.");
     }
     
     return connected;
   } catch (error) {
     console.error("API status check failed:", error);
+    console.log("⚠️ Backend appears to be in cold start or unavailable. Will retry later.");
     return false;
   }
 }
@@ -92,8 +115,12 @@ export async function checkAPIStatus(forcedCheck = false) {
 document.addEventListener('DOMContentLoaded', () => {
   console.log("Initializing silent API connectivity check...");
   
-  // Initial status check with delay
-  setTimeout(() => checkAPIStatus(), 1000);
+  // Initial status check with longer delay for cold start
+  console.log("🕒 Waiting 5 seconds before first API check to allow backend to wake up...");
+  setTimeout(() => {
+    console.log("⏰ Performing initial API availability check");
+    checkAPIStatus();
+  }, 5000);
   
   // Periodic check (less frequent)
   setInterval(() => {
@@ -115,7 +142,7 @@ export async function forceCheckAPI() {
   try {
     console.log(`Force checking API at: ${API_BASE_URL}/api/ping`);
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000);
+    const timeoutId = setTimeout(() => controller.abort(), 8000); // Longer timeout for cold starts
     
     const response = await fetch(`${API_BASE_URL}/api/ping`, {
       method: 'GET',
@@ -128,9 +155,17 @@ export async function forceCheckAPI() {
     
     clearTimeout(timeoutId);
     
-    return response.ok;
+    if (response.ok) {
+      console.log("✅ API is available");
+      return true;
+    } else {
+      console.log("❌ API responded with error status:", response.status);
+      console.log("🕒 Backend might be in cold start, waiting for it to initialize...");
+      return false;
+    }
   } catch (error) {
     console.error("Force API check failed:", error);
+    console.log("⚠️ Backend might be in cold start or unavailable");
     return false;
   }
 }

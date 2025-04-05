@@ -1,7 +1,7 @@
 /**
  * Database Connection Manager
  * Handles checking and managing database connectivity
- * MODIFIED: Removed UI elements
+ * MODIFIED: Increased retry delay for Render cold starts
  */
 
 import { apiConfig, isApiAvailable } from './api/apiConfig.js';
@@ -13,9 +13,11 @@ const STATUS_ELEMENT_ID = 'db-status-indicator';
 let lastKnownState = null;
 // Set a max retry count to avoid infinite attempts
 let retryCount = 0;
-const MAX_RETRIES = 3;
+const MAX_RETRIES = 5; // Increased from 3 to 5
 // Track if there's a manual override
 let manualOfflineMode = false;
+// Increased retry delay for Render cold starts (now 10 seconds)
+const RETRY_DELAY = 10000;
 
 // Create and inject the status indicator into the page - DISABLED
 function createStatusIndicator() {
@@ -70,6 +72,7 @@ export async function checkConnection(manual = false) {
     if (isAvailable) {
       apiService.offlineMode = false;
       apiConfig.isOfflineMode = false;
+      retryCount = 0; // Reset retry count on success
     } else if (manual) {
       retryCount++;
       
@@ -79,9 +82,10 @@ export async function checkConnection(manual = false) {
         apiService.offlineMode = true;
         apiConfig.isOfflineMode = true;
       } else {
-        console.log(`Connection failed, retry ${retryCount}/${MAX_RETRIES}`);
-        // Schedule another check after a delay
-        setTimeout(() => checkConnection(true), 3000);
+        console.log(`Backend still sleeping or unavailable. Attempt ${retryCount}/${MAX_RETRIES}`);
+        console.log(`Waiting ${RETRY_DELAY/1000} seconds before retry...`);
+        // Schedule another check after the increased delay
+        setTimeout(() => checkConnection(true), RETRY_DELAY);
       }
     }
     
@@ -101,23 +105,25 @@ export function initConnectionChecker() {
   console.log("Initializing database connection checker (UI disabled)");
   
   // Initial check with a delay to avoid initial script blocking
-  setTimeout(() => checkConnection(true), 1500);
+  setTimeout(() => checkConnection(true), 3000); // Increased initial delay
   
-  // Periodic checks - less frequent to avoid switching back and forth
+  // Periodic checks - less frequent for Render cold starts
   setInterval(() => {
     if (!manualOfflineMode) {
       checkConnection();
     }
-  }, 120000); // Check every 2 minutes
+  }, 180000); // Check every 3 minutes
   
   // Check on online/offline events
   window.addEventListener('online', () => {
     if (!manualOfflineMode) {
+      console.log("Browser reports online status, checking API...");
       checkConnection(true);
     }
   });
   
   window.addEventListener('offline', () => {
+    console.log("Browser reports offline status, pausing API checks");
     apiConfig.isOfflineMode = true;
     updateStatusIndicator(false);
   });

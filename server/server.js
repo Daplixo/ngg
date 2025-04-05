@@ -4,11 +4,11 @@ const cors = require('cors');
 const path = require('path');
 require('dotenv').config();
 
-// Import routes
-const userRoutes = require('./routes/users');
-const authRoutes = require('./routes/auth');
-const leaderboardRoutes = require('./routes/leaderboard');
-const miscRoutes = require('./routes/misc');
+// Import routes (✅ fixed filenames)
+const userRoutes = require('./routes/userRoutes');
+const authRoutes = require('./routes/authRoutes');
+const leaderboardRoutes = require('./routes/leaderboardRoutes');
+const miscRoutes = require('./routes/miscRoutes');
 
 // Import CORS configuration
 const corsOptions = require('./cors-config');
