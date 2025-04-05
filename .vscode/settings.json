@@ -14,5 +14,10 @@
   "liveSassCompile.settings.excludeList": [
     "**/node_modules/**",
     ".vscode/**"
-  ]
+  ],
+  "liveServer.settings.https": {
+    "enable": true,
+    "cert": "C:/Number-Guessing-Game/cert.pem",
+    "key": "C:/Number-Guessing-Game/key.pem"
+  }
 }
