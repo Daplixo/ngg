@@ -622,3 +622,16 @@ function addSoundAndAnimationEffects() {
     
     setTimeout(keepInputFocused, 500);
 }
+
+// Initialize sync manager for background data sync
+import { SyncManager } from './syncManager.js';
+
+// Set up automatic background sync
+function initBackgroundSync() {
+    const syncManager = new SyncManager();
+    syncManager.startSync();
+    window.syncManager = syncManager;
+}
+
+// Initialize after a delay to ensure other components are loaded
+setTimeout(initBackgroundSync, 5000);

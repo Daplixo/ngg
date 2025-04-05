@@ -451,19 +451,28 @@ export class UserProfileUI {
             this.userProfile.validateProfile(updatedProfile);
             this.userProfile.saveProfile(updatedProfile);
             
-            if (this.api.token && currentProfile.syncedWithServer) {
-                this.api.updateProfile({
-                    nickname: updatedProfile.nickname,
-                    username: updatedProfile.name,
-                    profilePicture: updatedProfile.picture
-                }).catch(error => {
-                    console.error('Failed to update server profile:', error);
-                });
+            // Sync changes with server if this is a non-guest profile
+            if (updatedProfile.type === 'account') {
+                this.syncProfileWithServer(updatedProfile);
             }
             
             this.updateProfileDisplay();
         } catch (error) {
             alert(error.message);
+        }
+    }
+
+    // New method to sync profile changes with server
+    syncProfileWithServer(profile) {
+        if (!this.api.offlineMode) {
+            console.log("Syncing profile changes with server");
+            this.api.updateProfile({
+                nickname: profile.nickname,
+                username: profile.name,
+                profilePicture: profile.picture
+            }).catch(error => {
+                console.warn("Failed to sync profile with server:", error);
+            });
         }
     }
 

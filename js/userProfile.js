@@ -16,10 +16,33 @@ export class UserProfile {
     saveProfile(profileData) {
         try {
             localStorage.setItem(this.storageKey, JSON.stringify(profileData));
+            
+            // Trigger server sync when profile is saved
+            this.triggerServerSync(profileData);
+            
             return true;
         } catch (error) {
             console.error('Error saving profile:', error);
             return false;
+        }
+    }
+
+    // New method to trigger immediate server sync
+    triggerServerSync(profileData) {
+        // Don't try to sync if we're in a module context without access to window
+        if (typeof window !== 'undefined') {
+            // If SyncManager is loaded, use it
+            if (window.syncManager) {
+                window.syncManager.performSync();
+            } else {
+                // Otherwise, load SyncManager dynamically
+                import('./syncManager.js').then(module => {
+                    const syncManager = new module.SyncManager();
+                    syncManager.performSync();
+                }).catch(err => {
+                    console.warn('Could not load SyncManager for immediate sync:', err);
+                });
+            }
         }
     }
 

@@ -252,9 +252,20 @@ export class InitialProfileSetup {
                 bestLevel: 1
             };
             
-            // Save profile locally
+            // Save profile locally first
             if (this.userProfile.saveProfile(profileData)) {
                 console.log("Profile saved successfully:", profileData);
+                
+                // Import and initialize SyncManager to immediately sync profile
+                import('./syncManager.js').then(module => {
+                    const syncManager = new module.SyncManager();
+                    // Immediately try to register this profile
+                    syncManager.registerProfileWithServer(profileData);
+                    // Store instance for future use
+                    window.syncManager = syncManager;
+                }).catch(err => {
+                    console.warn('Could not load SyncManager for initial sync:', err);
+                });
                 
                 // Initialize the profile UI to update the side menu
                 const profileUI = new UserProfileUI();
@@ -273,6 +284,47 @@ export class InitialProfileSetup {
             console.error("Account setup error:", error);
             alert(error.message || 'Error creating account. Please try again.');
         }
+    }
+
+    // New method to handle server registration without blocking UI
+    registerWithServer(profileData) {
+        import('./api/apiService.js').then(module => {
+            const apiService = module.apiService;
+            
+            // Create a unique email-like identifier and password for backend auth
+            // This avoids asking the user for an email/password but still works with the backend
+            const tempEmail = `user_${profileData.name}_${Date.now()}@numberguess.game`;
+            const tempPassword = `pwd_${Date.now()}_${Math.floor(Math.random() * 1000000)}`;
+            
+            // Register with server
+            apiService.register({
+                username: profileData.name,
+                nickname: profileData.nickname,
+                email: tempEmail,
+                password: tempPassword,
+                profilePicture: profileData.picture
+            }).then(response => {
+                console.log("Profile successfully registered with server");
+                
+                // Save the token for future API calls
+                if (response && response.token) {
+                    apiService.setToken(response.token);
+                    
+                    // Update the profile to mark it as synced with server
+                    const profile = this.userProfile.getProfile();
+                    if (profile) {
+                        profile.syncedWithServer = true;
+                        this.userProfile.saveProfile(profile);
+                    }
+                }
+            }).catch(error => {
+                console.warn("Server registration failed:", error);
+                // If username is taken, we could auto-rename, but that might confuse users
+                // For now, we'll just log the error and continue with local data
+            });
+        }).catch(error => {
+            console.warn("Failed to load API service:", error);
+        });
     }
     
     // Modified handleGuestSetup method to update the profile in the side menu

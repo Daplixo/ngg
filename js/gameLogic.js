@@ -90,6 +90,22 @@ export const GameLogic = {
             const userProfile = new UserProfile();
             if (userProfile.hasProfile()) {
                 userProfile.updateStatistics({ level: gameState.level });
+                
+                // Additional sync with server after statistics update
+                const profile = userProfile.getProfile();
+                if (profile && profile.syncedWithServer) {
+                    import('./api/apiService.js').then(module => {
+                        const apiService = module.apiService;
+                        // Ensure we have the latest token
+                        if (apiService.token) {
+                            apiService.updateStats({
+                                gamesPlayed: profile.gamesPlayed,
+                                bestLevel: profile.bestLevel,
+                                totalWins: (profile.totalWins || 0) + 1
+                            }).catch(e => console.warn('Win stats sync failed:', e));
+                        }
+                    }).catch(e => console.warn('API module load failed:', e));
+                }
             }
         } catch(e) {
             console.error("Error updating profile:", e);

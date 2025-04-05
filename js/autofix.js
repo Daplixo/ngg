@@ -92,4 +92,55 @@ setTimeout(() => {
     }
 }, 500);
 
+// Add a periodic sync function to automatically sync with server
+function setupPeriodicSync() {
+    const SYNC_INTERVAL = 5 * 60 * 1000; // 5 minutes
+    
+    setInterval(() => {
+        try {
+            // Only sync if user has a profile that's marked for server sync
+            const userProfile = new UserProfile();
+            const profile = userProfile.getProfile();
+            
+            if (profile && profile.syncedWithServer) {
+                import('./api/apiService.js').then(module => {
+                    const apiService = module.apiService;
+                    if (apiService.token && !apiService.offlineMode) {
+                        console.log("Performing periodic sync with server");
+                        
+                        // Sync profile stats
+                        apiService.updateStats({
+                            gamesPlayed: profile.gamesPlayed,
+                            bestLevel: profile.bestLevel
+                        }).catch(e => console.warn('Periodic stats sync failed:', e));
+                        
+                        // Fetch server profile to resolve any conflicts
+                        apiService.getUserProfile().then(serverProfile => {
+                            if (serverProfile) {
+                                // Only update local profile if server has newer data
+                                if (serverProfile.stats.bestLevel > profile.bestLevel) {
+                                    profile.bestLevel = serverProfile.stats.bestLevel;
+                                    userProfile.saveProfile(profile);
+                                }
+                                
+                                // Update UI if needed
+                                const profileUI = new UserProfileUI();
+                                profileUI.updateProfileDisplay();
+                            }
+                        }).catch(e => console.warn('Periodic profile fetch failed:', e));
+                    }
+                }).catch(e => console.warn('API module load failed in periodic sync:', e));
+            }
+        } catch (e) {
+            console.warn('Error in periodic sync:', e);
+        }
+    }, SYNC_INTERVAL);
+}
+
+// Set up periodic sync on page load
+document.addEventListener('DOMContentLoaded', () => {
+    // Wait a bit to ensure everything else is loaded
+    setTimeout(setupPeriodicSync, 10000);
+});
+
 // REMOVED: The code that added the "Repair Game" button has been removed
