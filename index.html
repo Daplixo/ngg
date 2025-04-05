@@ -577,114 +577,38 @@
     <!-- Debug helper for MongoDB connectivity issues -->
     <script type="module" src="js/debug.js"></script>
 
-    <!-- Form submission script - Optimized to avoid unnecessary code execution -->
+    <!-- Form submission script - Modified to work on both localhost and production -->
     <script>
-      // Only add event listener if we're in a development environment
-      if (
-        window.location.hostname === "localhost" ||
-        window.location.hostname === "127.0.0.1"
-      ) {
-        document
-          .getElementById("feedbackForm")
-          .addEventListener("submit", function (event) {
-            event.preventDefault();
-
-            // Get form data and handle the submission
-            const formData = new FormData(this);
-            const name = formData.get("name");
-            console.log("Form submitted:", Object.fromEntries(formData));
-
-            // Show success message and close modal
-            alert("Thank you for your feedback, " + name + "!");
-            document.getElementById("feedbackModal").style.display = "none";
-
-            // Reset form
-            this.reset();
-          });
-      }
-    </script>
-
-    <!-- Direct script to make side menu feedback button functional -->
-    <script>
-      // Make sure this runs after DOM is ready
+      // Enable form submissions from both localhost and production
       document.addEventListener("DOMContentLoaded", function () {
-        const sideMenuFeedbackBtn = document.getElementById(
-          "side-menu-feedback-btn"
-        );
-        const feedbackModal = document.getElementById("feedbackModal");
-        const closeModalBtn = document.querySelector(".close-modal");
+        const feedbackForm = document.getElementById("feedbackForm");
 
-        if (sideMenuFeedbackBtn && feedbackModal) {
-          console.log("Feedback button and modal found, adding click handler");
+        if (feedbackForm) {
+          // Add a listener to show confirmation after form submission
+          feedbackForm.addEventListener("submit", function (event) {
+            // Don't prevent default - let the form submit naturally to FormSubmit.co
+            // This works on both localhost and production
 
-          sideMenuFeedbackBtn.addEventListener("click", function () {
-            console.log("Side menu feedback button clicked");
+            // Get the user's name for the confirmation message
+            const name = document.getElementById("name").value;
 
-            // Close the side menu
-            const sideMenu = document.querySelector(".side-menu");
-            const sideMenuOverlay =
-              document.querySelector(".side-menu-overlay");
-            const menuToggle = document.getElementById("menu-toggle");
+            // Store in sessionStorage so we can show confirmation after redirect
+            sessionStorage.setItem("feedbackSent", "true");
+            sessionStorage.setItem("feedbackName", name);
 
-            if (sideMenu) sideMenu.classList.remove("active");
-            if (sideMenuOverlay) sideMenuOverlay.classList.remove("active");
-            if (menuToggle) menuToggle.classList.remove("active");
-            document.body.classList.remove("menu-open");
-
-            // Open feedback modal - direct approach
-            feedbackModal.style.display = "flex";
-            feedbackModal.style.visibility = "visible";
-            feedbackModal.style.opacity = "1";
-            feedbackModal.style.pointerEvents = "auto";
-            feedbackModal.classList.add("active");
-            window.isModalOpen = true;
-
-            console.log("Feedback modal should be open now");
-          });
-        } else {
-          console.error("Feedback button or modal not found!", {
-            button: sideMenuFeedbackBtn,
-            modal: feedbackModal,
-          });
-        }
-
-        // Add click handler for the close button
-        if (closeModalBtn) {
-          closeModalBtn.addEventListener("click", function () {
-            console.log("Close button clicked");
-            closeModal();
+            console.log("Form submitted, data will be sent to FormSubmit.co");
           });
 
-          // Also close when clicking outside the modal content
-          feedbackModal.addEventListener("click", function (e) {
-            if (e.target === feedbackModal) {
-              closeModal();
-            }
-          });
-        }
+          // Check if returning from submission
+          if (sessionStorage.getItem("feedbackSent") === "true") {
+            const name = sessionStorage.getItem("feedbackName") || "friend";
+            alert("Thank you for your feedback, " + name + "!");
 
-        // Global close modal function
-        function closeModal() {
-          if (feedbackModal) {
-            feedbackModal.style.display = "none";
-            feedbackModal.style.visibility = "hidden";
-            feedbackModal.style.opacity = "0";
-            feedbackModal.style.pointerEvents = "none";
-            feedbackModal.classList.remove("active");
-            window.isModalOpen = false;
-            console.log("Modal closed");
+            // Clear the session flag
+            sessionStorage.removeItem("feedbackSent");
+            sessionStorage.removeItem("feedbackName");
           }
         }
-
-        // Close with ESC key
-        document.addEventListener("keydown", function (e) {
-          if (
-            e.key === "Escape" &&
-            feedbackModal.classList.contains("active")
-          ) {
-            closeModal();
-          }
-        });
       });
     </script>
 

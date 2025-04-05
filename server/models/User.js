@@ -1,9 +1,10 @@
 const mongoose = require('mongoose');
 
-const playerSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema({
   username: {
     type: String,
     required: true,
+    unique: true,
     trim: true,
     minlength: 2,
     maxlength: 20
@@ -17,7 +18,7 @@ const playerSchema = new mongoose.Schema({
   },
   avatarId: {
     type: String,
-    required: true  // assuming every player picks an avatar
+    required: true  // assuming all users must select one of your premade avatars
   },
   stats: {
     gamesPlayed: { type: Number, default: 0 },
@@ -29,4 +30,5 @@ const playerSchema = new mongoose.Schema({
   }
 });
 
-module.exports = mongoose.model('User', userSchema);
+const User = mongoose.model('User', userSchema);
+module.exports = User;
