@@ -6,13 +6,16 @@ const auth = require('../middleware/auth');
 // TEMPORARY: Get all users (for backend sync test)
 router.get('/', async (req, res) => {
   try {
+    console.log('📦 Trying to fetch users...');
     const users = await User.find().select('-password');
+    console.log('✅ Users fetched:', users);
     res.json(users);
   } catch (error) {
-    console.error('Error fetching users:', error);
-    res.status(500).json({ message: 'Server error' });
+    console.error('❌ Error fetching users:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
+
 
 
 // Get current user profile
