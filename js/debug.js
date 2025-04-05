@@ -76,24 +76,26 @@ window.debugGame = function() {
  * Helps diagnose and fix MongoDB connection issues
  */
 
-// Force reconnect and restore functionality
+// MongoDB and API diagnostics helper
+
 window.fixGame = function() {
     console.log("🔧 Attempting to fix game functionality...");
     
     try {
-        // 1. Make game state and logic globally accessible for debugging
-        import('./gameState.js')
-            .then(module => {
-                window.gameState = module.gameState;
-                console.log("✓ Game state module loaded");
-            });
-            
-        import('./gameLogic.js')
-            .then(module => {
-                window.GameLogic = module.GameLogic;
-                console.log("✓ Game logic module loaded");
+        // 1. Force import critical modules
+        console.log("1. Importing critical modules");
+        Promise.all([
+            import('./gameLogic.js'),
+            import('./gameState.js'),
+            import('./uiManager.js')
+        ])
+            .then(([gameLogicModule, gameStateModule, uiManagerModule]) => {
+                window.GameLogic = gameLogicModule.GameLogic;
+                window.gameState = gameStateModule.gameState;
+                window.UIManager = uiManagerModule.UIManager;
                 
-                // Initialize the game after modules are loaded
+                console.log("✓ Critical modules imported");
+                
                 setTimeout(() => {
                     if (window.GameLogic && window.GameLogic.initGame) {
                         window.GameLogic.initGame();
@@ -108,9 +110,12 @@ window.fixGame = function() {
                 window.apiService = module.apiService;
                 console.log("✓ API service module loaded");
                 
-                // Disable API temporarily to prevent blocking
-                window.apiService.available = false;
-                console.log("⚠️ API functionality temporarily disabled to prevent blocking");
+                // Run a connectivity check but don't disable API
+                import('./db-connection.js')
+                    .then(connectionModule => {
+                        connectionModule.checkConnection(true);
+                        console.log("✓ Connection check initiated");
+                    });
             });
         
         // 3. Reset any broken event listeners
@@ -156,7 +161,7 @@ window.fixGame = function() {
     }
 };
 
-// Run diagnostic
+// Run diagnostic without forcing offline mode
 window.diagnoseMongoDB = function() {
     console.log("🔍 Diagnosing MongoDB connection issues...");
     
@@ -166,12 +171,19 @@ window.diagnoseMongoDB = function() {
             .then(module => {
                 console.log("API Base URL:", module.API_BASE_URL);
                 console.log("API Debug Mode:", module.apiConfig?.debug);
+                console.log("API Offline Mode:", module.apiConfig?.isOfflineMode);
                 
                 // Test server ping
                 fetch(`${module.API_BASE_URL}/ping`)
                     .then(response => response.json())
                     .then(data => console.log("Server ping response:", data))
                     .catch(err => console.error("Server ping failed:", err));
+                    
+                // Use our connection checker
+                import('./db-connection.js')
+                    .then(connectionModule => {
+                        connectionModule.checkConnection(true);
+                    });
             });
     } catch (e) {
         console.error("Failed to load API config:", e);
@@ -185,7 +197,7 @@ setTimeout(() => {
     console.log("%c📢 Game repair tools available!", "color: #4CAF50; font-size: 16px; font-weight: bold;");
     console.log("%cType window.fixGame() to restore game functionality", "color: #2196F3;");
     console.log("%cType window.diagnoseMongoDB() to check server connection", "color: #2196F3;");
-}, 1000);
+}, 2000);
 
 // Add console message to notify about debug feature
 console.log("%cGame Debug Helper", "color: #2eb82e; font-size: 14px; font-weight: bold;");

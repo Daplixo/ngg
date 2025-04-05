@@ -75,17 +75,15 @@ setTimeout(() => {
             })
             .catch(e => console.error("Keyboard init failed:", e));
         
-        // Fix database issues - prevent DB operations from blocking UI
+        // MODIFIED: Don't force offline mode, just initialize API service
         import('./api/apiService.js')
             .then(module => {
                 if (module.apiService) {
                     window.apiService = module.apiService;
-                    window.apiService.offlineMode = true;
-                    localStorage.setItem('api_offline_mode', 'true');
-                    console.log("✅ Database connectivity issues bypassed");
+                    console.log("✅ API service initialized");
                 }
             })
-            .catch(e => console.error("API service fix failed:", e));
+            .catch(e => console.error("API service init failed:", e));
             
     } catch (e) {
         console.error("Event listener repair failed:", e);

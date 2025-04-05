@@ -529,6 +529,49 @@
     <script src="js/button-fix.js"></script>
     <script src="js/immediate-button-fix.js"></script>
     <script src="js/force-button-checker.js"></script>
+
+    <!-- Enhanced API connectivity scripts - now using constant API URL -->
+    <script type="module" src="js/connectivity-fix.js"></script>
+    <script type="module" src="js/db-connection.js"></script>
+
+    <!-- Script to remove any status indicators -->
+    <script>
+      // Aggressive removal of API status indicators
+      (function removeAPIIndicators() {
+        // Run immediately
+        const removeNow = function () {
+          const indicators = [
+            document.getElementById("db-status-indicator"),
+            document.getElementById("api-status-indicator"),
+          ];
+
+          indicators.forEach((indicator) => {
+            if (indicator && indicator.parentNode) {
+              indicator.parentNode.removeChild(indicator);
+            }
+          });
+
+          // Also remove any elements with specific classes
+          document
+            .querySelectorAll(".db-status, .api-status, .status-indicator")
+            .forEach((el) => {
+              if (el && el.parentNode) {
+                el.parentNode.removeChild(el);
+              }
+            });
+        };
+
+        // Run now and after DOM is loaded
+        removeNow();
+        document.addEventListener("DOMContentLoaded", removeNow);
+
+        // And also after slight delays to catch delayed creations
+        setTimeout(removeNow, 500);
+        setTimeout(removeNow, 1500);
+        setTimeout(removeNow, 3000);
+      })();
+    </script>
+
     <!-- Auto-fix for MongoDB connectivity issues -->
     <script type="module" src="js/autofix.js"></script>
     <!-- Debug helper for MongoDB connectivity issues -->

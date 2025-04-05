@@ -2,66 +2,61 @@
  * API Configuration for Number Guessing Game
  */
 
-// Determine environment
-const isDevelopment = window.location.hostname === 'localhost' || 
-                      window.location.hostname === '127.0.0.1';
-
-// Set API URL based on environment - ensure URL is properly formatted
-export const API_BASE_URL = isDevelopment
-  ? 'http://localhost:5000/api'  
-  : 'https://number-guessing-backend-fumk.onrender.com/api'; // Verified production URL
+// MODIFIED: Use hardcoded Render URL for all environments
+export const API_BASE_URL = 'https://number-guessing-backend-fumk.onrender.com';
 
 // Configuration object
 export const apiConfig = {
   baseUrl: API_BASE_URL,
   timeout: 15000, // 15 seconds timeout for requests
-  debug: isDevelopment, // Enable debug logging in development
   
   // Add offline mode check
   get isOfflineMode() {
     return localStorage.getItem('api_offline_mode') === 'true';
+  },
+  
+  // Add setter for offline mode
+  set isOfflineMode(value) {
+    localStorage.setItem('api_offline_mode', value ? 'true' : 'false');
   }
 };
 
 // Helper function to detect if the API is available
 export async function isApiAvailable() {
-  // Check if offline mode is already enabled in localStorage
-  if (apiConfig.isOfflineMode) {
-    console.log("API availability check skipped - offline mode already active");
-    return false;
-  }
-  
   try {
+    console.log("Checking API availability...");
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 5000);
     
-    // Ensure we're using the full URL including /api suffix
-    const pingUrl = `${API_BASE_URL}/ping`;
-    console.log(`Checking API availability at: ${pingUrl}`);
+    // Use the correct ping endpoint with /api
+    const pingUrl = `${API_BASE_URL}/api/ping`;
+    console.log(`Pinging API at: ${pingUrl}`);
     
     const response = await fetch(pingUrl, {
       method: 'GET',
       signal: controller.signal,
       headers: {
-        'Accept': 'application/json'
-      }
+        'Accept': 'application/json',
+        'Cache-Control': 'no-cache, no-store',
+        'Pragma': 'no-cache' 
+      },
+      cache: 'no-store',
+      credentials: 'omit'
     });
     
     clearTimeout(timeoutId);
     
     if (response.ok) {
       console.log("API is available and responding");
+      // Reset offline mode since API is available
+      apiConfig.isOfflineMode = false;
       return true;
     } else {
       console.warn(`API responded with status: ${response.status}`);
-      // If API responds but with error, fallback to offline mode
-      localStorage.setItem('api_offline_mode', 'true');
       return false;
     }
   } catch (error) {
     console.warn('API availability check failed:', error);
-    // On error (timeout, network failure, etc), fallback to offline mode
-    localStorage.setItem('api_offline_mode', 'true');
     return false;
   }
 }
@@ -71,6 +66,6 @@ export function getFullApiUrl(endpoint) {
   // Remove leading slash if present to avoid double slashes
   const normalizedEndpoint = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint;
   
-  // If the API_BASE_URL already ends with /api, make sure we don't add it again
-  return `${API_BASE_URL}/${normalizedEndpoint}`;
+  // Always add /api to the path
+  return `${API_BASE_URL}/api/${normalizedEndpoint}`;
 }

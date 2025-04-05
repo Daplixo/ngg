@@ -3,23 +3,23 @@
  * Handles all communication with the backend server
  */
 
-import { API_BASE_URL, isApiAvailable } from './apiConfig.js';
+import { API_BASE_URL, isApiAvailable, apiConfig, getFullApiUrl } from './apiConfig.js';
 
 export class ApiService {
   constructor() {
     this.token = localStorage.getItem('auth_token');
     this.available = null; // API availability status (null means not yet checked)
     
-    // CRITICAL FIX: Add offline mode with force option
+    // FIXED: Don't start in offline mode unless explicitly set
     this.offlineMode = localStorage.getItem('api_offline_mode') === 'true';
     
-    // Check API availability on init - with timeout to prevent blocking
-    setTimeout(() => this.checkAvailability(), 500);
+    // FIXED: Always check availability once on init but with a delay
+    setTimeout(() => this.checkAvailability(), 1500);
   }
 
   // Check if the API is available
   async checkAvailability() {
-    // CRITICAL FIX: Don't attempt connection if offline mode is enabled
+    // Don't attempt connection if manual offline mode is enabled
     if (this.offlineMode) {
       console.log("API in offline mode - skipping availability check");
       this.available = false;
@@ -27,33 +27,40 @@ export class ApiService {
     }
     
     try {
+      console.log("ApiService: Running availability check...");
       // Add a short timeout to prevent long blocking
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 3000);
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
       
-      const response = await fetch(`${API_BASE_URL}/ping`, {
-        signal: controller.signal
+      // FIXED: Use the correct ping endpoint with /api
+      const response = await fetch(`${API_BASE_URL}/api/ping`, {
+        signal: controller.signal,
+        headers: {
+          'Accept': 'application/json',
+          'Cache-Control': 'no-cache'
+        }
       });
       clearTimeout(timeoutId);
       
-      this.available = response.ok;
-      console.log(`API status: ${this.available ? 'Available' : 'Unavailable'}`);
+      // FIXED: Handle response
+      const data = await response.json();
+      console.log("API ping response:", data);
+      
+      const result = response.ok;
+      console.log(`API status check: ${result ? 'Available ✓' : 'Unavailable ✗'}`);
+      
+      this.available = result;
       return this.available;
     } catch (error) {
-      this.available = false;
       console.warn('API availability check failed:', error);
-      
-      // CRITICAL FIX: If checking fails, enable offline mode automatically
-      this.offlineMode = true;
-      localStorage.setItem('api_offline_mode', 'true');
-      console.log("Enabling offline mode automatically");
-      
       return false;
     }
   }
 
-  // CRITICAL FIX: Add method to toggle offline mode
+  // Toggle offline mode
   toggleOfflineMode(enabled) {
+    if (this.offlineMode === enabled) return; // No change needed
+    
     this.offlineMode = enabled;
     localStorage.setItem('api_offline_mode', enabled ? 'true' : 'false');
     this.available = !enabled;
@@ -74,7 +81,8 @@ export class ApiService {
   // Create default headers for API requests
   getHeaders() {
     const headers = {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      'Cache-Control': 'no-cache'
     };
     
     if (this.token) {
@@ -87,13 +95,25 @@ export class ApiService {
   // Execute API request with offline handling
   async executeRequest(endpoint, options, offlineErrorMessage) {
     // If we already know the API is unavailable, don't attempt the request
-    if (this.available === false) {
+    if (this.available === false || this.offlineMode) {
+      console.warn(`Skipping API request to ${endpoint} - offline mode active`);
       throw new Error(offlineErrorMessage || 'API is currently unavailable. Please try again later.');
     }
     
     try {
-      const response = await fetch(`${API_BASE_URL}${endpoint}`, options);
-      const data = await response.json();
+      // FIXED: Use getFullApiUrl to ensure proper URL construction
+      const fullUrl = getFullApiUrl(endpoint);
+      console.log(`Executing API request to: ${fullUrl}`);
+      
+      const response = await fetch(fullUrl, options);
+      let data;
+      
+      try {
+        data = await response.json();
+      } catch (e) {
+        // Handle non-JSON responses
+        data = { message: 'Server returned non-JSON response' };
+      }
       
       if (!response.ok) {
         throw new Error(data.message || 'An error occurred with the request');
@@ -103,8 +123,9 @@ export class ApiService {
     } catch (error) {
       // Check if it's a network error, which likely means API is down
       if (error.name === 'TypeError' && error.message.includes('network')) {
-        this.available = false;
-        throw new Error(offlineErrorMessage || 'Unable to connect to server. Please check your internet connection.');
+        console.warn(`Network error on API request to ${endpoint}`);
+        // Run an availability check to update status for future requests
+        setTimeout(() => this.checkAvailability(), 1000);
       }
       
       throw error;
@@ -225,3 +246,23 @@ export class ApiService {
 
 // Create and export a singleton instance
 export const apiService = new ApiService();
+
+// Immediately check availability on module load
+setTimeout(async () => {
+  console.log("Initial API availability check...");
+  try {
+    const available = await isApiAvailable();
+    console.log(`Initial API check result: ${available ? 'Available ✓' : 'Unavailable ✗'}`);
+    
+    // Update the service instance
+    apiService.available = available;
+    
+    // When available, reset offline mode
+    if (available) {
+      apiService.offlineMode = false;
+      apiConfig.isOfflineMode = false;
+    }
+  } catch (err) {
+    console.error("Error during initial API check:", err);
+  }
+}, 500);
