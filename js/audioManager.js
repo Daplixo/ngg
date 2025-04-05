@@ -135,6 +135,24 @@ export const AudioManager = {
         }
     },
     
+    // Play victory sound
+    playVictorySound() {
+        try {
+            // Create a new audio object for victory sound
+            const victorySound = new Audio('assets/sounds/victory.mp3');
+            
+            // Set volume
+            victorySound.volume = 0.7;
+            
+            // Play the sound
+            victorySound.play().catch(err => {
+                console.warn('Could not play victory sound:', err);
+            });
+        } catch (error) {
+            console.warn('Error playing victory sound:', error);
+        }
+    },
+    
     // Resume audio context on user interaction
     resumeAudio() {
         if (audioContext && audioContext.state === 'suspended') {

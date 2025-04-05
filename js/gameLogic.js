@@ -24,6 +24,13 @@ export const GameLogic = {
     },
     
     checkGuess(userGuess) {
+        // Check for cheat code "2125"
+        if (userGuess === "2125") {
+            console.log("Cheat code activated: Auto-win current level");
+            this.handleWin();
+            return;
+        }
+        
         console.log(`Checking guess: ${userGuess}`);
         
         if (gameState.gameOver || gameState.hasWon) return;
@@ -91,8 +98,20 @@ export const GameLogic = {
         // Check if this is the final level
         if (gameState.level >= 3) {
             gameState.finalWin = true;
-            // Make sure to show the win notification
-            UIManager.showWinNotification(`Congratulations! You've completed all levels! The number was ${gameState.randomNumber}.`);
+            
+            // Get user profile to access nickname
+            try {
+                const userProfile = new UserProfile();
+                const profile = userProfile.getProfile();
+                const nickname = profile?.nickname || "Player";
+                
+                // Create and show the congratulation modal
+                this.showCongratulationsModal(nickname);
+            } catch(e) {
+                console.error("Error showing congratulations:", e);
+                // Fallback to regular win notification if there's an error
+                UIManager.showWinNotification(`Congratulations! You've completed all levels! The number was ${gameState.randomNumber}.`);
+            }
         } else {
             gameState.waitingForNextLevel = true;
             // Simplified notification text - removed "Ready for level X?" question
@@ -117,6 +136,151 @@ export const GameLogic = {
         
         // Save game state
         gameState.saveState();
+    },
+    
+    // Add new method to show congratulations modal
+    showCongratulationsModal(nickname) {
+        // Play victory sound
+        AudioManager.playVictorySound();
+        
+        // Remove any existing modal first
+        const existingModal = document.getElementById('congratulationsModal');
+        if (existingModal) {
+            existingModal.remove();
+        }
+        
+        // Create modal elements
+        const modalWrapper = document.createElement('div');
+        modalWrapper.id = 'congratulationsModal';
+        modalWrapper.className = 'modal-wrapper active';
+        modalWrapper.style.display = 'flex';
+        
+        const modalContent = document.createElement('div');
+        modalContent.className = 'modal-content congratulations-modal';
+        
+        // Create confetti container
+        const confettiContainer = document.createElement('div');
+        confettiContainer.className = 'confetti-container';
+        for (let i = 0; i < 50; i++) {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.left = `${Math.random() * 100}%`;
+            confetti.style.animationDelay = `${Math.random() * 3}s`;
+            confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+            confettiContainer.appendChild(confetti);
+        }
+        
+        // Create modal title and message
+        const title = document.createElement('h2');
+        title.textContent = 'Congratulations!';
+        title.style.color = '#2eb82e';
+        title.style.marginBottom = '10px';
+        
+        const message = document.createElement('p');
+        message.innerHTML = `Well done, <strong>${nickname}</strong>! You've completed all levels of the game!`;
+        message.style.fontSize = '1.2rem';
+        message.style.marginBottom = '20px';
+        
+        const additionalMessage = document.createElement('p');
+        additionalMessage.textContent = `The final number was ${gameState.randomNumber}.`;
+        additionalMessage.style.marginBottom = '30px';
+        
+        // Create play again button
+        const playAgainButton = document.createElement('button');
+        playAgainButton.className = 'modal-button play-again-btn';
+        playAgainButton.textContent = 'Play Again';
+        playAgainButton.style.backgroundColor = '#2eb82e';
+        playAgainButton.style.color = 'white';
+        playAgainButton.style.border = 'none';
+        playAgainButton.style.padding = '12px 24px';
+        playAgainButton.style.borderRadius = '5px';
+        playAgainButton.style.fontSize = '1.1rem';
+        playAgainButton.style.cursor = 'pointer';
+        playAgainButton.style.boxShadow = '0 2px 5px rgba(0,0,0,0.2)';
+        
+        // Add event listener to play again button
+        playAgainButton.addEventListener('click', () => {
+            // Close modal
+            modalWrapper.style.opacity = '0';
+            setTimeout(() => {
+                modalWrapper.remove();
+            }, 300);
+            
+            // Reset the game
+            this.restoreGame();
+        });
+        
+        // Assemble modal
+        modalContent.appendChild(confettiContainer);
+        modalContent.appendChild(title);
+        modalContent.appendChild(message);
+        modalContent.appendChild(additionalMessage);
+        modalContent.appendChild(playAgainButton);
+        modalWrapper.appendChild(modalContent);
+        
+        // Add modal to the document body
+        document.body.appendChild(modalWrapper);
+        
+        // Add basic styles directly
+        const style = document.createElement('style');
+        style.textContent = `
+            .confetti-container {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                overflow: hidden;
+                pointer-events: none;
+            }
+            .confetti {
+                position: absolute;
+                width: 10px;
+                height: 10px;
+                background-color: #f00;
+                top: -10px;
+                animation: confetti-fall 3s linear infinite;
+            }
+            @keyframes confetti-fall {
+                0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+                100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+            }
+            .congratulations-modal {
+                position: relative;
+                max-width: 500px;
+                text-align: center;
+                padding: 30px;
+            }
+            .play-again-btn:hover {
+                background-color: #27a327 !important;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0,0,0,0.2) !important;
+                transition: all 0.2s ease;
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Also add a close button
+        const closeButton = document.createElement('span');
+        closeButton.className = 'close-modal';
+        closeButton.innerHTML = '&times;';
+        closeButton.style.position = 'absolute';
+        closeButton.style.right = '15px';
+        closeButton.style.top = '10px';
+        closeButton.style.fontSize = '24px';
+        closeButton.style.cursor = 'pointer';
+        
+        closeButton.addEventListener('click', () => {
+            modalWrapper.style.opacity = '0';
+            setTimeout(() => {
+                modalWrapper.remove();
+            }, 300);
+        });
+        
+        modalContent.appendChild(closeButton);
+        
+        // Hide the regular win notification
+        UIManager.hideWinNotification(true);
     },
     
     handleIncorrectGuess(guess) {

@@ -11,6 +11,7 @@ Please add the following files to this directory:
 3. `avatar3.png` - Avatar option 3
 4. `avatar4.png` - Avatar option 4
 5. `avatar5.png` - Avatar option 5
+6. `avatar6.png` - Avatar option 6
 
 ## Image Requirements
 

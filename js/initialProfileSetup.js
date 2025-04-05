@@ -13,12 +13,12 @@ export class InitialProfileSetup {
     constructor() {
         this.userProfile = new UserProfile();
         this.avatarOptions = [
-            'assets/icons/default-profile.png', // Default avatar as fallback
             'assets/avatars/avatar1.png',
             'assets/avatars/avatar2.png',
             'assets/avatars/avatar3.png',
             'assets/avatars/avatar4.png',
-            'assets/avatars/avatar5.png'
+            'assets/avatars/avatar5.png',
+            'assets/avatars/avatar6.png'
         ];
     }
 
