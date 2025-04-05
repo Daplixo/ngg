@@ -7,23 +7,22 @@ const authRoutes = require('./routes/authRoutes');
 const leaderboardRoutes = require('./routes/leaderboardRoutes');
 const miscRoutes = require('./routes/miscRoutes');
 
-const corsOptions = {
-  origin: '*', // Allow all origins
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-};
-
-app.use(cors(corsOptions));
-
 // Load environment variables
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// CORS setup
+const corsOptions = {
+  origin: '*', // Or replace with ['https://127.0.0.1:5500'] for stricter config
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+};
+app.use(cors(corsOptions));
+
 // Middleware
-app.use(cors());
-app.use(express.json({ limit: '5mb' })); // For handling JSON data and profile images
+app.use(express.json({ limit: '5mb' }));
 app.use(express.urlencoded({ extended: true }));
 
 // Connect to MongoDB
@@ -35,9 +34,9 @@ mongoose.connect(process.env.MONGODB_URI)
 app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/leaderboard', leaderboardRoutes);
-app.use('/api', miscRoutes); // Add the misc routes for ping
+app.use('/api', miscRoutes);
 
-// Basic route for testing
+// Test route
 app.get('/', (req, res) => {
   res.send('Number Guessing Game API is running');
 });

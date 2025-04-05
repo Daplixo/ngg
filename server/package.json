@@ -2,9 +2,9 @@
   "name": "number-guessing-game-server",
   "version": "1.0.0",
   "description": "Backend server for Number Guessing Game",
-  "main": "server.js",
+  "main": "server/server.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "node server/server.js",
     "dev": "nodemon server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

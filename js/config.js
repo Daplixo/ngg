@@ -7,7 +7,8 @@ const config = {
   // API endpoints
   api: {
     // Replace this URL with your Render deployment URL
-    baseUrl: 'https://number-guessing-backend-fumk.onrender.com',
+    baseUrl: 'https://number-guessing-backend-fumk.onrender.com/api',
+
 
     // Specific endpoints
     endpoints: {
