@@ -180,6 +180,69 @@
   }
 }
 
+// Game indicators container styling
+#game-indicators-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 12px; // Space between the indicators
+  
+  // Make sure container takes appropriate space
+  width: 100%;
+  height: 100%;
+  
+  // Indicators common styling
+  & > * {
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+  
+  // Style for previous guess and attempts indicators
+  #previous-guess, #attempts {
+    transition: color 0.3s;
+  }
+  
+  // Highlight animation for previous guess
+  #previous-guess.highlight {
+    animation: highlight-pulse 1s ease-in-out;
+  }
+}
+
+@keyframes highlight-pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+
+// Mobile optimizations
+@media (max-width: 576px) {
+  #game-indicators-container {
+    flex-direction: row; // Keep them in a row
+    gap: 8px; // Reduce gap on smaller screens
+    
+    & > * {
+      font-size: 0.75rem; // Smaller text on mobile
+    }
+  }
+}
+
+// Very small screens optimization
+@media (max-width: 360px) {
+  #game-indicators-container {
+    gap: 4px; // Even smaller gap
+    
+    & > * {
+      font-size: 0.7rem; // Even smaller text
+    }
+  }
+}
+
 /* Responsive styles */
 @media (max-width: $breakpoint-md) {
   .game-header {

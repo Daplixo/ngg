@@ -68,18 +68,19 @@ export class UserProfileUI {
         
         // CRITICAL FIX: Add error handling to prevent blocking
         try {
-            if (!this.userProfile.hasProfile()) {
+            // Always initialize the profile section in the side menu, even with initialProfileSetup
+            this.initProfileSection();
+            this.setupEventListeners();
+            
+            // Check if we need to show profile setup
+            if (!window.profileSetupInitialized && !this.userProfile.hasProfile()) {
                 console.log("No profile found, showing setup...");
                 await this.showProfileSetup().catch(err => {
                     console.error("Error showing profile setup:", err);
                 });
             } else {
-                console.log("Profile found:", this.userProfile.getProfile());
+                console.log("Profile found or handled by initialProfileSetup:", this.userProfile.getProfile());
             }
-            
-            // Always initialize the profile section in the side menu
-            this.initProfileSection();
-            this.setupEventListeners();
             
             // CRITICAL FIX: Don't block if server connection fails
             const serverProfilePromise = new Promise(async (resolve) => {
@@ -382,29 +383,7 @@ export class UserProfileUI {
         } else {
             console.warn("Edit profile button not found");
         }
-        
-        // Add server sync button if not already present
-        const profileSection = document.querySelector('.profile-section');
-        const existingSyncBtn = document.getElementById('server-sync-btn');
-        
-        if (profileSection && !existingSyncBtn) {
-            const serverSyncBtn = document.createElement('button');
-            serverSyncBtn.id = 'server-sync-btn';
-            serverSyncBtn.className = 'server-sync-btn';
-            serverSyncBtn.innerHTML = `
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 2v6h-6"></path>
-                    <path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path>
-                    <path d="M3 22v-6h6"></path>
-                    <path d="M21 12a9 9 0 0 1-15 6.7L3 16"></path>
-                </svg>
-                <span>Server Account</span>
-            `;
-            
-            profileSection.appendChild(serverSyncBtn);
-            
-            serverSyncBtn.addEventListener('click', () => this.showServerAccountOptions());
-        }
+        // Server sync button has been removed
     }
 
     showEditProfile() {
@@ -488,121 +467,10 @@ export class UserProfileUI {
         }
     }
 
+    // We'll keep the showServerAccountOptions method to avoid breaking existing code,
+    // but we won't call it anywhere
     showServerAccountOptions() {
-        const profile = this.userProfile.getProfile();
-        if (!profile) return;
-        
-        const modal = document.createElement('div');
-        modal.className = 'modal-wrapper';
-        modal.id = 'serverAccountModal';
-        
-        modal.innerHTML = `
-            <div class="modal-content profile-setup">
-                <h2>${profile.syncedWithServer ? 'Server Account' : 'Connect to Server'}</h2>
-                
-                ${profile.syncedWithServer ? 
-                    `<p>Your account is connected to the server!</p>
-                     <button id="sync-logout-btn" class="submit-btn">Log Out</button>` : 
-                    
-                    `<p>Connect your profile to the server to enable leaderboards and sync across devices.</p>
-                     <form id="serverAccountForm">
-                        <div class="form-group">
-                            <label for="serverEmail">Email</label>
-                            <input type="email" id="serverEmail" name="email" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="serverPassword">Password</label>
-                            <input type="password" id="serverPassword" name="password" required>
-                        </div>
-                        <div class="server-account-buttons">
-                            <button type="button" id="login-btn" class="submit-btn">Log In</button>
-                            <button type="button" id="register-btn" class="submit-btn">Register</button>
-                        </div>
-                     </form>`
-                }
-                
-                <button class="close-modal">&times;</button>
-            </div>
-        `;
-        
-        document.body.appendChild(modal);
-        
-        const closeBtn = modal.querySelector('.close-modal');
-        closeBtn.addEventListener('click', () => modal.remove());
-        
-        modal.addEventListener('click', e => {
-            if (e.target === modal) modal.remove();
-        });
-        
-        if (profile.syncedWithServer) {
-            const logoutBtn = document.getElementById('sync-logout-btn');
-            logoutBtn.addEventListener('click', () => {
-                this.api.logout();
-                
-                const updatedProfile = { ...profile, syncedWithServer: false };
-                this.userProfile.saveProfile(updatedProfile);
-                
-                modal.remove();
-                alert('Logged out successfully');
-            });
-        } else {
-            const loginBtn = document.getElementById('login-btn');
-            const registerBtn = document.getElementById('register-btn');
-            
-            loginBtn.addEventListener('click', async () => {
-                const form = document.getElementById('serverAccountForm');
-                const formData = new FormData(form);
-                
-                try {
-                    await this.api.login({
-                        login: formData.get('email'),
-                        password: formData.get('password')
-                    });
-                    
-                    const updatedProfile = { ...profile, syncedWithServer: true };
-                    this.userProfile.saveProfile(updatedProfile);
-                    
-                    const serverProfile = await this.api.getUserProfile();
-                    
-                    this.userProfile.saveProfile({
-                        ...profile,
-                        nickname: serverProfile.nickname,
-                        name: serverProfile.username,
-                        syncedWithServer: true,
-                        serverId: serverProfile._id
-                    });
-                    
-                    this.updateProfileDisplay();
-                    modal.remove();
-                    alert('Connected to server successfully!');
-                } catch (error) {
-                    alert(`Login failed: ${error.message}`);
-                }
-            });
-            
-            registerBtn.addEventListener('click', async () => {
-                const form = document.getElementById('serverAccountForm');
-                const formData = new FormData(form);
-                
-                try {
-                    await this.api.register({
-                        username: profile.name,
-                        nickname: profile.nickname,
-                        email: formData.get('email'),
-                        password: formData.get('password'),
-                        profilePicture: profile.picture
-                    });
-                    
-                    const updatedProfile = { ...profile, syncedWithServer: true };
-                    this.userProfile.saveProfile(updatedProfile);
-                    
-                    this.updateProfileDisplay();
-                    modal.remove();
-                    alert('Account created and connected to server!');
-                } catch (error) {
-                    alert(`Registration failed: ${error.message}`);
-                }
-            });
-        }
+        console.log("Server account options disabled");
+        // Method kept for compatibility but functionality disabled
     }
 }

@@ -16,9 +16,11 @@
 
 // Components
 @import 'components/buttons';
-@import 'components/notifications';
-@import 'components/profile-setup';
+@import 'components/forms';
 @import 'components/modals';
+@import 'components/profile-setup';
+@import 'components/initial-profile';
+@import 'components/notifications';
 
 // Features
 @import 'features/proximity-meter';

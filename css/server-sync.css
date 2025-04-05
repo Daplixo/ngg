@@ -73,3 +73,815 @@
     from { opacity: 0; transform: translateY(-10px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
+/* Hide server sync button */
+#server-sync-btn, 
+.server-sync-btn,
+[id^="server-sync-"],
+[class^="server-sync-"] {
+    display: none !important;
+}
+
+/* Hide server sync related elements */
+.server-sync-option,
+.sync-fields,
+#syncWithServer,
+.server-account-buttons,
+#server-sync-btn,
+.server-sync-btn {
+    display: none !important;
+}
+
+/* Modal styling improvements */
+.modal-wrapper {
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    padding: 1rem;
+    box-sizing: border-box;
+}
+
+.modal-content {
+    background-color: var(--card-bg);
+    padding: 1.25rem;
+    border-radius: 8px;
+    max-width: 450px;
+    width: 100%;
+    position: relative;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+/* Profile choice styling */
+.profile-choice {
+    text-align: center;
+}
+
+.profile-choice h2 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    font-size: 1.5rem;
+    color: var(--text-color);
+}
+
+.profile-choice p {
+    margin-bottom: 1.5rem;
+    color: var(--text-muted, #888);
+    font-size: 0.95rem;
+}
+
+.profile-choice .choice-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.choice-btn {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    border: 2px solid var(--border-color, #ccc);
+    border-radius: 8px;
+    background-color: var(--card-bg);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    overflow: hidden;
+}
+
+.choice-btn svg {
+    flex-shrink: 0;
+    margin-right: 12px;
+    stroke: var(--btn-primary, #4d6fed);
+    width: 24px;
+    height: 24px;
+}
+
+.choice-content {
+    flex: 1;
+    overflow: hidden;
+}
+
+.choice-content h3 {
+    margin: 0 0 5px 0;
+    font-size: 1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.choice-content p {
+    margin: 0;
+    font-size: 0.8rem;
+    white-space: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    opacity: 0.7;
+    text-align: left;
+}
+
+.choice-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.account-btn {
+    border-color: var(--btn-primary, #4d6fed);
+    background-color: rgba(77, 111, 237, 0.05);
+}
+
+/* Avatar grid styling */
+.avatar-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 columns for 6 avatars (2 rows) */
+    gap: 10px;
+    margin-top: 10px;
+    margin-bottom: 15px;
+}
+
+.avatar-option {
+    aspect-ratio: 1;
+    border-radius: 4px;
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid var(--border-color, #ccc);
+    transition: all 0.2s ease;
+}
+
+.avatar-option img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-option.selected {
+    border-color: var(--btn-primary, #4d6fed);
+    transform: scale(1.05);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Form styling */
+.profile-setup h2 {
+    margin-top: 0;
+    text-align: center;
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.profile-setup p {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: var(--text-muted, #888);
+    font-size: 0.95rem;
+}
+
+.form-group {
+    margin-bottom: 0.5rem; /* Reduced from 0.75rem */
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.2rem; /* Reduced from 0.5rem */
+    font-weight: 500;
+    font-size: 0.85rem;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.5rem; /* Reduced from 0.75rem */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: var(--input-bg, #f5f5f5);
+    color: var(--text-color);
+    font-size: 0.9rem;
+    box-sizing: border-box;
+}
+
+.form-group input:focus {
+    border-color: var(--btn-primary, #4d6fed);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(77, 111, 237, 0.15);
+}
+
+/* Form action buttons */
+.form-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 0.7rem; /* Reduced from 1.25rem */
+}
+
+.form-actions button {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    color: var(--text-color) !important;
+}
+
+.form-actions button[type="submit"] {
+    background-color: var(--btn-primary, #4d6fed);
+    color: white !important;
+}
+
+.form-actions button[type="button"] {
+    background-color: #e0e0e0;
+    color: #333 !important;
+}
+
+.primary-btn {
+    background-color: var(--btn-primary, #4d6fed);
+    color: white;
+}
+
+.primary-btn:hover {
+    background-color: var(--btn-hover, #3a5dcf);
+}
+
+.secondary-btn {
+    background-color: var(--btn-secondary, #e0e0e0);
+    color: var(--text-color);
+}
+
+.secondary-btn:hover {
+    background-color: var(--btn-secondary-hover, #d0d0d0);
+}
+
+/* Responsive adjustments */
+@media (min-width: 576px) {
+    .profile-choice .choice-buttons {
+        flex-direction: row;
+    }
+
+    .modal-content {
+        padding: 2rem;
+    }
+}
+
+/* Modal animation */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.modal-content {
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* Hide server sync related elements */
+.server-sync-option,
+.sync-fields,
+#syncWithServer,
+.server-account-buttons,
+#server-sync-btn,
+.server-sync-btn {
+    display: none !important;
+}
+
+/* Modal styling improvements */
+.modal-wrapper {
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    padding: 1rem;
+    box-sizing: border-box;
+}
+
+.modal-content {
+    background-color: var(--card-bg);
+    padding: 1.25rem;
+    border-radius: 8px;
+    max-width: 450px;
+    width: 100%;
+    position: relative;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+/* Profile choice styling */
+.profile-choice {
+    text-align: center;
+}
+
+.profile-choice h2 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    font-size: 1.5rem;
+    color: var(--text-color);
+}
+
+.profile-choice p {
+    margin-bottom: 1.5rem;
+    color: var(--text-muted, #888);
+    font-size: 0.95rem;
+}
+
+.profile-choice .choice-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.choice-btn {
+    padding: 1rem;
+    border: 2px solid var(--border-color, #ccc);
+    border-radius: 8px;
+    background-color: var(--card-bg);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+.choice-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.account-btn {
+    border-color: var(--btn-primary, #4d6fed);
+    background-color: var(--btn-primary, #4d6fed);
+    color: white;
+}
+
+.guest-btn {
+    border-color: var(--border-color, #ccc);
+    background-color: var(--card-bg);
+}
+
+/* Form styling - Responsive & Minimal */
+.profile-setup {
+    text-align: center;
+}
+
+.profile-setup h2 {
+    margin-top: 0;
+    margin-bottom: 0.25rem;
+    font-size: 1.4rem;
+    color: var(--text-color);
+}
+
+.profile-setup p {
+    margin-bottom: 1rem;
+    color: var(--text-muted, #888);
+    font-size: 0.9rem;
+}
+
+.form-group {
+    margin-bottom: 0.5rem; /* Reduced from 0.75rem */
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.2rem; /* Reduced from 0.5rem */
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.5rem; /* Reduced from 0.75rem */
+    border: 1px solid var(--border-color, #ccc);
+    border-radius: 8px;
+    background-color: var(--input-bg, #f5f5f5);
+    color: var(--text-color);
+    font-size: 0.9rem;
+    transition: border-color 0.2s;
+    box-sizing: border-box;
+}
+
+.form-group input:focus {
+    border-color: var(--btn-primary, #4d6fed);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(77, 111, 237, 0.15);
+}
+
+/* Avatar grid styling */
+.avatar-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    margin: 0.5rem 0;
+}
+
+.avatar-option {
+    aspect-ratio: 1;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid var(--border-color, #ccc);
+    transition: all 0.2s ease;
+}
+
+.avatar-option img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-option.selected {
+    border-color: var(--btn-primary, #4d6fed);
+    transform: scale(1.05);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Form action buttons */
+.form-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 0.7rem; /* Reduced from 1.25rem */
+}
+
+.form-actions button {
+    flex: 1;
+    padding: 0.75rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    color: var(--text-color) !important;
+}
+
+.form-actions button[type="submit"] {
+    background-color: var(--btn-primary, #4d6fed);
+    color: white !important;
+}
+
+.form-actions button[type="submit"]:hover {
+    background-color: var(--btn-hover, #3a5dcf);
+}
+
+.form-actions button[type="button"] {
+    background-color: var(--btn-secondary, #e0e0e0);
+    color: #333 !important;
+}
+
+.form-actions button[type="button"]:hover {
+    background-color: var(--btn-secondary-hover, #d0d0d0);
+}
+
+/* Compact buttons that are small and side-by-side */
+.form-actions.compact-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.form-actions.compact-buttons button {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+    min-width: 70px;
+}
+
+.form-actions.compact-buttons button[type="submit"] {
+    background-color: var(--btn-primary, #4d6fed);
+    color: white;
+}
+
+.form-actions.compact-buttons button[type="button"] {
+    background-color: var(--btn-secondary, #e0e0e0);
+    color: var(--text-color);
+}
+
+/* Responsive adjustments */
+@media (min-width: 576px) {
+    .profile-choice .choice-buttons {
+        flex-direction: row;
+    }
+    
+    .modal-content {
+        padding: 2rem;
+    }
+}
+
+/* Small screens adaptations */
+@media (max-width: 400px) {
+    .modal-content {
+        padding: 1.25rem;
+    }
+    
+    .form-group label {
+        font-size: 0.85rem;
+    }
+    
+    .form-group input {
+        padding: 0.6rem;
+        font-size: 0.9rem;
+    }
+    
+    .avatar-grid {
+        gap: 0.5rem;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .form-actions button {
+        width: 100%;
+    }
+    
+    .profile-setup h2 {
+        font-size: 1.25rem;
+    }
+    
+    .profile-setup p {
+        font-size: 0.85rem;
+        margin-bottom: 1rem;
+    }
+}
+
+/* Very small screens */
+@media (max-height: 600px) {
+    .modal-content {
+        max-height: 95vh;
+        padding: 1rem;
+    }
+    
+    .form-group {
+        margin-bottom: 0.75rem;
+    }
+    
+    .avatar-grid {
+        gap: 0.5rem;
+    }
+}
+
+/* Animation keyframes */
+@keyframes modalFadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.modal-content {
+    animation: modalFadeIn 0.3s ease-out;
+}
+
+/* Form action buttons - make them more compact */
+.form-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-top: 0.7rem; /* Reduced from 1.25rem */
+}
+
+.form-actions button {
+    padding: 0.5rem 0.75rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    min-width: 80px; /* Ensure buttons have enough width for text */
+    color: var(--text-color) !important;
+}
+
+.form-actions button[type="submit"] {
+    background-color: var(--btn-primary, #4d6fed);
+    color: white !important;
+    margin-left: auto; /* Push to the right */
+}
+
+.form-actions button[type="button"] {
+    background-color: var(--btn-secondary, #e0e0e0);
+    color: #333 !important;
+}
+
+/* Make the form more compact overall */
+.form-group {
+    margin-bottom: 0.5rem; /* Reduced from 0.75rem */
+}
+
+.avatar-grid {
+    gap: 8px;
+    margin: 0.5rem 0;
+}
+
+.profile-setup h2 {
+    margin-bottom: 0.25rem;
+}
+
+.profile-setup p {
+    margin-bottom: 1rem;
+}
+
+/* Adjust modal layout with proportional sections */
+.modal-content.profile-setup {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    max-height: 90vh;
+}
+
+/* Heading - 1/6 of the space */
+.modal-content.profile-setup h2 {
+    flex: 1;
+    margin: 0 0 0.75rem 0;
+    font-size: 1.25rem;
+    padding-bottom: 0.25rem;
+    border-bottom: 1px solid var(--border-color, rgba(255,255,255,0.1));
+}
+
+/* Form - structured with flexbox for proportional layout */
+.modal-content.profile-setup form {
+    display: flex;
+    flex-direction: column;
+    flex: 5;
+}
+
+/* Input fields section - 2/6 of the space */
+.modal-content.profile-setup .input-fields {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 0.3rem; /* Reduced from 0.5rem */
+}
+
+/* Avatar section - 2/6 of the space */
+.modal-content.profile-setup .avatar-section {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    margin-top: 0.25rem;
+}
+
+.modal-content.profile-setup .avatar-section label {
+    margin-bottom: 0.2rem;
+}
+
+/* Buttons section - 1/6 of the space */
+.modal-content.profile-setup .form-actions {
+    flex: 1;
+    margin-top: 0.75rem;
+    display: flex;
+    justify-content: space-between;
+}
+
+/* Compact form elements for small screens */
+.form-group {
+    margin-bottom: 0.5rem; /* Reduced from 0.75rem */
+}
+
+.form-group label {
+    font-size: 0.85rem;
+    margin-bottom: 0.2rem; /* Reduced from 0.5rem */
+}
+
+.form-group input {
+    padding: 0.5rem; /* Reduced from 0.75rem */
+    font-size: 0.9rem;
+}
+
+.avatar-grid {
+    margin: 0.25rem 0;
+}
+
+/* Make buttons more compact */
+.form-actions button {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.85rem;
+}
+
+/* Additional responsive adjustments */
+@media (max-height: 600px) {
+    .modal-content.profile-setup h2 {
+        margin-bottom: 0.5rem;
+        font-size: 1.1rem;
+    }
+    
+    .form-group label {
+        font-size: 0.8rem;
+    }
+    
+    .avatar-grid {
+        gap: 4px;
+    }
+    
+    .form-actions {
+        margin-top: 0.5rem;
+    }
+}
+
+/* Further reduce spacing and adjust proportions to give more space to avatars */
+
+/* Adjust modal layout with better proportions for avatars */
+.modal-content.profile-setup {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    max-height: 90vh;
+    padding: 1rem; /* Reduced padding */
+}
+
+/* Heading - make more compact */
+.modal-content.profile-setup h2 {
+    flex: 0.5; /* Reduced from 1 */
+    margin: 0 0 0.5rem 0; /* Reduced bottom margin */
+    font-size: 1.2rem; /* Smaller font */
+    padding-bottom: 0.15rem; /* Reduced padding */
+    border-bottom: 1px solid var(--border-color, rgba(255,255,255,0.1));
+}
+
+/* Form - proportioned with more space for avatars */
+.modal-content.profile-setup form {
+    display: flex;
+    flex-direction: column;
+    flex: 5;
+}
+
+/* Input fields section - reduced to make room for avatars */
+.modal-content.profile-setup .input-fields {
+    flex: 1.5; /* Reduced from 2 */
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem; /* Further reduced from 0.3rem */
+}
+
+/* Avatar section - increased to 40% of space */
+.modal-content.profile-setup .avatar-section {
+    flex: 2.5; /* Increased from 2 - now ~40% of the form space */
+    display: flex;
+    flex-direction: column;
+    margin-top: 0.15rem; /* Minimal top margin */
+}
+
+.modal-content.profile-setup .avatar-section label {
+    margin-bottom: 0.1rem; /* Minimal label spacing */
+    font-size: 0.8rem; /* Smaller font */
+}
+
+/* Make avatar grid taller relative to other elements */
+.avatar-grid {
+    flex-grow: 1;
+    min-height: 150px; /* Ensure minimum height for avatars */
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px; /* Reduced from 6px */
+    margin: 0.2rem 0; /* Reduced margin */
+}
+
+/* More compact form elements */
+.form-group {
+    margin-bottom: 0.4rem; /* Further reduced */
+}
+
+.form-group label {
+    margin-bottom: 0.1rem; /* Minimal label spacing */
+    font-size: 0.8rem; /* Smaller font */
+    line-height: 1; /* Tighter line height */
+}
+
+.form-group input {
+    padding: 0.4rem; /* Reduced padding */
+    font-size: 0.85rem; /* Smaller font */
+    height: 2.2rem; /* Fixed height to save space */
+}
+
+/* Form action buttons - minimal height */
+.form-actions {
+    margin-top: 0.5rem; /* Reduced top margin */
+    flex: 0.5; /* Reduced from 1 */
+}
+
+.form-actions button {
+    padding: 0.4rem 0.6rem; /* Smaller padding */
+    font-size: 0.85rem; /* Smaller font */
+    height: 2.2rem; /* Fixed height */
+}

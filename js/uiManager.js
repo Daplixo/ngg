@@ -69,36 +69,41 @@ export const UIManager = {
         if (!this.elements.attempts) {
             this.elements.attempts = document.getElementById('attempts');
             
-            // If it still doesn't exist, create it
+            // If it doesn't exist, create it
             if (!this.elements.attempts) {
                 console.log("Creating attempts element dynamically");
-                const headerCenter = document.querySelector('.header-center');
-                if (headerCenter) {
-                    const attemptsElement = document.createElement('div');
+                
+                // Get or create the game indicators container
+                let gameIndicatorsContainer = document.getElementById('game-indicators-container');
+                if (!gameIndicatorsContainer) {
+                    const headerCenter = document.querySelector('.header-center');
+                    if (headerCenter) {
+                        gameIndicatorsContainer = document.createElement('div');
+                        gameIndicatorsContainer.id = 'game-indicators-container';
+                        headerCenter.appendChild(gameIndicatorsContainer);
+                    }
+                }
+                
+                if (gameIndicatorsContainer) {
+                    const attemptsElement = document.createElement('p');
                     attemptsElement.id = 'attempts';
-                    
-                    // IMPROVED: Add styles to ensure it stays on one line
-                    attemptsElement.style.cssText = 'display: inline-block; margin: 0; white-space: nowrap;';
-                    
-                    headerCenter.appendChild(attemptsElement);
+                    gameIndicatorsContainer.appendChild(attemptsElement);
                     this.elements.attempts = attemptsElement;
                 }
             }
         }
-        
-        // Make attempts display consistent
+
+        // Update content and ensure visibility
         if (this.elements.attempts) {
-            const text = `Attempts: ${gameState.attempts}/${gameState.maxAttempts}`;
-            this.elements.attempts.textContent = text;
-            
-            // Also update data attribute for simplified display on very small screens
+            this.elements.attempts.textContent = `Attempts: ${gameState.attempts}/${gameState.maxAttempts}`;
             this.elements.attempts.setAttribute('data-count', `${gameState.attempts}/${gameState.maxAttempts}`);
             
-            // Ensure visibility with important styling
+            // Ensure visibility with consistent styling
             this.elements.attempts.style.display = 'inline-block';
             this.elements.attempts.style.visibility = 'visible';
             this.elements.attempts.style.opacity = '1';
             this.elements.attempts.style.whiteSpace = 'nowrap';
+            this.elements.attempts.style.margin = '0';
             
             console.log("Updated attempts display:", this.elements.attempts.textContent);
         } else {
@@ -589,15 +594,22 @@ export const UIManager = {
             // If it still doesn't exist, create it
             if (!this.elements.previousGuess) {
                 console.log("Creating previous guess element dynamically");
-                const headerCenter = document.querySelector('.header-center');
-                if (headerCenter) {
+                
+                // Get or create the game indicators container
+                let gameIndicatorsContainer = document.getElementById('game-indicators-container');
+                if (!gameIndicatorsContainer) {
+                    const headerCenter = document.querySelector('.header-center');
+                    if (headerCenter) {
+                        gameIndicatorsContainer = document.createElement('div');
+                        gameIndicatorsContainer.id = 'game-indicators-container';
+                        headerCenter.appendChild(gameIndicatorsContainer);
+                    }
+                }
+                
+                if (gameIndicatorsContainer) {
                     const previousGuessElement = document.createElement('div');
                     previousGuessElement.id = 'previous-guess';
-                    
-                    // IMPROVED: Add styles to ensure it stays on one line
-                    previousGuessElement.style.cssText = 'display: inline-block; margin: 0; white-space: nowrap;';
-                    
-                    headerCenter.appendChild(previousGuessElement);
+                    gameIndicatorsContainer.appendChild(previousGuessElement);
                     this.elements.previousGuess = previousGuessElement;
                 }
             }
@@ -607,11 +619,12 @@ export const UIManager = {
         if (this.elements.previousGuess) {
             this.elements.previousGuess.textContent = `Last Guess: ${guess}`;
             
-            // Ensure visibility with important styling
+            // Ensure visibility with consistent styling
             this.elements.previousGuess.style.display = 'inline-block';
             this.elements.previousGuess.style.visibility = 'visible';
             this.elements.previousGuess.style.opacity = '1';
             this.elements.previousGuess.style.whiteSpace = 'nowrap';
+            this.elements.previousGuess.style.margin = '0';
             
             // Add highlight effect
             this.elements.previousGuess.classList.add('highlight');

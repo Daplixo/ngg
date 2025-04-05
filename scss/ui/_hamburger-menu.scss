@@ -134,7 +134,7 @@ body.menu-open {
     }
     
     .side-menu-item {
-      padding: 1rem;
+      padding: 1rem 1rem 1rem 16px; // Increased left padding to 16px
       border-bottom: 1px solid var(--border-color);
       
       &:last-child {
@@ -151,14 +151,14 @@ body.menu-open {
     border: none;
     color: white; /* Default color for dark mode */
     font-size: 16px;
-    padding: 8px 0;
+    padding: 8px 0 8px 8px; // Increased left padding to 16px
     cursor: pointer;
     width: 100%;
     text-align: left;
     line-height: 1; /* Added to standardize line height */
     
     svg {
-      margin-right: 12px; /* Standard spacing for both buttons */
+      margin-right: 22px; /* Standard spacing for both buttons */
       stroke: white; /* Default color for dark mode */
       width: 16px;
       height: 16px;
@@ -1000,14 +1000,15 @@ body.menu-open {
   }
   
   .side-menu-content {
-    padding: 0.5rem; // Reduced padding
+    padding: 0.5rem 0.5rem 0.5rem 12px; // Increased left padding to 16px
   }
   
   .side-menu-item {
     padding: 8px 0; // Reduced padding
     
     .side-menu-button {
-      padding: 5px 0; // Reduced padding
+      padding: 5px 0 5px 12px; // Increased left padding to 16px
+      margin-left: 10px;
       
       span {
         font-size: 0.9rem; // Smaller font
@@ -1016,7 +1017,7 @@ body.menu-open {
       svg {
         width: 14px;
         height: 14px;
-        margin-right: 10px; // Reduced margin
+        margin-right: 16px; // Reduced margin
       }
     }
   }
@@ -1184,6 +1185,21 @@ body.menu-open {
   }
 }
 
+/* Very small screens */
+@media (max-width: $breakpoint-xs) {
+  .side-menu-content {
+    padding: 0.25rem 0.25rem 0.25rem 0.75rem; // Increased left padding
+  }
+  
+  .side-menu-item {
+    .side-menu-button {
+      padding: 4px 0 4px 6px; // Added left padding to buttons
+    }
+  }
+  
+  // ...existing code...
+}
+
 // Special handling for very small screens
 @media (max-height: 500px) {
   .side-menu {
@@ -1274,6 +1290,7 @@ body.menu-open {
     .side-menu-content {
       padding-top: 0;
       padding-bottom: 0;
+      padding-left: 0.5rem; // Added left padding
     }
     
     .side-menu-item {
@@ -1306,6 +1323,12 @@ body.menu-open {
         bottom: 0;
         left: 0;
         right: 0;
+      }
+    }
+    
+    .side-menu-item {
+      .side-menu-button {
+        padding-left: 4px; // Added left padding
       }
     }
   }

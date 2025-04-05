@@ -32,9 +32,24 @@ window.playWrongSound = (isGameOver = false) => {
     AudioManager.playBeep(isGameOver);
 };
 
-// Initialize game when DOM is loaded
+// Add a check to prevent premature profile initialization if our initialProfileSetup is active
+
 document.addEventListener('DOMContentLoaded', async function() {
     console.log('DOM fully loaded');
+    
+    // Force initialize profile section in side menu if a profile exists
+    try {
+        const userProfile = new UserProfile();
+        if (userProfile.hasProfile()) {
+            console.log("Profile exists, initializing profile section in side menu");
+            const profileUI = new UserProfileUI();
+            profileUI.initProfileSection();
+        } else {
+            console.log("No profile exists yet");
+        }
+    } catch (error) {
+        console.error("Error checking profile:", error);
+    }
 
     // CRITICAL FIX: Ensure header elements are created dynamically
     createHeaderElements();
@@ -47,9 +62,18 @@ document.addEventListener('DOMContentLoaded', async function() {
         // Wait a moment before initializing profile to avoid blocking
         setTimeout(async () => {
             try {
-                const profileUI = new UserProfileUI();
-                await profileUI.init();
-                console.log("Profile UI initialized successfully");
+                // Only initialize UserProfileUI if initialProfileSetup is not active
+                // or if it didn't show its UI
+                if (!window.initialProfileSetupActive || 
+                    (window.initialProfileSetupInstance && 
+                     window.initialProfileSetupInstance.userProfile.hasProfile())) {
+                    console.log("Initializing UserProfileUI from main.js");
+                    const profileUI = new UserProfileUI();
+                    await profileUI.init();
+                    console.log("Profile UI initialized successfully");
+                } else {
+                    console.log("Skipping UserProfileUI initialization - using initialProfileSetup");
+                }
             } catch (error) {
                 console.error("Failed to initialize profile UI:", error);
             }
