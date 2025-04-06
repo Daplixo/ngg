@@ -152,6 +152,26 @@ export const GameLogic = {
         
         // Save game state
         gameState.saveState();
+        
+        // Ensure local game state is saved
+        gameState.saveState();
+        
+        // Update user profile with game statistics
+        try {
+            // Use global UserProfile instance if available, otherwise create a new one
+            const userProfileInstance = window.UserProfile || new UserProfile();
+            
+            const statsUpdate = {
+                level: gameState.level,
+                hasWon: true,
+                attempts: gameState.attempts
+            };
+            
+            console.log("🏆 Updating stats for level completion:", statsUpdate);
+            userProfileInstance.updateStatistics(statsUpdate);
+        } catch(e) {
+            console.error("❌ Error updating profile stats:", e);
+        }
     },
     
     // Add new method to show congratulations modal
@@ -340,11 +360,16 @@ export const GameLogic = {
         // Clear feedback message
         UIManager.clearFeedback();
         
-        // Play game over sound
-        AudioManager.playBeep(true);
+        // Play proper game over sound instead of a beep
+        AudioManager.play("gameOver");
         
-        // Update UI
-        UIManager.showGameOverNotification(`Game Over! The number was ${gameState.randomNumber}.`);
+        // First ensure any existing game over notification is hidden immediately
+        UIManager.hideGameOverNotification(true);
+        
+        // Show a single game over notification and make sure it stays visible
+        const targetNumber = String(gameState.randomNumber);
+        console.log("Game over - target number was:", targetNumber);
+        UIManager.showGameOverNotification(`Game Over! The number was ${targetNumber}.`, false); // Pass false to prevent auto-hide
         
         // Update UI to Play Again mode
         const playAgainBtn = document.getElementById('playAgainBtn');
@@ -358,6 +383,26 @@ export const GameLogic = {
         
         // Save game state
         gameState.saveState();
+        
+        // Ensure local game state is saved
+        gameState.saveState();
+        
+        // Update user profile with game statistics for loss
+        try {
+            // Use global UserProfile instance if available, otherwise create a new one
+            const userProfileInstance = window.UserProfile || new UserProfile();
+            
+            const statsUpdate = {
+                level: gameState.level,
+                hasWon: false,
+                attempts: gameState.maxAttempts // Used all attempts
+            };
+            
+            console.log("❌ Updating stats for game over:", statsUpdate);
+            userProfileInstance.updateStatistics(statsUpdate);
+        } catch(e) {
+            console.error("❌ Error updating profile stats:", e);
+        }
     },
     
     continueNextLevel() {

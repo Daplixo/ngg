@@ -5,6 +5,7 @@
 
 import { UserProfile } from './userProfile.js';
 import { UserProfileUI } from './userProfileUI.js';
+import { AVATARS, getAvatarIdByPath } from './config/avatarConfig.js';
 
 // Set a global flag to indicate initialProfileSetup is active
 window.initialProfileSetupActive = true;
@@ -12,14 +13,7 @@ window.initialProfileSetupActive = true;
 export class InitialProfileSetup {
     constructor() {
         this.userProfile = new UserProfile();
-        this.avatarOptions = [
-            'assets/avatars/avatar1.png',
-            'assets/avatars/avatar2.png',
-            'assets/avatars/avatar3.png',
-            'assets/avatars/avatar4.png',
-            'assets/avatars/avatar5.png',
-            'assets/avatars/avatar6.png'
-        ];
+        this.avatarOptions = AVATARS.map(avatar => avatar.path);
     }
 
     init() {
@@ -112,6 +106,7 @@ export class InitialProfileSetup {
                             <!-- Avatars will be added here by JavaScript -->
                         </div>
                         <input type="hidden" id="selectedAvatar" name="avatar" value="${this.avatarOptions[0]}">
+                        <input type="hidden" id="selectedAvatarId" name="avatarId" value="avatar_01">
                     </div>
                     
                     <div class="form-actions compact-buttons">
@@ -165,6 +160,15 @@ export class InitialProfileSetup {
                         </div>
                     </div>
                     
+                    <div class="avatar-section">
+                        <label>Choose an Avatar</label>
+                        <div class="avatar-grid" id="avatarGrid">
+                            <!-- Avatars will be added here by JavaScript -->
+                        </div>
+                        <input type="hidden" id="selectedAvatar" name="avatar" value="${this.avatarOptions[0]}">
+                        <input type="hidden" id="selectedAvatarId" name="avatarId" value="avatar_01">
+                    </div>
+                    
                     <div class="form-actions compact-buttons">
                         <button type="button" id="guestBackBtn" style="color: #333;">Back</button>
                         <button type="submit" style="color: white;">Start</button>
@@ -197,10 +201,10 @@ export class InitialProfileSetup {
         }
         
         console.log("Setting up avatar grid");
-        this.avatarOptions.forEach((avatarSrc, index) => {
+        AVATARS.forEach((avatar, index) => {
             const avatarElement = document.createElement('div');
             avatarElement.className = 'avatar-option';
-            avatarElement.innerHTML = `<img src="${avatarSrc}" alt="Avatar ${index + 1}">`;
+            avatarElement.innerHTML = `<img src="${avatar.path}" alt="${avatar.alt}">`;
             
             // Select the first avatar by default
             if (index === 0) {
@@ -215,15 +219,18 @@ export class InitialProfileSetup {
                 
                 // Add selected class to clicked avatar
                 avatarElement.classList.add('selected');
-                document.getElementById('selectedAvatar').value = avatarSrc;
+                
+                // Store both the path and avatarId
+                document.getElementById('selectedAvatar').value = avatar.path;
+                document.getElementById('selectedAvatarId').value = avatar.id;
             };
             
             avatarGrid.appendChild(avatarElement);
         });
     }
     
-    // Modified handleAccountSetup method to update the profile in the side menu
-    handleAccountSetup(form) {
+    // Modified handleAccountSetup method to ensure username is correctly set
+    async handleAccountSetup(form) {
         try {
             console.log("Handling account setup");
             const formData = new FormData(form);
@@ -231,7 +238,8 @@ export class InitialProfileSetup {
             // Validate form data
             const username = formData.get('username');
             const nickname = formData.get('nickname');
-            const avatar = formData.get('avatar') || this.avatarOptions[0];
+            const avatarPath = formData.get('avatar') || this.avatarOptions[0];
+            const avatarId = formData.get('avatarId') || getAvatarIdByPath(avatarPath);
             
             if (!username || username.length < 3) {
                 throw new Error('Username must be at least 3 characters long');
@@ -241,12 +249,27 @@ export class InitialProfileSetup {
                 throw new Error('Please enter a nickname');
             }
             
+            // Check if username exists on server
+            try {
+                const exists = await apiService.checkUsernameExists(username);
+                if (exists) {
+                    throw new Error('Username already taken. Please choose another.');
+                }
+            } catch (error) {
+                if (error.message === 'Username already taken. Please choose another.') {
+                    throw error; // Pass through the username conflict error
+                }
+                // If it's a different error (like server unavailable), continue with local creation
+                console.warn('Username check failed:', error);
+            }
+            
             // Create profile data
             const profileData = {
                 type: 'account',
-                name: username,
+                username: username, // Explicitly set username property
                 nickname: nickname,
-                picture: avatar,
+                picture: avatarPath,
+                avatarId: avatarId,
                 createdAt: new Date().toISOString(),
                 gamesPlayed: 0,
                 bestLevel: 1
@@ -260,9 +283,15 @@ export class InitialProfileSetup {
                 import('./syncManager.js').then(module => {
                     const syncManager = new module.SyncManager();
                     // Immediately try to register this profile
-                    syncManager.registerProfileWithServer(profileData);
-                    // Store instance for future use
-                    window.syncManager = syncManager;
+                    syncManager.registerProfileWithServer(profileData).then(result => {
+                        if (result && result.error === 'USERNAME_TAKEN') {
+                            // Username conflict occurred during registration
+                            alert('Username already taken. Please choose another.');
+                            return;
+                        }
+                        // Store instance for future use
+                        window.syncManager = syncManager;
+                    });
                 }).catch(err => {
                     console.warn('Could not load SyncManager for initial sync:', err);
                 });
@@ -285,7 +314,60 @@ export class InitialProfileSetup {
             alert(error.message || 'Error creating account. Please try again.');
         }
     }
-
+    
+    // Modified handleGuestSetup method to ensure consistent username handling
+    handleGuestSetup(form) {
+        try {
+            console.log("Handling guest setup");
+            const formData = new FormData(form);
+            
+            // Validate form data
+            const nickname = formData.get('nickname');
+            const avatarPath = formData.get('avatar') || this.avatarOptions[0];
+            const avatarId = formData.get('avatarId') || getAvatarIdByPath(avatarPath);
+            
+            if (!nickname) {
+                throw new Error('Please enter a nickname');
+            }
+            
+            // Generate a unique guest username
+            const guestUsername = 'guest_' + Date.now();
+            
+            // Create profile data
+            const profileData = {
+                type: 'guest',
+                username: guestUsername, // Set username directly
+                nickname: nickname,
+                picture: avatarPath,
+                avatarId: avatarId,
+                createdAt: new Date().toISOString(),
+                gamesPlayed: 0,
+                bestLevel: 1
+            };
+            
+            // Save profile locally
+            if (this.userProfile.saveProfile(profileData)) {
+                console.log("Guest profile saved successfully:", profileData);
+                
+                // Initialize the profile UI to update the side menu
+                const profileUI = new UserProfileUI();
+                profileUI.initProfileSection();
+                
+                // Close the modal
+                document.getElementById('guestSetupModal').remove();
+                
+                // Reload the page to start the game with the new profile
+                location.reload();
+            } else {
+                console.error("Failed to save guest profile");
+                throw new Error('Failed to save guest profile. Please try again.');
+            }
+        } catch (error) {
+            console.error("Guest setup error:", error);
+            alert(error.message || 'Error setting up guest profile. Please try again.');
+        }
+    }
+    
     // New method to handle server registration without blocking UI
     registerWithServer(profileData) {
         import('./api/apiService.js').then(module => {
@@ -325,54 +407,6 @@ export class InitialProfileSetup {
         }).catch(error => {
             console.warn("Failed to load API service:", error);
         });
-    }
-    
-    // Modified handleGuestSetup method to update the profile in the side menu
-    handleGuestSetup(form) {
-        try {
-            console.log("Handling guest setup");
-            const formData = new FormData(form);
-            
-            // Validate form data
-            const nickname = formData.get('nickname');
-            const avatar = formData.get('avatar') || this.avatarOptions[0];
-            
-            if (!nickname) {
-                throw new Error('Please enter a nickname');
-            }
-            
-            // Create profile data
-            const profileData = {
-                type: 'guest',
-                name: 'guest_' + Date.now(),
-                nickname: nickname,
-                picture: avatar,
-                createdAt: new Date().toISOString(),
-                gamesPlayed: 0,
-                bestLevel: 1
-            };
-            
-            // Save profile locally
-            if (this.userProfile.saveProfile(profileData)) {
-                console.log("Guest profile saved successfully:", profileData);
-                
-                // Initialize the profile UI to update the side menu
-                const profileUI = new UserProfileUI();
-                profileUI.initProfileSection();
-                
-                // Close the modal
-                document.getElementById('guestSetupModal').remove();
-                
-                // Reload the page to start the game with the new profile
-                location.reload();
-            } else {
-                console.error("Failed to save guest profile");
-                throw new Error('Failed to save guest profile. Please try again.');
-            }
-        } catch (error) {
-            console.error("Guest setup error:", error);
-            alert(error.message || 'Error setting up guest profile. Please try again.');
-        }
     }
     
     initProfileInSideMenu(profileData) {

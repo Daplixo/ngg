@@ -2,8 +2,8 @@
  * API Configuration for Number Guessing Game
  */
 
-// MODIFIED: Use hardcoded Render URL for all environments
-export const API_BASE_URL = 'https://number-guessing-backend-fumk.onrender.com';
+// MODIFIED: Use local development URL
+export const API_BASE_URL = 'http://localhost:5000';
 
 // Configuration object
 export const apiConfig = {

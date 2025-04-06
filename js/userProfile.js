@@ -1,6 +1,12 @@
 export class UserProfile {
     constructor() {
         this.storageKey = 'userProfileData';
+        
+        // If we're in a browser context, make this instance globally available
+        if (typeof window !== 'undefined' && !window.UserProfile) {
+            window.UserProfile = this;
+            console.log('📝 UserProfile instance attached to global scope');
+        }
     }
 
     getProfile() {
@@ -49,6 +55,8 @@ export class UserProfile {
     updateStatistics(gameData) {
         const profile = this.getProfile();
         if (profile) {
+            console.log('📊 Updating statistics for level', gameData.level, 'win:', gameData.hasWon);
+            
             profile.gamesPlayed = (profile.gamesPlayed || 0) + 1;
             
             // Only update best level if the current level is higher
@@ -56,11 +64,77 @@ export class UserProfile {
                 profile.bestLevel = gameData.level;
             }
             
+            // Track total wins
+            if (gameData.hasWon) {
+                profile.totalWins = (profile.totalWins || 0) + 1;
+            }
+            
+            // Track total attempts
+            profile.totalAttempts = (profile.totalAttempts || 0) + gameData.attempts;
+            
+            // Save profile to localStorage
             this.saveProfile(profile);
+            
+            // Always sync stats with server, regardless of syncedWithServer flag
+            console.log('🔄 Always triggering stats sync with server');
+            this.syncStatsWithServer(profile);
             
             return true;
         }
         return false;
+    }
+    
+    // New method specifically for syncing stats to server
+    syncStatsWithServer(profile) {
+        try {
+            if (!profile) {
+                console.error('❌ Cannot sync stats: No profile provided');
+                return;
+            }
+            
+            if (!profile.username) {
+                console.error('❌ Cannot sync stats: Missing username in profile');
+                return;
+            }
+            
+            const statsToSync = {
+                gamesPlayed: profile.gamesPlayed || 0,
+                bestLevel: profile.bestLevel || 1,
+                totalWins: profile.totalWins || 0,
+                totalAttempts: profile.totalAttempts || 0
+            };
+            
+            console.log('📤 Syncing stats to server for username:', profile.username);
+            
+            // First try to use existing SyncManager
+            if (window.syncManager) {
+                window.syncManager.syncStats();
+                return;
+            }
+            
+            // Otherwise load SyncManager dynamically
+            import('./syncManager.js')
+                .then(module => {
+                    const syncManager = new module.SyncManager();
+                    syncManager.syncStats();
+                })
+                .catch(err => {
+                    console.error('❌ Failed to load SyncManager:', err);
+                    
+                    // Fallback: Try to use API service directly if SyncManager fails
+                    import('./api/apiService.js')
+                        .then(module => {
+                            const apiService = module.apiService;
+                            // Use username strictly
+                            apiService.updateUserStats(profile.username, statsToSync)
+                                .then(() => console.log('✅ Stats synced via direct API call'))
+                                .catch(err => console.error('❌ Direct API stats sync failed:', err));
+                        })
+                        .catch(apiErr => console.error('❌ Failed to load API service:', apiErr));
+                });
+        } catch (error) {
+            console.error('❌ Error in syncStatsWithServer:', error);
+        }
     }
 
     validateProfile(profileData) {
@@ -91,7 +165,7 @@ export class UserProfile {
         console.log("Profile check:", profile ? "Found profile" : "No profile found");
         return !!profile;
     }
-
+    
     deleteProfile() {
         try {
             localStorage.removeItem(this.storageKey);
@@ -108,4 +182,10 @@ export class UserProfile {
         const profile = this.getProfile();
         return profile && profile.type === 'guest';
     }
+}
+
+// Create a global instance if we're in a browser context
+if (typeof window !== 'undefined' && !window.UserProfile) {
+    window.UserProfile = new UserProfile();
+    console.log('🌍 Global UserProfile instance created');
 }

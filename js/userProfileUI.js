@@ -1,5 +1,6 @@
 import { UserProfile } from './userProfile.js';
 import { apiService } from './api/apiService.js';
+import { getAvatarIdByPath } from './config/avatarConfig.js';
 
 export class UserProfileUI {
     constructor() {
@@ -25,6 +26,7 @@ export class UserProfileUI {
                             <input type="file" id="profilePicture" name="picture" 
                                    accept="image/*">
                             <div id="picturePreview" class="picture-preview"></div>
+                            <input type="hidden" id="avatarId" name="avatarId" value="avatar_01">
                         </div>
                         <button type="submit" class="submit-btn">Start Playing</button>
                     </form>
@@ -220,39 +222,56 @@ export class UserProfileUI {
             const preview = document.getElementById('picturePreview');
             const profileData = {
                 nickname: formData.get('nickname'),
-                name: formData.get('name'),
+                username: formData.get('name'), // Store form name as username
                 picture: preview?.dataset?.image || null,
+                avatarId: formData.get('avatarId') || 'avatar_01',
                 createdAt: new Date().toISOString(),
                 gamesPlayed: 0,
                 bestLevel: 1
             };
+
+            // If picture is from an avatar, extract avatarId from path
+            if (profileData.picture && !profileData.avatarId) {
+                profileData.avatarId = getAvatarIdByPath(profileData.picture);
+            }
+
+            // Check if username already exists
+            try {
+                const exists = await this.api.checkUsernameExists(profileData.username);
+                if (exists) {
+                    throw new Error('Username already taken. Please choose another.');
+                }
+            } catch (error) {
+                if (error.message === 'Username already taken. Please choose another.') {
+                    throw error; // Pass through username conflict error
+                }
+                // If it's a connection error, continue with local profile creation
+                console.warn('Username check failed:', error);
+            }
 
             this.userProfile.validateProfile(profileData);
             this.userProfile.saveProfile(profileData);
 
             const syncWithServer = formData.get('syncWithServer');
             if (syncWithServer) {
-                const email = formData.get('email');
-                const password = formData.get('password');
-                
-                if (!email || !password) {
-                    throw new Error('Email and password are required for server sync');
-                }
-                
                 try {
-                    await this.api.register({
-                        username: profileData.name,
+                    const result = await this.api.register({
+                        username: profileData.username,
                         nickname: profileData.nickname,
-                        email,
-                        password,
+                        avatarId: profileData.avatarId,
                         profilePicture: profileData.picture
                     });
                     
-                    profileData.syncedWithServer = true;
-                    this.userProfile.saveProfile(profileData);
-                    
-                    alert('Profile created and synced with server!');
+                    if (result && result.token) {
+                        profileData.syncedWithServer = true;
+                        this.userProfile.saveProfile(profileData);
+                        
+                        alert('Profile created and synced with server!');
+                    }
                 } catch (error) {
+                    if (error.status === 409) {
+                        throw new Error('Username already taken. Please choose another.');
+                    }
                     alert(`Server sync failed: ${error.message}. Profile saved locally only.`);
                 }
             }
@@ -350,7 +369,18 @@ export class UserProfileUI {
             }
             
             if (picElement) {
-                picElement.src = profile.picture || 'assets/icons/default-profile.png';
+                // Use the avatarId to determine the picture path
+                if (profile.avatarId) {
+                    // Import getAvatarPathById dynamically to avoid circular dependencies
+                    import('./config/avatarConfig.js').then(module => {
+                        picElement.src = module.getAvatarPathById(profile.avatarId);
+                    }).catch(() => {
+                        picElement.src = profile.picture || 'assets/icons/default-profile.png';
+                    });
+                } else {
+                    picElement.src = profile.picture || 'assets/icons/default-profile.png';
+                }
+                
                 picElement.onerror = function() {
                     this.src = 'assets/icons/default-profile.png';
                 };
@@ -440,11 +470,20 @@ export class UserProfileUI {
         const currentProfile = this.userProfile.getProfile();
         const preview = document.getElementById('editPicturePreview');
         
+        let avatarId = formData.get('avatarId') || currentProfile?.avatarId || 'avatar_01';
+        const picturePath = preview?.dataset?.image || currentProfile?.picture;
+        
+        // If picture has changed, update avatarId
+        if (picturePath && picturePath !== currentProfile?.picture) {
+            avatarId = getAvatarIdByPath(picturePath);
+        }
+        
         const updatedProfile = {
             ...currentProfile,
             nickname: formData.get('nickname'),
             name: formData.get('name'),
-            picture: preview?.dataset?.image || currentProfile?.picture
+            picture: picturePath,
+            avatarId: avatarId
         };
 
         try {
@@ -464,15 +503,17 @@ export class UserProfileUI {
 
     // New method to sync profile changes with server
     syncProfileWithServer(profile) {
-        if (!this.api.offlineMode) {
+        if (!this.api.offlineMode && profile.username) {
             console.log("Syncing profile changes with server");
             this.api.updateProfile({
                 nickname: profile.nickname,
-                username: profile.name,
+                username: profile.username,
                 profilePicture: profile.picture
             }).catch(error => {
                 console.warn("Failed to sync profile with server:", error);
             });
+        } else if (!profile.username) {
+            console.error("❌ Cannot sync profile with server: Missing username");
         }
     }
 

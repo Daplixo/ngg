@@ -135,10 +135,29 @@ export class ApiService {
   // User registration
   async register(userData) {
     try {
+      // Make sure avatarId is included in the request
+      if (userData.profilePicture && !userData.avatarId) {
+        // Extract avatar ID from the profile picture path if it's not provided directly
+        const avatarMatch = userData.profilePicture.match(/avatar(\d+)\.png$/);
+        if (avatarMatch) {
+          userData.avatarId = `avatar_${avatarMatch[1].padStart(2, '0')}`;
+        } else {
+          userData.avatarId = 'avatar_01'; // Default
+        }
+      }
+      
+      // Simplify the registration payload - remove email and password
+      const payload = {
+        username: userData.username,
+        nickname: userData.nickname,
+        avatarId: userData.avatarId || 'avatar_01',
+        profilePicture: userData.profilePicture
+      };
+
       return await this.executeRequest('/auth/register', {
         method: 'POST',
         headers: this.getHeaders(),
-        body: JSON.stringify(userData)
+        body: JSON.stringify(payload)
       }, 'Unable to register account while offline. Your profile will be saved locally.');
     } catch (error) {
       console.error('Registration error:', error);
@@ -208,6 +227,43 @@ export class ApiService {
     }
   }
 
+  // Update user statistics by username
+  async updateStatsByUsername(username, stats) {
+    try {
+      console.log(`📊 [API] Updating stats for ${username} via updateStatsByUsername():`, stats);
+      return await this.executeRequest('/users/stats', {
+        method: 'PUT',
+        headers: this.getHeaders(),
+        body: JSON.stringify({ username, stats })
+      }, 'Unable to update stats while offline. Changes saved locally.');
+    } catch (error) {
+      console.error(`[API] Error updating stats for ${username}:`, error);
+      // Don't throw this error, just log it - we don't want to break the game flow for stats updates
+      return null;
+    }
+  }
+
+  // Update user statistics
+  async updateUserStats(username, stats) {
+    try {
+      console.log(`📤 [API] Sending stats update for ${username} via updateUserStats():`, stats);
+      
+      const endpoint = '/users/stats';
+      const response = await this.executeRequest(endpoint, {
+        method: 'PUT',
+        headers: this.getHeaders(),
+        body: JSON.stringify({ username, stats })
+      }, 'Unable to sync stats while offline. Will try again later.');
+      
+      console.log('✅ [API] Stats update successful:', response);
+      return response;
+    } catch (error) {
+      console.error(`❌ [API] Stats update failed for ${username}:`, error);
+      // Don't throw error - we don't want to break game flow
+      return null;
+    }
+  }
+
   // Delete user account
   async deleteAccount() {
     try {
@@ -221,6 +277,33 @@ export class ApiService {
     } catch (error) {
       console.error('Delete account error:', error);
       throw error;
+    }
+  }
+
+  // Delete user account by username
+  async deleteAccountByUsername(username) {
+    try {
+      return await this.executeRequest(`/users/${username}`, {
+        method: 'DELETE',
+        headers: this.getHeaders()
+      }, 'Unable to delete account while offline.');
+    } catch (error) {
+      console.error('Delete account error:', error);
+      throw error;
+    }
+  }
+
+  // Check if username exists
+  async checkUsernameExists(username) {
+    try {
+      const response = await this.executeRequest(`/auth/username/${username}`, {
+        method: 'GET',
+        headers: this.getHeaders()
+      });
+      return response.exists;
+    } catch (error) {
+      console.error('Username check error:', error);
+      return false;
     }
   }
 

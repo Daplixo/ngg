@@ -11,7 +11,7 @@ console.log("🔍 API Connectivity Fix loaded - Silent mode");
 
 // Send a silent wakeup ping to Render immediately to warm up the backend
 (function wakeupBackend() {
-  const BACKEND_URL = 'https://number-guessing-backend-fumk.onrender.com/';
+  const BACKEND_URL = 'http://localhost:5000/';
   
   console.log("🔥 Sending early wakeup ping to backend...");
   
@@ -53,9 +53,9 @@ export async function checkAPIStatus(forcedCheck = false) {
     
     // Test against multiple endpoints for redundancy
     const pingEndpoints = [
-      `${API_BASE_URL}/api/ping`,
-      `${API_BASE_URL}/ping`,
-      `${API_BASE_URL}/api` // Try root API path
+      `http://localhost:5000/api/ping`,
+      `http://localhost:5000/ping`,
+      `http://localhost:5000/api` // Try root API path
     ];
     
     console.log("Trying multiple API endpoints for connectivity...");
@@ -140,11 +140,11 @@ document.addEventListener('DOMContentLoaded', () => {
 export async function forceCheckAPI() {
   // Test the API directly
   try {
-    console.log(`Force checking API at: ${API_BASE_URL}/api/ping`);
+    console.log(`Force checking API at: http://localhost:5000/api/ping`);
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 8000); // Longer timeout for cold starts
     
-    const response = await fetch(`${API_BASE_URL}/api/ping`, {
+    const response = await fetch(`http://localhost:5000/api/ping`, {
       method: 'GET',
       signal: controller.signal,
       headers: {

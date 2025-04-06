@@ -151,29 +151,66 @@ export const UIManager = {
         }
     },
 
-    showGameOverNotification(message) {
-        this.elements.gameOverNotification.textContent = message;
-        this.elements.gameOverNotification.classList.add("show");
-        AudioManager.play("gameOver");
-        // Increased to 5 seconds to give time to read the number
-        setTimeout(() => {
-            this.hideGameOverNotification();
-        }, 5000);
+    showGameOverNotification(message, autoHide = true) {
+        // Make sure the message is properly set
+        console.log("Showing game over notification:", message, "autoHide:", autoHide);
+        
+        // Ensure the element exists and is accessible
+        if (!this.elements.gameOverNotification) {
+            this.elements.gameOverNotification = document.getElementById('gameOverNotification');
+        }
+        
+        if (this.elements.gameOverNotification) {
+            // Clear any existing notification first
+            this.hideGameOverNotification(true);
+            
+            // Set up the new notification
+            this.elements.gameOverNotification.textContent = message;
+            this.elements.gameOverNotification.classList.add("show");
+            this.elements.gameOverNotification.style.display = "block"; // Force display
+            
+            // Clear any existing timeout
+            if (this._gameOverNotificationTimeout) {
+                clearTimeout(this._gameOverNotificationTimeout);
+                this._gameOverNotificationTimeout = null;
+            }
+            
+            // Only set auto-hide timeout if requested
+            if (autoHide) {
+                this._gameOverNotificationTimeout = setTimeout(() => {
+                    this.hideGameOverNotification();
+                }, 5000);
+            }
+        } else {
+            console.error("Game over notification element not found");
+        }
     },
-
+    
     hideGameOverNotification(immediate = false) {
-        const notification = this.elements.gameOverNotification;
+        if (!this.elements.gameOverNotification) {
+            this.elements.gameOverNotification = document.getElementById('gameOverNotification');
+            if (!this.elements.gameOverNotification) return;
+        }
+        
+        // Clear any active timeout
+        if (this._gameOverNotificationTimeout) {
+            clearTimeout(this._gameOverNotificationTimeout);
+            this._gameOverNotificationTimeout = null;
+        }
         
         if (immediate) {
             // Immediately hide without transition
-            notification.classList.remove("show", "hide");
-            notification.textContent = "";
-            notification.style.display = "none";
+            this.elements.gameOverNotification.classList.remove("show", "hide");
+            this.elements.gameOverNotification.textContent = "";
+            this.elements.gameOverNotification.style.display = "none";
         } else {
             // Standard gradual hide with transition
-            notification.classList.add("hide");
-            setTimeout(() => {
-                notification.classList.remove("show", "hide");
+            this.elements.gameOverNotification.classList.add("hide");
+            this._gameOverNotificationTimeout = setTimeout(() => {
+                if (this.elements.gameOverNotification) {
+                    this.elements.gameOverNotification.classList.remove("show", "hide");
+                    this.elements.gameOverNotification.style.display = "none";
+                }
             }, 300);
         }
     },

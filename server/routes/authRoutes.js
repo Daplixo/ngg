@@ -6,25 +6,19 @@ const User = require('../models/User');
 // Register a new user
 router.post('/register', async (req, res) => {
   try {
-    const { username, nickname, email, password, profilePicture } = req.body;
+    const { username, nickname, avatarId, profilePicture } = req.body;
     
     // Check if user already exists
-    let user = await User.findOne({ email });
-    if (user) {
-      return res.status(400).json({ message: 'User with this email already exists' });
-    }
-    
-    user = await User.findOne({ username });
-    if (user) {
-      return res.status(400).json({ message: 'Username already taken' });
+    const existingUser = await User.findOne({ username });
+    if (existingUser) {
+      return res.status(409).json({ message: 'Username already taken' });
     }
     
     // Create new user
-    user = new User({
+    const user = new User({
       username,
       nickname,
-      email,
-      password,
+      avatarId: avatarId || 'avatar_01',
       profilePicture: profilePicture || null
     });
     
@@ -43,64 +37,35 @@ router.post('/register', async (req, res) => {
         id: user._id,
         username: user.username,
         nickname: user.nickname,
-        email: user.email,
+        avatarId: user.avatarId,
         profilePicture: user.profilePicture,
         stats: user.stats
       }
     });
   } catch (error) {
+    // Check for MongoDB duplicate key error
+    if (error.code === 11000) {
+      return res.status(409).json({ message: 'Username already taken' });
+    }
+    
     console.error('Registration error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });
 
-// Login user
-router.post('/login', async (req, res) => {
+// Get user by username (for checking if username exists)
+router.get('/username/:username', async (req, res) => {
   try {
-    const { login, password } = req.body;
+    const username = req.params.username;
+    const user = await User.findOne({ username });
     
-    // Check if user exists (by email or username)
-    const user = await User.findOne({
-      $or: [
-        { email: login.toLowerCase() },
-        { username: login }
-      ]
-    });
-    
-    if (!user) {
-      return res.status(400).json({ message: 'Invalid credentials' });
+    if (user) {
+      return res.status(200).json({ exists: true });
     }
     
-    // Verify password
-    const isMatch = await user.comparePassword(password);
-    if (!isMatch) {
-      return res.status(400).json({ message: 'Invalid credentials' });
-    }
-    
-    // Update last login time
-    user.lastLoginAt = Date.now();
-    await user.save();
-    
-    // Generate JWT token
-    const token = jwt.sign(
-      { id: user._id },
-      process.env.JWT_SECRET,
-      { expiresIn: '7d' }
-    );
-    
-    res.json({
-      token,
-      user: {
-        id: user._id,
-        username: user.username,
-        nickname: user.nickname,
-        email: user.email,
-        profilePicture: user.profilePicture,
-        stats: user.stats
-      }
-    });
+    res.status(200).json({ exists: false });
   } catch (error) {
-    console.error('Login error:', error);
+    console.error('Username check error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });

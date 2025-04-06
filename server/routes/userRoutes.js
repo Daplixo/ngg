@@ -17,11 +17,10 @@ router.get('/', async (req, res) => {
 });
 //testing
 
-
 // Get current user profile
 router.get('/profile', auth, async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).select('-password');
+    const user = await User.findById(req.user.id);
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
@@ -35,7 +34,7 @@ router.get('/profile', auth, async (req, res) => {
 // Update user profile
 router.put('/profile', auth, async (req, res) => {
   try {
-    const { nickname, username, profilePicture } = req.body;
+    const { nickname, username, avatarId, profilePicture } = req.body;
     
     // Check if username already exists (if being changed)
     if (username) {
@@ -45,20 +44,21 @@ router.put('/profile', auth, async (req, res) => {
       });
       
       if (existingUser) {
-        return res.status(400).json({ message: 'Username already taken' });
+        return res.status(409).json({ message: 'Username already taken' });
       }
     }
     
     const updateData = {};
     if (nickname) updateData.nickname = nickname;
     if (username) updateData.username = username;
+    if (avatarId) updateData.avatarId = avatarId;
     if (profilePicture) updateData.profilePicture = profilePicture;
     
     const user = await User.findByIdAndUpdate(
       req.user.id,
       { $set: updateData },
       { new: true }
-    ).select('-password');
+    );
     
     res.json(user);
   } catch (error) {
@@ -67,37 +67,67 @@ router.put('/profile', auth, async (req, res) => {
   }
 });
 
-// Update user statistics
-router.put('/stats', auth, async (req, res) => {
+// Update user statistics by username (no auth required)
+router.put('/stats', async (req, res) => {
   try {
-    const { gamesPlayed, bestLevel, totalWins, totalAttempts } = req.body;
+    const { username, stats } = req.body;
     
-    const updateData = { stats: {} };
-    if (gamesPlayed !== undefined) updateData.stats.gamesPlayed = gamesPlayed;
-    if (bestLevel !== undefined) updateData.stats.bestLevel = bestLevel;
-    if (totalWins !== undefined) updateData.stats.totalWins = totalWins;
-    if (totalAttempts !== undefined) updateData.stats.totalAttempts = totalAttempts;
+    // Validate required fields
+    if (!username || !stats) {
+      return res.status(400).json({ error: 'Username and stats are required' });
+    }
     
-    const user = await User.findByIdAndUpdate(
-      req.user.id,
-      { $set: updateData },
+    console.log(`🔄 Updating stats for user ${username}:`, stats);
+    
+    const updatedUser = await User.findOneAndUpdate(
+      { username },
+      { $set: { stats } },
       { new: true }
-    ).select('-password');
+    );
     
-    res.json(user);
-  } catch (error) {
-    console.error('Error updating stats:', error);
-    res.status(500).json({ message: 'Server error' });
+    if (!updatedUser) {
+      console.log(`❌ User not found: ${username}`);
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    console.log(`✅ Stats updated successfully for ${username}`);
+    return res.status(200).json({ 
+      message: 'Stats updated successfully',
+      user: {
+        username: updatedUser.username,
+        stats: updatedUser.stats
+      }
+    });
+  } catch (err) {
+    console.error('❌ Error updating stats:', err);
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-// Delete user account
+// Delete user account by ID (auth middleware)
 router.delete('/', auth, async (req, res) => {
   try {
     await User.findByIdAndDelete(req.user.id);
     res.json({ message: 'User account deleted successfully' });
   } catch (error) {
     console.error('Error deleting account:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Delete user account by username (no auth required)
+router.delete('/:username', async (req, res) => {
+  try {
+    const { username } = req.params;
+    const result = await User.findOneAndDelete({ username });
+    
+    if (!result) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    
+    res.json({ message: 'User account deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting account by username:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });

@@ -577,6 +577,12 @@
     <!-- Debug helper for MongoDB connectivity issues -->
     <script type="module" src="js/debug.js"></script>
 
+    <!-- Stats Sync Debug Tools -->
+    <script type="module" src="js/statsSyncDebug.js"></script>
+
+    <!-- Fix for game notifications -->
+    <script src="js/game-notification-fix.js"></script>
+
     <!-- Form submission script - Modified to work on both localhost and production -->
     <script>
       // Enable form submissions from both localhost and production
@@ -672,6 +678,34 @@
         "--hamburger-color:",
         rootStyle.getPropertyValue("--hamburger-color")
       );
+
+      // Game stats debug monitor
+      window.debugStats = function () {
+        try {
+          const userProfile = new UserProfile();
+          const profile = userProfile.getProfile();
+          if (profile) {
+            console.log("📊 Current User Stats:", {
+              username: profile.name,
+              gamesPlayed: profile.gamesPlayed || 0,
+              bestLevel: profile.bestLevel || 1,
+              totalWins: profile.totalWins || 0,
+              totalAttempts: profile.totalAttempts || 0,
+              syncedWithServer: !!profile.syncedWithServer,
+            });
+          } else {
+            console.log("📊 No user profile found");
+          }
+        } catch (e) {
+          console.error("Error accessing stats:", e);
+        }
+      };
+
+      // Run stats check after a delay
+      setTimeout(function () {
+        console.log("==== STATS DEBUG ====");
+        window.debugStats();
+      }, 3000);
     </script>
 
     <!-- Emergency Menu Toggle Fix -->

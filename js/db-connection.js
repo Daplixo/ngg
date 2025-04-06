@@ -19,6 +19,8 @@ let manualOfflineMode = false;
 // Increased retry delay for Render cold starts (now 10 seconds)
 const RETRY_DELAY = 10000;
 
+// Make sure all API references use 'http://localhost:5000'
+
 // Create and inject the status indicator into the page - DISABLED
 function createStatusIndicator() {
   // Disabled to remove UI elements

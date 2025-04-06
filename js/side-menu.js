@@ -391,22 +391,47 @@
     
     // Function to delete all user data
     function deleteAllUserData() {
-        console.log("Deleting all user data from local storage");
+        console.log("Deleting all user data");
         try {
+            // Get user profile data before deleting
+            const profileData = JSON.parse(localStorage.getItem('userProfileData'));
+            const username = profileData?.name;
+            
             // Save theme preference temporarily
             const currentTheme = localStorage.getItem('theme');
             
             // Clear all localStorage
             localStorage.clear();
             
-            // Restore theme preference if user wants to keep it
+            // Restore theme preference
             if (currentTheme) {
                 localStorage.setItem('theme', currentTheme);
             }
             
+            // If the profile was synced with server, delete from server as well
+            if (username && profileData?.syncedWithServer) {
+                import('./api/apiService.js').then(module => {
+                    const apiService = module.apiService;
+                    apiService.deleteAccountByUsername(username)
+                        .then(() => {
+                            console.log("Account deleted from server");
+                        })
+                        .catch(err => {
+                            console.error("Failed to delete account from server:", err);
+                        });
+                });
+            }
+            
             console.log("All user data deleted successfully");
+            showSuccessMessage();
+            
+            // Reload the page after a short delay so the success message is visible
+            setTimeout(() => {
+                location.reload();
+            }, 1500);
         } catch (e) {
             console.error("Error deleting user data:", e);
+            alert("An error occurred while deleting your account. Please try again.");
         }
     }
     
