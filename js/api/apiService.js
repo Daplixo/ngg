@@ -3,12 +3,15 @@
  * Handles all communication with the backend server
  */
 
-import { API_BASE_URL, isApiAvailable, apiConfig, getFullApiUrl } from './apiConfig.js';
+import { apiConfig } from './apiConfig.js';
 
 export class ApiService {
   constructor() {
-    this.token = localStorage.getItem('auth_token');
-    this.available = null; // API availability status (null means not yet checked)
+    // CRITICAL: Make sure the API URL is always set
+    this.apiUrl = apiConfig.baseUrl;
+    this.token = localStorage.getItem(apiConfig.tokenKey);
+    this.offlineMode = apiConfig.isOfflineMode || false;
+    this.available = null; // Will be determined by connectivity check
     
     // FIXED: Don't start in offline mode unless explicitly set
     this.offlineMode = localStorage.getItem('api_offline_mode') === 'true';
@@ -33,7 +36,7 @@ export class ApiService {
       const timeoutId = setTimeout(() => controller.abort(), 5000);
       
       // FIXED: Use the correct ping endpoint with /api
-      const response = await fetch(`${API_BASE_URL}/api/ping`, {
+      const response = await fetch(`${apiConfig.baseUrl}/api/ping`, {
         signal: controller.signal,
         headers: {
           'Accept': 'application/json',
@@ -58,81 +61,89 @@ export class ApiService {
   }
 
   // Toggle offline mode
-  toggleOfflineMode(enabled) {
-    if (this.offlineMode === enabled) return; // No change needed
+  toggleOfflineMode(isOffline = null) {
+    // If isOffline is not provided, toggle the current state
+    this.offlineMode = isOffline !== null ? isOffline : !this.offlineMode;
+    console.log(`API Service ${this.offlineMode ? 'offline' : 'online'} mode ${this.offlineMode ? 'enabled' : 'disabled'}`);
     
-    this.offlineMode = enabled;
-    localStorage.setItem('api_offline_mode', enabled ? 'true' : 'false');
-    this.available = !enabled;
-    console.log(`API offline mode ${enabled ? 'enabled' : 'disabled'}`);
+    // Also update the global config
+    apiConfig.isOfflineMode = this.offlineMode;
+    
     return this.offlineMode;
   }
 
-  // Set auth token for API calls
+  // Set token for authentication
   setToken(token) {
     this.token = token;
     if (token) {
-      localStorage.setItem('auth_token', token);
+      localStorage.setItem(apiConfig.tokenKey, token);
     } else {
-      localStorage.removeItem('auth_token');
+      localStorage.removeItem(apiConfig.tokenKey);
     }
   }
 
-  // Create default headers for API requests
+  // Helper method to get all the required headers
   getHeaders() {
     const headers = {
       'Content-Type': 'application/json',
-      'Cache-Control': 'no-cache'
+      'Accept': 'application/json'
     };
-    
+
     if (this.token) {
-      headers['x-auth-token'] = this.token;
+      headers['Authorization'] = `Bearer ${this.token}`;
     }
-    
+
     return headers;
   }
 
-  // Execute API request with offline handling
-  async executeRequest(endpoint, options, offlineErrorMessage) {
-    // If we already know the API is unavailable, don't attempt the request
-    if (this.available === false || this.offlineMode) {
-      console.warn(`Skipping API request to ${endpoint} - offline mode active`);
-      throw new Error(offlineErrorMessage || 'API is currently unavailable. Please try again later.');
-    }
-    
+  // Execute request with better error handling
+  async executeRequest(endpoint, options, offlineMessage = 'Cannot perform this action while offline') {
     try {
-      // FIXED: Use getFullApiUrl to ensure proper URL construction
-      const fullUrl = getFullApiUrl(endpoint);
+      if (this.offlineMode) {
+        console.log(`[API] Offline mode active, skipping request to ${endpoint}`);
+        throw new Error(offlineMessage);
+      }
+
+      // CRITICAL FIX: Make sure we add /api prefix to all endpoints
+      // If the endpoint already starts with /api, don't add it again
+      let apiEndpoint = endpoint;
+      if (!endpoint.startsWith('/api') && !endpoint.startsWith('http')) {
+        apiEndpoint = `/api${endpoint.startsWith('/') ? endpoint : '/' + endpoint}`;
+      }
+
+      // Construct the full URL
+      const fullUrl = apiEndpoint.startsWith('http') 
+        ? apiEndpoint 
+        : `${apiConfig.baseUrl}${apiEndpoint}`;
+        
       console.log(`Executing API request to: ${fullUrl}`);
+      console.log(`${options.method} ${fullUrl}`);
       
       const response = await fetch(fullUrl, options);
-      let data;
       
-      try {
-        data = await response.json();
-      } catch (e) {
-        // Handle non-JSON responses
-        data = { message: 'Server returned non-JSON response' };
-      }
-      
+      // Handle HTTP errors
       if (!response.ok) {
-        throw new Error(data.message || 'An error occurred with the request');
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage = errorData.message || errorData.error || `HTTP Error ${response.status}`;
+
+        // Standardize error messages for specific status codes
+        if (response.status === 409) {
+          throw new Error('Username already taken');
+        } else if (response.status === 404) {
+          throw new Error('User not found');
+        } else {
+          throw new Error(errorMessage);
+        }
       }
       
-      return data;
+      return await response.json();
     } catch (error) {
-      // Check if it's a network error, which likely means API is down
-      if (error.name === 'TypeError' && error.message.includes('network')) {
-        console.warn(`Network error on API request to ${endpoint}`);
-        // Run an availability check to update status for future requests
-        setTimeout(() => this.checkAvailability(), 1000);
-      }
-      
+      // Pass through our own Error objects unchanged
       throw error;
     }
   }
 
-  // User registration
+  // User registration - FIXED endpoint
   async register(userData) {
     try {
       // Make sure avatarId is included in the request
@@ -165,40 +176,40 @@ export class ApiService {
     }
   }
 
-  // User login
+  // User login - FIXED endpoint
   async login(credentials) {
     try {
-      const data = await this.executeRequest('/auth/login', {
+      const response = await this.executeRequest('/auth/login', {
         method: 'POST',
         headers: this.getHeaders(),
         body: JSON.stringify(credentials)
-      }, 'Unable to login while offline.');
+      }, 'Unable to login while offline. Please try again when connected.');
       
-      if (data.token) {
-        this.setToken(data.token);
+      if (response.token) {
+        this.setToken(response.token);
       }
       
-      return data;
+      return response;
     } catch (error) {
       console.error('Login error:', error);
       throw error;
     }
   }
 
-  // Get current user profile
+  // Get user profile - FIXED endpoint
   async getUserProfile() {
     try {
       return await this.executeRequest('/users/profile', {
         method: 'GET',
         headers: this.getHeaders()
-      }, 'Unable to fetch profile while offline.');
+      }, 'Unable to fetch profile while offline. Using local data.');
     } catch (error) {
       console.error('Get profile error:', error);
       throw error;
     }
   }
 
-  // Update user profile
+  // Update user profile - FIXED endpoint
   async updateProfile(profileData) {
     try {
       return await this.executeRequest('/users/profile', {
@@ -212,7 +223,7 @@ export class ApiService {
     }
   }
 
-  // Update user statistics
+  // Update user statistics - FIXED endpoint
   async updateStats(statsData) {
     try {
       return await this.executeRequest('/users/stats', {
@@ -227,10 +238,16 @@ export class ApiService {
     }
   }
 
-  // Update user statistics by username
+  // Update user statistics by username - FIXED endpoint
   async updateStatsByUsername(username, stats) {
     try {
-      console.log(`📊 [API] Updating stats for ${username} via updateStatsByUsername():`, stats);
+      if (!username) {
+        console.error("❌ Cannot update stats: Missing username");
+        return null;
+      }
+      
+      console.log(`📊 Updating stats for ${username}:`, stats);
+      
       return await this.executeRequest('/users/stats', {
         method: 'PUT',
         headers: this.getHeaders(),
@@ -243,44 +260,41 @@ export class ApiService {
     }
   }
 
-  // Update user statistics
+  // Update user statistics - FIXED endpoint
   async updateUserStats(username, stats) {
     try {
-      console.log(`📤 [API] Sending stats update for ${username} via updateUserStats():`, stats);
+      if (!username) {
+        console.error("❌ [API] Cannot update stats: Missing username");
+        return null;
+      }
       
-      const endpoint = '/users/stats';
-      const response = await this.executeRequest(endpoint, {
+      console.log(`📤 [API] Sending stats update for ${username}:`, stats);
+      
+      return await this.executeRequest('/users/stats', {
         method: 'PUT',
         headers: this.getHeaders(),
         body: JSON.stringify({ username, stats })
       }, 'Unable to sync stats while offline. Will try again later.');
-      
-      console.log('✅ [API] Stats update successful:', response);
-      return response;
     } catch (error) {
       console.error(`❌ [API] Stats update failed for ${username}:`, error);
-      // Don't throw error - we don't want to break game flow
       return null;
     }
   }
 
-  // Delete user account
+  // Delete user account - FIXED endpoint
   async deleteAccount() {
     try {
-      const data = await this.executeRequest('/users', {
+      return await this.executeRequest('/users', {
         method: 'DELETE',
         headers: this.getHeaders()
       }, 'Unable to delete account while offline.');
-      
-      this.setToken(null);
-      return data;
     } catch (error) {
       console.error('Delete account error:', error);
       throw error;
     }
   }
 
-  // Delete user account by username
+  // Delete user account by username - FIXED endpoint
   async deleteAccountByUsername(username) {
     try {
       return await this.executeRequest(`/users/${username}`, {
@@ -288,12 +302,12 @@ export class ApiService {
         headers: this.getHeaders()
       }, 'Unable to delete account while offline.');
     } catch (error) {
-      console.error('Delete account error:', error);
+      console.error(`Delete account error for ${username}:`, error);
       throw error;
     }
   }
 
-  // Check if username exists
+  // Check if username exists - FIXED endpoint
   async checkUsernameExists(username) {
     try {
       const response = await this.executeRequest(`/auth/username/${username}`, {
@@ -307,7 +321,7 @@ export class ApiService {
     }
   }
 
-  // Get leaderboard data (by best level)
+  // Get leaderboard data (by best level) - FIXED endpoint
   async getLeaderboardByLevel(limit = 10) {
     try {
       return await this.executeRequest(`/leaderboard/best-level?limit=${limit}`, {
@@ -334,7 +348,7 @@ export const apiService = new ApiService();
 setTimeout(async () => {
   console.log("Initial API availability check...");
   try {
-    const available = await isApiAvailable();
+    const available = await apiService.checkAvailability();
     console.log(`Initial API check result: ${available ? 'Available ✓' : 'Unavailable ✗'}`);
     
     // Update the service instance

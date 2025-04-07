@@ -4,14 +4,15 @@
  * MODIFIED: Added early wakeup ping and better Render cold start handling
  */
 
-import { API_BASE_URL, isApiAvailable, apiConfig } from './api/apiConfig.js';
+import { apiConfig } from './api/apiConfig.js';
 import { apiService } from './api/apiService.js';
 
 console.log("🔍 API Connectivity Fix loaded - Silent mode");
 
 // Send a silent wakeup ping to Render immediately to warm up the backend
 (function wakeupBackend() {
-  const BACKEND_URL = 'http://localhost:5000/';
+  // Use apiConfig.baseUrl consistently
+  const BACKEND_URL = apiConfig.baseUrl || 'http://localhost:5000/';
   
   console.log("🔥 Sending early wakeup ping to backend...");
   
@@ -28,17 +29,17 @@ console.log("🔍 API Connectivity Fix loaded - Silent mode");
   });
 })();
 
-// Create a simple status indicator - DISABLED
-function createStatusIndicator() {
-  // Return null to disable the UI indicator
-  return null;
-}
-
-// Update status indicator - DISABLED
-function updateStatusIndicator(status) {
-  // Function disabled - no UI indicators
-  console.log(`API Status: ${status} (indicator disabled)`);
-}
+// Wait for the DOM to be loaded before initializing
+document.addEventListener('DOMContentLoaded', () => {
+  console.log("Initializing silent API connectivity check...");
+  
+  // Delay the first check to allow backend to start up (cold start)
+  console.log("🕒 Waiting 5 seconds before first API check to allow backend to warm up...");
+  setTimeout(() => {
+    console.log("⏰ Performing initial API availability check");
+    checkAPIStatus(true);
+  }, 5000);
+});
 
 // Check API status function
 export async function checkAPIStatus(forcedCheck = false) {
@@ -53,9 +54,9 @@ export async function checkAPIStatus(forcedCheck = false) {
     
     // Test against multiple endpoints for redundancy
     const pingEndpoints = [
-      `http://localhost:5000/api/ping`,
-      `http://localhost:5000/ping`,
-      `http://localhost:5000/api` // Try root API path
+      `${apiConfig.baseUrl}/api/ping`,
+      `${apiConfig.baseUrl}/ping`,
+      `${apiConfig.baseUrl}/api` // Try root API path
     ];
     
     console.log("Trying multiple API endpoints for connectivity...");
@@ -111,40 +112,22 @@ export async function checkAPIStatus(forcedCheck = false) {
   }
 }
 
-// Initialize
-document.addEventListener('DOMContentLoaded', () => {
-  console.log("Initializing silent API connectivity check...");
-  
-  // Initial status check with longer delay for cold start
-  console.log("🕒 Waiting 5 seconds before first API check to allow backend to wake up...");
-  setTimeout(() => {
-    console.log("⏰ Performing initial API availability check");
-    checkAPIStatus();
-  }, 5000);
-  
-  // Periodic check (less frequent)
-  setInterval(() => {
-    if (!apiService.offlineMode) {
-      checkAPIStatus();
-    }
-  }, 180000); // Check every 3 minutes
-  
-  // Check when coming back online
-  window.addEventListener('online', () => {
-    console.log("Browser reports online status, checking API...");
+// Click handler for reload button
+document.addEventListener('click', function(e) {
+  if (e.target && e.target.id === 'retryConnection') {
     checkAPIStatus(true);
-  });
+  }
 });
 
 // Export direct connection checkers that bypass normal checks
 export async function forceCheckAPI() {
   // Test the API directly
   try {
-    console.log(`Force checking API at: http://localhost:5000/api/ping`);
+    console.log(`Force checking API at: ${apiConfig.baseUrl}/api/ping`);
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 8000); // Longer timeout for cold starts
     
-    const response = await fetch(`http://localhost:5000/api/ping`, {
+    const response = await fetch(`${apiConfig.baseUrl}/api/ping`, {
       method: 'GET',
       signal: controller.signal,
       headers: {

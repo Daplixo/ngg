@@ -39,12 +39,6 @@ export class SyncManager {
                 return;
             }
             
-            // Check for required username - critical for proper syncing
-            if (!profile.username) {
-                console.error("❌ Sync failed: Missing username in profile");
-                return;
-            }
-            
             // If profile isn't synced with server and it's a non-guest profile,
             // try to register it first
             if (!profile.syncedWithServer && profile.type === 'account') {
@@ -64,57 +58,146 @@ export class SyncManager {
 
     async registerProfileWithServer(profile) {
         try {
-            // STRICT: Use ONLY username, no fallback
-            if (!profile.username) {
+            // Use consistent username property - profile.username if it exists, otherwise profile.name
+            const username = profile.username || profile.name;
+            
+            if (!username) {
                 console.error("❌ Cannot register profile: Missing username");
                 return { success: false, error: 'MISSING_USERNAME' };
             }
             
-            console.log(`🔄 Checking if username ${profile.username} exists before registration`);
+            console.log(`🔄 Checking if username ${username} exists before registration`);
             
             // Check if username already exists
-            const exists = await apiService.checkUsernameExists(profile.username);
-            
-            if (exists) {
-                console.log(`⚠️ Username ${profile.username} already exists on server`);
+            try {
+                const exists = await apiService.checkUsernameExists(username);
                 
-                // Instead of generating a new username, mark this profile as synced
-                // and update the server data for this username
-                console.log(`📝 Marking profile as synced with server and updating data`);
+                if (exists) {
+                    console.log(`⚠️ Username ${username} already exists on server`);
+                    
+                    // Mark the profile as synced with server, so we can update it
+                    profile.syncedWithServer = true;
+                    
+                    // Ensure username is always saved correctly in the profile
+                    if (!profile.username) {
+                        profile.username = username;
+                    }
+                    
+                    this.userProfile.saveProfile(profile);
+                    
+                    // Update existing profile on server instead of creating a new one
+                    await this.updateProfileOnServer(profile);
+                    
+                    return { success: true, message: 'Profile marked as synced with existing account' };
+                }
                 
-                // Update the syncedWithServer flag
-                profile.syncedWithServer = true;
-                this.userProfile.saveProfile(profile);
+                console.log(`✅ Username ${username} is available, registering...`);
                 
-                // Update profile data on server
-                await this.updateExistingProfileOnServer(profile);
+                // Register the profile with the server
+                try {
+                    const result = await apiService.register({
+                        username: username,
+                        nickname: profile.nickname,
+                        avatarId: profile.avatarId,
+                        profilePicture: profile.picture
+                    });
+                    
+                    if (result && result.token) {
+                        console.log('✅ Profile successfully registered with server');
+                        profile.syncedWithServer = true;
+                        
+                        // Ensure username is always saved correctly in the profile
+                        if (!profile.username) {
+                            profile.username = username;
+                        }
+                        
+                        this.userProfile.saveProfile(profile);
+                        apiService.setToken(result.token);
+                        
+                        // Sync stats immediately after successful registration
+                        this.syncStats();
+                        return { success: true, message: 'Profile registered successfully' };
+                    }
+                    
+                    return { success: false, message: 'Registration failed' };
+                } catch (registerError) {
+                    // Handle 409 Conflict error specifically (username already exists)
+                    if (registerError.message === 'Username already taken') {
+                        console.log(`⚠️ Username ${username} already exists (caught during registration)`);
+                        
+                        // Mark the profile as synced with server
+                        profile.syncedWithServer = true;
+                        
+                        // Ensure username is saved correctly
+                        if (!profile.username) {
+                            profile.username = username;
+                        }
+                        
+                        this.userProfile.saveProfile(profile);
+                        
+                        // Update existing profile on server
+                        await this.updateProfileOnServer(profile);
+                        
+                        return { success: true, message: 'Profile marked as synced with existing account' };
+                    }
+                    
+                    // Re-throw any other errors
+                    throw registerError;
+                }
+            } catch (error) {
+                // If the error is from our register attempt with 409 status, it's already handled above
+                if (error.message === 'Username already taken') {
+                    throw error; // This will be caught by the outer catch block
+                }
                 
-                return { success: true, message: 'Profile marked as synced with existing account' };
+                // For connection errors or other issues checking username existence,
+                // attempt direct registration and handle 409 errors there
+                console.warn('Username check failed:', error);
+                
+                try {
+                    const result = await apiService.register({
+                        username: username,
+                        nickname: profile.nickname,
+                        avatarId: profile.avatarId,
+                        profilePicture: profile.picture
+                    });
+                    
+                    if (result && result.token) {
+                        console.log('✅ Profile successfully registered with server');
+                        profile.syncedWithServer = true;
+                        
+                        if (!profile.username) {
+                            profile.username = username;
+                        }
+                        
+                        this.userProfile.saveProfile(profile);
+                        apiService.setToken(result.token);
+                        
+                        this.syncStats();
+                        return { success: true, message: 'Profile registered successfully' };
+                    }
+                    
+                    return { success: false, message: 'Registration failed' };
+                } catch (registerError) {
+                    // Handle 409 Conflict error
+                    if (registerError.message === 'Username already taken') {
+                        console.log(`⚠️ Username ${username} already exists (caught during registration)`);
+                        
+                        profile.syncedWithServer = true;
+                        
+                        if (!profile.username) {
+                            profile.username = username;
+                        }
+                        
+                        this.userProfile.saveProfile(profile);
+                        await this.updateProfileOnServer(profile);
+                        
+                        return { success: true, message: 'Profile marked as synced with existing account' };
+                    }
+                    
+                    throw registerError;
+                }
             }
-            
-            console.log(`✅ Username ${profile.username} is available, registering...`);
-            
-            // Register the profile with the server
-            const result = await apiService.register({
-                username: profile.username,  // Only use profile.username
-                nickname: profile.nickname,
-                avatarId: profile.avatarId,
-                profilePicture: profile.picture
-            });
-            
-            if (result && result.token) {
-                console.log('✅ Profile successfully registered with server');
-                profile.syncedWithServer = true;
-                this.userProfile.saveProfile(profile);
-                apiService.setToken(result.token);
-                
-                // Also sync stats immediately after successful registration
-                this.syncStats();
-                
-                return { success: true, message: 'Profile registered successfully' };
-            }
-            
-            return { success: false, message: 'Registration failed' };
         } catch (error) {
             console.error('❌ Error registering profile with server:', error);
             return { success: false, error: error.message };
@@ -170,34 +253,32 @@ export class SyncManager {
 
     // Keep existing handleExistingUsername method but update it to use username correctly
     handleExistingUsername(profile) {
-        console.log(`⚠️ [DEPRECATED] handleExistingUsername called - this should not happen anymore`);
-        if (!profile.username) {
-            console.error("❌ Cannot handle existing username: Missing username in profile");
-            return;
-        }
-        
-        // Generate a new username by appending a random number
-        const newUsername = `${profile.username}_${Math.floor(Math.random() * 10000)}`;
+        // FIX: Use consistent username handling
+        const baseUsername = profile.username || profile.name;
+        const newUsername = `${baseUsername}_${Math.floor(Math.random() * 10000)}`;
         console.log(`🔄 Generating new username: ${newUsername}`);
         
-        // Update the profile with the new username
+        // Update the profile with the new username and save
         profile.username = newUsername;
         this.userProfile.saveProfile(profile);
         this.registerProfileWithServer(profile);
     }
 
     updateProfileOnServer(profile) {
-        if (!profile.username) {
-            console.error("❌ Cannot update profile on server: Missing username");
+        console.log("📤 Syncing profile data to server...");
+        
+        // Use consistent username handling
+        const username = profile.username || profile.name;
+        
+        if (!username) {
+            console.error("❌ Cannot update profile: Missing username");
             return;
         }
-        
-        console.log("📤 Syncing profile data to server...");
         
         // Update profile data
         apiService.updateProfile({
             nickname: profile.nickname,
-            username: profile.username, // Only use profile.username
+            username: username,
             profilePicture: profile.picture,
             avatarId: profile.avatarId
         }).catch(err => {
@@ -207,13 +288,13 @@ export class SyncManager {
 
         // Update stats data
         console.log("📤 Syncing stats to server...");
-        apiService.updateStatsByUsername(profile.username, {
-            gamesPlayed: profile.gamesPlayed,
-            bestLevel: profile.bestLevel,
+        apiService.updateUserStats(username, {
+            gamesPlayed: profile.gamesPlayed || 0,
+            bestLevel: profile.bestLevel || 1,
             totalWins: profile.totalWins || 0,
             totalAttempts: profile.totalAttempts || 0
         }).catch(err => {
-            console.warn(`❌ Error syncing stats for user ${profile.username}:`, err);
+            console.warn(`❌ Error syncing stats for user ${username}:`, err);
             console.log("🕒 Will automatically retry in the next sync cycle");
         });
     }
@@ -227,15 +308,18 @@ export class SyncManager {
                 return;
             }
             
-            if (!profile.username) {
-                console.error("❌ Cannot sync game stats: Missing username in profile");
+            // FIX: Use consistent username handling - this is critical for syncing
+            const username = profile.username || profile.name;
+            
+            if (!username) {
+                console.error("❌ Cannot sync game stats: Missing username");
                 return;
             }
             
             // Always sync game stats regardless of syncedWithServer flag
-            console.log("🎮 Syncing game stats after game completion...");
+            console.log(`🎮 Syncing game stats for ${username} after game completion...`);
             
-            apiService.updateStatsByUsername(profile.username, {
+            apiService.updateUserStats(username, {
                 gamesPlayed: profile.gamesPlayed,
                 bestLevel: profile.bestLevel,
                 totalWins: profile.totalWins || 0,
@@ -243,7 +327,7 @@ export class SyncManager {
             }).then(() => {
                 console.log("✅ Game stats synced successfully");
             }).catch(err => {
-                console.warn(`❌ Error syncing game stats for user ${profile.username}:`, err);
+                console.warn(`❌ Error syncing game stats for user ${username}:`, err);
             });
         } catch (error) {
             console.error("Error attempting to sync game stats:", error);
@@ -271,15 +355,15 @@ export class SyncManager {
                 return;
             }
             
-            // Check for required username - critical for proper syncing
-            if (!profile.username) {
-                console.error('❌ Cannot sync stats: Missing username in profile');
+            // FIX: Use consistent username handling - this is critical for syncing
+            const username = profile.username || profile.name;
+            
+            if (!username) {
+                console.warn('⚠️ Profile has no username, cannot sync stats');
                 return;
             }
             
             // Always sync stats regardless of syncedWithServer flag
-            console.log('📊 Preparing to sync stats...');
-            
             const statsToSync = {
                 gamesPlayed: profile.gamesPlayed || 0,
                 bestLevel: profile.bestLevel || 1,
@@ -287,9 +371,9 @@ export class SyncManager {
                 totalAttempts: profile.totalAttempts || 0
             };
             
-            console.log(`📊 Syncing stats for ${profile.username}:`, statsToSync);
+            console.log(`📊 Syncing stats for ${username}:`, statsToSync);
             
-            apiService.updateUserStats(profile.username, statsToSync)
+            apiService.updateUserStats(username, statsToSync)
                 .then(response => {
                     console.log('✅ Stats synced successfully:', response);
                 })

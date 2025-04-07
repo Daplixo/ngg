@@ -140,6 +140,112 @@
             } catch (e) {
                 console.error("Error in test sync:", e);
             }
+        },
+        
+        // Fix API URL configuration
+        fixApiConfig: function() {
+            try {
+                console.log("🔧 Running API Config fix...");
+                
+                import('./api/apiConfig.js').then(module => {
+                    const apiConfig = module.apiConfig;
+                    
+                    console.log("Current API configuration:", {
+                        baseUrl: apiConfig.baseUrl,
+                        apiPath: apiConfig.apiPath,
+                        isOfflineMode: apiConfig.isOfflineMode
+                    });
+                    
+                    // Fix the base URL if it's undefined or incorrect
+                    if (!apiConfig.baseUrl || apiConfig.baseUrl === 'undefined') {
+                        console.log("🔧 Setting API base URL to http://localhost:5000");
+                        apiConfig.baseUrl = 'http://localhost:5000';
+                    }
+                    
+                    // Add API_BASE_URL export for backward compatibility
+                    console.log("🔧 Ensuring API_BASE_URL is available for compatibility");
+                    window.API_BASE_URL = apiConfig.baseUrl;
+                    
+                    console.log("🔧 Testing API endpoints now...");
+                    
+                    // Test the API with correct endpoints
+                    fetch(`${apiConfig.baseUrl}/api/ping`)
+                        .then(response => {
+                            console.log(`✅ API ping test: ${response.status === 200 ? 'Success!' : 'Failed'}`);
+                        })
+                        .catch(err => {
+                            console.log("❌ API ping test failed:", err);
+                        });
+                    
+                    // Apply fixes to API service
+                    this.fixApiEndpoints();
+                    
+                    return "API configuration fixed. Please run window.statsDebug.testSync() to test the connection.";
+                });
+            } catch (e) {
+                console.error("Error fixing API config:", e);
+                return "Failed to fix API configuration";
+            }
+        },
+        
+        // Add an additional emergency fix method for the specific API_BASE_URL issue
+        fixApiBaseUrl: function() {
+            console.log("🔧 Applying emergency fix for API_BASE_URL issue");
+            
+            try {
+                // Define the missing API_BASE_URL globally
+                window.API_BASE_URL = 'http://localhost:5000';
+                
+                // Patch the connectivity-fix.js module
+                import('./connectivity-fix.js').then(module => {
+                    console.log("✅ connectivity-fix.js module loaded successfully");
+                }).catch(err => {
+                    console.log("❌ Failed to patch connectivity-fix.js:", err);
+                });
+                
+                console.log("✅ Emergency fix applied. API_BASE_URL is now defined as:", window.API_BASE_URL);
+                return "Emergency API_BASE_URL fix applied. Please refresh the page to see if it works.";
+            } catch (e) {
+                console.error("Error in emergency API fix:", e);
+                return "Failed to apply emergency fix";
+            }
+        },
+        
+        // Add a new method to fix API endpoints
+        fixApiEndpoints: function() {
+            try {
+                import('./api/apiService.js').then(module => {
+                    const apiService = module.apiService;
+                    console.log("🔧 Fixing API endpoints in apiService...");
+                    
+                    // Attempt to sync stats with proper endpoints
+                    if (apiService) {
+                        const profile = getUserProfile();
+                        if (profile && profile.username) {
+                            console.log(`🔄 Testing stats sync for ${profile.username}`);
+                            
+                            apiService.updateUserStats(profile.username, {
+                                gamesPlayed: profile.gamesPlayed || 0,
+                                bestLevel: profile.bestLevel || 1,
+                                totalWins: profile.totalWins || 0,
+                                totalAttempts: profile.totalAttempts || 0
+                            }).then(result => {
+                                console.log("✅ Test sync successful:", result);
+                            }).catch(err => {
+                                console.error("❌ Test sync failed:", err);
+                            });
+                        } else {
+                            console.log("⚠️ No profile or username found for testing sync");
+                        }
+                        
+                        console.log("✅ API endpoint fixes applied to apiService");
+                    }
+                }).catch(err => {
+                    console.error("❌ Failed to access apiService:", err);
+                });
+            } catch (e) {
+                console.error("Error fixing API endpoints:", e);
+            }
         }
     };
     
@@ -178,6 +284,8 @@
     console.log("• window.statsDebug.triggerSync() - Manually trigger stats sync");
     console.log("• window.statsDebug.testSync() - Test direct username sync");
     console.log("• window.statsDebug.simulateGame(win, level) - Simulate game completion");
+    console.log("• window.statsDebug.fixApiConfig() - Fix API configuration issues");
+    console.log("• window.statsDebug.fixApiBaseUrl() - Emergency fix for API_BASE_URL issue");
     
     // Run an initial scan for username issues
     setTimeout(() => {

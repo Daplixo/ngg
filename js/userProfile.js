@@ -92,8 +92,11 @@ export class UserProfile {
                 return;
             }
             
-            if (!profile.username) {
-                console.error('❌ Cannot sync stats: Missing username in profile');
+            // FIX: Use consistent username handling
+            const username = profile.username || profile.name;
+            
+            if (!username) {
+                console.error('❌ Cannot sync stats: Missing username');
                 return;
             }
             
@@ -104,7 +107,7 @@ export class UserProfile {
                 totalAttempts: profile.totalAttempts || 0
             };
             
-            console.log('📤 Syncing stats to server for username:', profile.username);
+            console.log(`📤 Syncing stats to server for ${username}:`, statsToSync);
             
             // First try to use existing SyncManager
             if (window.syncManager) {
@@ -125,8 +128,7 @@ export class UserProfile {
                     import('./api/apiService.js')
                         .then(module => {
                             const apiService = module.apiService;
-                            // Use username strictly
-                            apiService.updateUserStats(profile.username, statsToSync)
+                            apiService.updateUserStats(username, statsToSync)
                                 .then(() => console.log('✅ Stats synced via direct API call'))
                                 .catch(err => console.error('❌ Direct API stats sync failed:', err));
                         })
