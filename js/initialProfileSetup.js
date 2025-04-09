@@ -14,6 +14,9 @@ export class InitialProfileSetup {
     constructor() {
         this.userProfile = new UserProfile();
         this.avatarOptions = AVATARS.map(avatar => avatar.path);
+        
+        // Store an instance reference for other modules to access
+        window.initialProfileSetupInstance = this;
     }
 
     init() {
@@ -256,17 +259,15 @@ export class InitialProfileSetup {
                     throw new Error('Username already taken. Please choose another.');
                 }
             } catch (error) {
-                if (error.message === 'Username already taken. Please choose another.') {
-                    throw error; // Pass through the username conflict error
-                }
-                // If it's a different error (like server unavailable), continue with local creation
-                console.warn('Username check failed:', error);
+                // If the API is not available, we'll continue with local account creation
+                console.warn('Could not check if username exists:', error);
             }
             
             // Create profile data
             const profileData = {
                 type: 'account',
-                username: username, // Explicitly set username property
+                username: username,
+                name: username, // Backwards compatibility
                 nickname: nickname,
                 picture: avatarPath,
                 avatarId: avatarId,
@@ -275,26 +276,12 @@ export class InitialProfileSetup {
                 bestLevel: 1
             };
             
-            // Save profile locally first
+            // Save profile locally
             if (this.userProfile.saveProfile(profileData)) {
-                console.log("Profile saved successfully:", profileData);
+                console.log("Account profile saved successfully:", profileData);
                 
-                // Import and initialize SyncManager to immediately sync profile
-                import('./syncManager.js').then(module => {
-                    const syncManager = new module.SyncManager();
-                    // Immediately try to register this profile
-                    syncManager.registerProfileWithServer(profileData).then(result => {
-                        if (result && result.error === 'USERNAME_TAKEN') {
-                            // Username conflict occurred during registration
-                            alert('Username already taken. Please choose another.');
-                            return;
-                        }
-                        // Store instance for future use
-                        window.syncManager = syncManager;
-                    });
-                }).catch(err => {
-                    console.warn('Could not load SyncManager for initial sync:', err);
-                });
+                // Try to register with server in the background
+                this.registerWithServer(profileData);
                 
                 // Initialize the profile UI to update the side menu
                 const profileUI = new UserProfileUI();
@@ -302,9 +289,28 @@ export class InitialProfileSetup {
                 
                 alert('Account created successfully! Welcome, ' + nickname + '!');
                 
-                // Close the modal and reload to start the game
+                // Close the modal
                 document.getElementById('accountSetupModal').remove();
-                location.reload();
+                
+                // REMOVED: Don't reload the page here
+                // location.reload();
+                
+                this.handleProfileCreationComplete();
+                
+                // Dispatch a custom event that our menu-reinit script can listen for
+                window.dispatchEvent(new CustomEvent('profileCreationComplete'));
+                
+                // Start the game directly without reload
+                if (window.GameLogic) {
+                    setTimeout(() => {
+                        if (typeof window.reinitializeMenu === 'function') {
+                            window.reinitializeMenu();
+                        }
+                        window.GameLogic.showStartGamePrompt();
+                    }, 100);
+                }
+                
+                return true;
             } else {
                 console.error("Failed to save profile");
                 throw new Error('Failed to save profile. Please try again.');
@@ -357,15 +363,32 @@ export class InitialProfileSetup {
                 // Close the modal
                 document.getElementById('guestSetupModal').remove();
                 
-                // Reload the page to start the game with the new profile
-                location.reload();
+                // REMOVED: Don't reload the page here
+                // location.reload();
+                
+                this.handleProfileCreationComplete();
+                
+                // Dispatch a custom event that our menu-reinit script can listen for
+                window.dispatchEvent(new CustomEvent('profileCreationComplete'));
+                
+                // Start the game directly without reload
+                if (window.GameLogic) {
+                    setTimeout(() => {
+                        if (typeof window.reinitializeMenu === 'function') {
+                            window.reinitializeMenu();
+                        }
+                        window.GameLogic.showStartGamePrompt();
+                    }, 100);
+                }
+                
+                return true;
             } else {
                 console.error("Failed to save guest profile");
                 throw new Error('Failed to save guest profile. Please try again.');
             }
         } catch (error) {
             console.error("Guest setup error:", error);
-            alert(error.message || 'Error setting up guest profile. Please try again.');
+            alert(error.message || 'Error creating guest account. Please try again.');
         }
         this.handleProfileCreationComplete();
     }
@@ -461,18 +484,33 @@ export class InitialProfileSetup {
     }
 
     handleProfileCreationComplete() {
-        console.log("Profile creation complete, initializing game");
+        console.log("Profile creation completed");
+        window.initialProfileSetupActive = false;
         
-        // Set a flag to indicate this is the first game after profile creation
-        window.isFirstGameAfterProfileCreation = true;
-        
-        // Create a small delay to ensure all profile creation processes are complete
+        // Properly reinitialize side menu functionality
         setTimeout(() => {
-            // Initialize the game
-            if (window.GameLogic && window.GameLogic.initGame) {
-                window.GameLogic.initGame();
+            console.log("Reinitializing side menu after profile creation");
+            
+            // Call all menu fix functions to ensure proper functionality
+            if (window.fixSideMenu && typeof window.fixSideMenu === 'function') {
+                window.fixSideMenu();
             }
-        }, 300);
+            
+            // Call global menu fix function if available
+            if (window.globalMenuFix && typeof window.globalMenuFix === 'function') {
+                window.globalMenuFix();
+            }
+            
+            // Fix settings buttons specifically
+            if (window.fixSettingsButtons && typeof window.fixSettingsButtons === 'function') {
+                window.fixSettingsButtons();
+            }
+            
+            // Force menu button fix
+            if (window.fixMenuToggle && typeof window.fixMenuToggle === 'function') {
+                window.fixMenuToggle();
+            }
+        }, 500);
     }
 }
 

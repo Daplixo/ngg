@@ -35,6 +35,14 @@ export const GameLogic = {
             return;
         }
         
+        // Prevent multiple calls from creating multiple prompts
+        if (this._startPromptCreating) {
+            console.log("Start prompt creation already in progress");
+            return;
+        }
+        
+        this._startPromptCreating = true;
+        
         // Create and show the start game modal
         const modalWrapper = document.createElement('div');
         modalWrapper.id = 'startGamePrompt';
@@ -84,6 +92,16 @@ export const GameLogic = {
                         
                         // Set the flag to prevent duplicate increments
                         window.gameCounterIncrementedThisSession = true;
+                        
+                        // Save game state to ensure it persists across the refresh
+                        gameState.saveState();
+                        
+                        // Always perform a page refresh to ensure UI updates properly
+                        console.log("Refreshing page to update game counter display...");
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 100);
+                        return; // Exit early since we're refreshing
                     } else {
                         console.log("Game counter already incremented this session, skipping");
                         userProfile.updateStatistics({ 
@@ -93,12 +111,15 @@ export const GameLogic = {
                         });
                     }
                 }
+                
+                // Start the actual game
+                this.actualGameInit();
             } catch(e) {
                 console.error("Error updating profile stats for new game:", e);
+                
+                // Fallback - start the game even if statistics update fails
+                this.actualGameInit();
             }
-            
-            // Start the actual game
-            this.actualGameInit();
         });
         
         // Assemble the modal
@@ -109,6 +130,11 @@ export const GameLogic = {
         
         // Add to document
         document.body.appendChild(modalWrapper);
+        
+        // Reset creation flag after a short delay
+        setTimeout(() => {
+            this._startPromptCreating = false;
+        }, 500);
     },
     
     // Actual game initialization logic

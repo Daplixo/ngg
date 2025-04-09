@@ -17,10 +17,12 @@
 // Components
 @import 'components/buttons';
 @import 'components/forms';
+@import 'components/icons';
 @import 'components/modals';
 @import 'components/profile-setup';
 @import 'components/initial-profile';
 @import 'components/notifications';
+@import 'components/profile-stats';  // Add our new component
 
 // Features
 @import 'features/proximity-meter';

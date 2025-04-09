@@ -144,23 +144,29 @@
         });
     }
     
-    // Run fix both immediately and after a delay to ensure it works
-    runFix();
-    setTimeout(runFix, 1000);
-    
-    // Make fix function available globally for manual execution
-    window.fixAllMenuButtons = runFix;
-    
-    // Run fix now
+    // Make the function globally accessible to be called after profile setup
+    window.globalMenuFix = runFix;
+
+    // Run on page load
     runFix();
     
-    // Run fix after DOM loaded
+    // Run after short delay
+    setTimeout(runFix, 500);
+    
+    // Also run after DOM content loaded
     document.addEventListener('DOMContentLoaded', runFix);
     
-    // Run fix after a delay to catch all elements
-    setTimeout(runFix, 500);
-    setTimeout(runFix, 1000);
-    
+    // Additional fix for post-profile creation events
+    window.addEventListener('profileCreated', runFix);
+
+    // Make sure all buttons work after any modal is closed
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('modal-wrapper') || 
+            e.target.classList.contains('close-modal')) {
+            setTimeout(runFix, 100);
+        }
+    });
+
     // Make sure theme toggle and delete account have consistent sizes
     function ensureConsistentButtonSizes() {
         const themeToggle = document.getElementById('theme-toggle');

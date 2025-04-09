@@ -57,6 +57,10 @@ export class UserProfile {
         if (profile) {
             console.log('📊 Updating statistics for level', gameData.level, 'win:', gameData.hasWon);
             
+            // Track if any stats were updated
+            let statsUpdated = false;
+            let updatedStats = {};
+            
             // Only increment gamesPlayed when explicitly specified with newGame flag
             // AND we haven't already incremented it this session
             if (gameData.newGame === true) {
@@ -65,9 +69,12 @@ export class UserProfile {
                     (Date.now() - this._lastIncrementTime) < 5000) { // 5 seconds threshold
                     console.log('🎮 Preventing duplicate increment (too soon after last increment)');
                 } else {
-                    profile.gamesPlayed = (profile.gamesPlayed || 0) + 1;
+                    const oldGamesPlayed = profile.gamesPlayed || 0;
+                    profile.gamesPlayed = oldGamesPlayed + 1;
                     this._lastIncrementTime = Date.now();
                     console.log('🎮 Incrementing games played count to:', profile.gamesPlayed);
+                    statsUpdated = true;
+                    updatedStats.gamesPlayed = profile.gamesPlayed;
                 }
             } else {
                 console.log('🎮 Not incrementing games played (not a new game)');
@@ -76,18 +83,33 @@ export class UserProfile {
             // Only update best level if the current level is higher
             if (gameData.level > (profile.bestLevel || 1)) {
                 profile.bestLevel = gameData.level;
+                statsUpdated = true;
+                updatedStats.bestLevel = profile.bestLevel;
             }
             
             // Track total wins
             if (gameData.hasWon) {
-                profile.totalWins = (profile.totalWins || 0) + 1;
+                const oldWins = profile.totalWins || 0;
+                profile.totalWins = oldWins + 1;
+                statsUpdated = true;
+                updatedStats.totalWins = profile.totalWins;
             }
             
             // Track total attempts
-            profile.totalAttempts = (profile.totalAttempts || 0) + gameData.attempts;
+            const oldAttempts = profile.totalAttempts || 0;
+            profile.totalAttempts = oldAttempts + gameData.attempts;
+            statsUpdated = true;
+            updatedStats.totalAttempts = profile.totalAttempts;
             
             // Save profile to localStorage
             this.saveProfile(profile);
+            
+            // Dispatch an event to notify other components that the profile has been updated
+            if (statsUpdated) {
+                document.dispatchEvent(new CustomEvent('profileStatsUpdated', { 
+                    detail: updatedStats 
+                }));
+            }
             
             // Always sync stats with server, regardless of syncedWithServer flag
             console.log('🔄 Always triggering stats sync with server');

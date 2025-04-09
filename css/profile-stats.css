@@ -1,0 +1,64 @@
+/* Profile stats update animation */
+@keyframes stat-highlight {
+  0% {
+    background-color: rgba(77, 111, 237, 0);
+  }
+  30% {
+    background-color: rgba(77, 111, 237, 0.4);
+  }
+  100% {
+    background-color: rgba(77, 111, 237, 0);
+  }
+}
+
+@keyframes stat-highlight-dark {
+  0% {
+    background-color: rgba(46, 184, 46, 0);
+  }
+  30% {
+    background-color: rgba(46, 184, 46, 0.3);
+  }
+  100% {
+    background-color: rgba(46, 184, 46, 0);
+  }
+}
+
+.stat-updated {
+  animation: stat-highlight 1.5s ease;
+  border-radius: 3px;
+}
+
+[data-theme="dark"] .stat-updated {
+  animation-name: stat-highlight-dark;
+}
+
+/* Enhanced profile section styling */
+.profile-section {
+  transition: all 0.3s ease;
+}
+
+.profile-section .profile-stat {
+  transition: background-color 0.3s ease;
+  padding: 2px 4px;
+  border-radius: 3px;
+  display: inline-block;
+}
+
+.profile-section .profile-stat:not(:last-child) {
+  margin-right: 5px;
+}
+
+.profile-section .achievement-unlocked {
+  animation: achievement-glow 2s ease-in-out infinite;
+  color: var(--achievement-color, gold);
+  font-weight: bold;
+}
+
+@keyframes achievement-glow {
+  0%, 100% {
+    text-shadow: 0 0 2px rgba(255, 215, 0, 0.2);
+  }
+  50% {
+    text-shadow: 0 0 6px rgba(255, 215, 0, 0.6);
+  }
+}

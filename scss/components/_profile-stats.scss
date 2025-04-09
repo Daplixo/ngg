@@ -1,0 +1,73 @@
+/* Profile stats update animation */
+
+// Define keyframe animations for stat highlighting
+@keyframes stat-highlight {
+  0% {
+    background-color: rgba(77, 111, 237, 0);
+  }
+  30% {
+    background-color: rgba(77, 111, 237, 0.4);
+  }
+  100% {
+    background-color: rgba(77, 111, 237, 0);
+  }
+}
+
+@keyframes stat-highlight-dark {
+  0% {
+    background-color: rgba(46, 184, 46, 0);
+  }
+  30% {
+    background-color: rgba(46, 184, 46, 0.3);
+  }
+  100% {
+    background-color: rgba(46, 184, 46, 0);
+  }
+}
+
+// Apply animation to updated stats
+.stat-updated {
+  animation: stat-highlight 1.5s ease;
+  border-radius: 3px;
+  
+  // Use dark theme variant when appropriate
+  [data-theme="dark"] & {
+    animation-name: stat-highlight-dark;
+  }
+}
+
+// Enhanced profile section styling
+.profile-section {
+  // Add transition for any property changes
+  transition: all 0.3s ease;
+  
+  .profile-stat {
+    transition: background-color 0.3s ease;
+    padding: 2px 4px;
+    border-radius: 3px;
+    display: inline-block;
+    
+    &:not(:last-child) {
+      margin-right: 5px;
+    }
+  }
+  
+  // When new achievements are unlocked
+  .achievement-unlocked {
+    animation: achievement-glow 2s ease-in-out infinite;
+    color: var(--achievement-color, gold);
+    font-weight: bold;
+  }
+}
+
+// Achievement glow effect
+@keyframes achievement-glow {
+  0%, 100% {
+    text-shadow: 0 0 2px rgba(255, 215, 0, 0.2);
+  }
+  50% {
+    text-shadow: 0 0 6px rgba(255, 215, 0, 0.6);
+  }
+}
+
+// Make sure it imports into the main SCSS file
