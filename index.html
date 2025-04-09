@@ -586,18 +586,25 @@
     <!-- Fix for game notifications -->
     <script src="js/game-notification-fix.js"></script>
 
-    <!-- Form submission script - Modified to work on both localhost and production -->
+    <!-- Form refresh handler - Must be loaded before form submission script -->
+    <script src="js/form-refresh.js"></script>
+
+    <!-- Form submission script - Modified to automatically refresh after submission -->
     <script>
-      // Enable form submissions from both localhost and production
       document.addEventListener("DOMContentLoaded", function () {
         const feedbackForm = document.getElementById("feedbackForm");
 
         if (feedbackForm) {
-          // Add a listener to show confirmation after form submission
-          feedbackForm.addEventListener("submit", function (event) {
-            // Don't prevent default - let the form submit naturally to FormSubmit.co
-            // This works on both localhost and production
+          // Add hidden field for page redirection after form submission
+          const redirectInput = document.createElement("input");
+          redirectInput.type = "hidden";
+          redirectInput.name = "_next";
+          // Set to current URL to redirect back to this page
+          redirectInput.value = window.location.href;
+          feedbackForm.appendChild(redirectInput);
 
+          // Add a listener to store user name for thank you message
+          feedbackForm.addEventListener("submit", function (event) {
             // Get the user's name for the confirmation message
             const name = document.getElementById("name").value;
 
@@ -605,7 +612,7 @@
             sessionStorage.setItem("feedbackSent", "true");
             sessionStorage.setItem("feedbackName", name);
 
-            console.log("Form submitted, data will be sent to FormSubmit.co");
+            console.log("Form submitted, page will refresh automatically");
           });
 
           // Check if returning from submission
