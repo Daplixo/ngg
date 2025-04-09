@@ -7,8 +7,8 @@
   }
   
   #game-container {
-    padding-top: 5px;
-    padding-bottom: 0.5rem;
+    padding-top: 0;
+    padding-bottom: 0;
     min-height: auto;
   }
   
@@ -156,12 +156,52 @@
   }
   
   #level-indicator, 
-  #theme-toggle,
-  #attempts {
+  #theme-toggle {
     height: 24px;
     padding: 2px 8px;
     font-size: 0.7rem;
     width: auto;
     max-width: max-content;
+  }
+  
+  /* FIXED: Override font-size for attempts to maintain consistency */
+  #attempts {
+    height: 24px;
+    padding: 2px 8px;
+    font-size: 0.85rem !important; /* Maintain consistent size */
+    width: auto;
+    max-width: max-content;
+  }
+}
+
+/* Improved vertical space optimization for smaller screens */
+@media (max-height: 700px) {
+  .game-layout {
+    min-height: auto;
+    height: auto;
+    max-height: calc(100vh - 150px); /* Account for header */
+  }
+  
+  .game-wrapper {
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 70px);
+  }
+  
+  #game-container {
+    margin: 0 auto;
+  }
+}
+
+/* Fixed vertical alignment on small laptops */
+@media (min-height: 600px) and (max-height: 800px) {
+  .game-wrapper {
+    justify-content: center !important; /* Force vertical centering */
+    min-height: calc(100vh - 130px) !important; /* Ensure consistent height calculation */
+  }
+  
+  #game-container {
+    margin: auto; /* Center vertically and horizontally */
+    padding: 0; /* Remove padding that affects centering */
   }
 }

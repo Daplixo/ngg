@@ -9,6 +9,7 @@ export const gameState = {
     hasWon: false,
     waitingForNextLevel: false,
     finalWin: false,
+    gameStarted: false, // New property to track if game has been started with the button
     pastGuesses: [], // Track past guesses with their proximity values
 
     // Save the current game state to localStorage
@@ -23,6 +24,7 @@ export const gameState = {
             hasWon: this.hasWon,
             waitingForNextLevel: this.waitingForNextLevel,
             finalWin: this.finalWin,
+            gameStarted: this.gameStarted,
             pastGuesses: this.pastGuesses
         };
         
@@ -52,9 +54,10 @@ export const gameState = {
                 this.hasWon = parsedState.hasWon || false;
                 this.waitingForNextLevel = parsedState.waitingForNextLevel || false;
                 this.finalWin = parsedState.finalWin || false;
+                this.gameStarted = parsedState.gameStarted || false; // Load gameStarted property
                 this.pastGuesses = parsedState.pastGuesses || [];
                 
-                console.log(`Game state loaded: Level ${this.level}, Attempts: ${this.attempts}/${this.maxAttempts}`);
+                console.log(`Game state loaded: Level ${this.level}, Attempts: ${this.attempts}/${this.maxAttempts}, Game Started: ${this.gameStarted}`);
                 return true;
             }
         } catch (error) {
@@ -87,6 +90,7 @@ export const gameState = {
         this.hasWon = false;
         this.finalWin = false;
         this.waitingForNextLevel = false;
+        this.gameStarted = false; // Reset gameStarted flag
         this.randomNumber = Math.floor(Math.random() * this.maxNumber) + 1;
         this.pastGuesses = []; // Clear past guesses
         

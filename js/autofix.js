@@ -14,10 +14,16 @@ console.log("🔧 Auto-fixing game functionality...");
                 window.GameLogic = module.GameLogic;
                 console.log("✅ GameLogic globally accessible");
                 
-                // Initialize game if needed
+                // Initialize game if needed but don't count as new game on auto-fixes
                 if (!window._gameInitialized) {
                     setTimeout(() => {
                         try {
+                            // Reset game initialization tracking when coming from autofix
+                            // to avoid inadvertently counting refreshes
+                            if (!localStorage.getItem('gameAlreadyInitialized')) {
+                                localStorage.setItem('gameAlreadyInitialized', 'true');
+                            }
+                            
                             window.GameLogic.initGame();
                             window._gameInitialized = true;
                             console.log("✅ Game initialized via autofix");

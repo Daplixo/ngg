@@ -779,6 +779,7 @@ body.menu-open {
 /* Settings dropdown styles */
 .settings-container {
   position: relative;
+  width: 100%; /* Ensure container has full width */
 }
 
 .settings-toggle {
@@ -807,12 +808,16 @@ body.menu-open {
   margin-left: 28px; /* Align with the text of the button */
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   
+  /* Ensure all settings options have the same width */
   .settings-option {
     padding: 8px 12px;
     cursor: pointer;
     transition: background-color 0.2s ease;
     font-size: 0.9rem;
     color: var(--text-color);
+    width: 100%; /* Force full width */
+    box-sizing: border-box; /* Include padding in width calculation */
+    display: flex; /* Ensure flex display */
     
     &:hover {
       background-color: var(--dropdown-option-hover-bg, rgba(0, 0, 0, 0.05));
@@ -822,100 +827,32 @@ body.menu-open {
       border-bottom: 1px solid var(--border-color);
     }
     
-    /* Theme toggle option specific styling */
-    &#theme-toggle {
-      padding: 8px 12px;
-      
-      .theme-option-content {
-        display: flex;
-        align-items: center;
-        
-        .icon-container {
-          position: relative;
-          width: 16px;
-          height: 16px;
-          margin-right: 12px;
-          flex-shrink: 0;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          
-          #moon-icon, #sun-icon {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 16px;
-            height: 16px;
-            transition: opacity 0.3s ease;
-          }
-          
-          #moon-icon {
-            stroke: #333 !important;
-            fill: none !important;
-            
-            [data-theme="dark"] & {
-              opacity: 0;
-            }
-            
-            [data-theme="light"] & {
-              opacity: 1;
-            }
-          }
-          
-          #sun-icon {
-            stroke: white !important;
-            fill: none !important;
-            
-            [data-theme="dark"] & {
-              opacity: 1;
-            }
-            
-            [data-theme="light"] & {
-              opacity: 0;
-            }
-          }
-        }
-        
-        span {
-          font-size: 0.9rem;
-        }
-      }
+    /* Consistent styling for all option contents */
+    .theme-option-content {
+      display: flex;
+      align-items: center;
+      width: 100%;
     }
     
-    /* Delete Account button styling */
-    &#delete-account-btn {
-      padding: 8px 12px;
-      
-      .theme-option-content {
-        display: flex;
-        align-items: center;
-        
-        .icon-container {
-          position: relative;
-          width: 16px;
-          height: 16px;
-          margin-right: 12px;
-          flex-shrink: 0;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          
-          svg {
-            width: 16px;
-            height: 16px;
-            stroke: #e74c3c; /* Red color for warning */
-          }
-        }
-        
-        span {
-          font-size: 0.9rem;
-          color: #e74c3c; /* Red color for warning */
-        }
-      }
-      
-      &:hover {
-        background-color: rgba(231, 76, 60, 0.1); /* Light red background on hover */
-      }
+    /* Ensure both theme toggle and delete account have identical spacing */
+    .icon-container {
+      position: relative;
+      width: 16px;
+      height: 16px;
+      min-width: 16px;
+      margin-right: 12px;
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    /* Ensure text is styled identically */
+    span {
+      font-size: 0.9rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   }
   
@@ -932,6 +869,21 @@ body.menu-open {
 /* Show dropdown when settings-toggle has aria-expanded="true" */
 .settings-toggle[aria-expanded="true"] + .settings-dropdown {
   display: block;
+}
+
+// Add styles for the delete account button to make it stand out
+#delete-account-btn {
+  .theme-option-content {
+    color: #e74c3c;
+    
+    .icon-container svg {
+      stroke: #e74c3c;
+    }
+  }
+  
+  &:hover {
+    background-color: rgba(231, 76, 60, 0.1);
+  }
 }
 
 /* Responsive adjustments for the settings dropdown */
@@ -955,6 +907,28 @@ body.menu-open {
             font-size: 0.85rem;
           }
         }
+      }
+    }
+  }
+}
+
+/* Force consistent styling for settings dropdown options on all screen sizes */
+@media (max-width: 480px) {
+  .settings-dropdown {
+    .settings-option {
+      padding: 6px 10px !important; /* Maintain consistent padding */
+      
+      /* Keep icon container size consistent */
+      .icon-container {
+        width: 16px !important;
+        height: 16px !important;
+        min-width: 16px !important;
+        margin-right: 12px !important;
+      }
+      
+      /* Keep text size consistent */
+      span {
+        font-size: 0.9rem !important;
       }
     }
   }

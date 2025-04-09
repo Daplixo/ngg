@@ -1,13 +1,24 @@
 /* Theme Toggle Button styles */
 #theme-toggle {
-  /* Most styles are inherited from .side-menu-button in _hamburger-menu.scss */
+  /* Ensure consistent sizing with delete account button */
+  width: 100% !important;
+  min-width: 100% !important;
+  box-sizing: border-box !important;
+  padding: 8px 12px !important;
+  
+  .theme-option-content {
+    display: flex !important;
+    align-items: center !important;
+    width: 100% !important;
+  }
   
   .icon-container {
     position: relative;
     width: 16px;
     height: 16px;
+    min-width: 16px; /* Prevent icon container from shrinking */
     margin-right: 12px;
-    flex-shrink: 0;
+    flex-shrink: 0; /* Prevent icon from shrinking */
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -21,6 +32,14 @@
     width: 16px;
     height: 16px;
     transition: opacity 0.3s ease;
+  }
+  
+  /* Ensure text doesn't wrap or get cut off */
+  span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 0.9rem; /* Match delete account text size */
   }
 }
 
@@ -62,6 +81,14 @@
 [data-theme="dark"] #sun-icon line,
 [data-theme="dark"] #sun-icon circle {
   stroke: white !important;
+}
+
+/* Ensure consistent sizing across screen sizes */
+@media (max-width: 480px) {
+  #theme-toggle {
+    padding: 6px 10px !important;
+    /* Keep all sizing identical to delete account button */
+  }
 }
 
 /* Responsive styles */

@@ -313,6 +313,7 @@ export class InitialProfileSetup {
             console.error("Account setup error:", error);
             alert(error.message || 'Error creating account. Please try again.');
         }
+        this.handleProfileCreationComplete();
     }
     
     // Modified handleGuestSetup method to ensure consistent username handling
@@ -366,6 +367,7 @@ export class InitialProfileSetup {
             console.error("Guest setup error:", error);
             alert(error.message || 'Error setting up guest profile. Please try again.');
         }
+        this.handleProfileCreationComplete();
     }
     
     // New method to handle server registration without blocking UI
@@ -456,6 +458,21 @@ export class InitialProfileSetup {
         } catch (error) {
             console.error("Error initializing profile in side menu:", error);
         }
+    }
+
+    handleProfileCreationComplete() {
+        console.log("Profile creation complete, initializing game");
+        
+        // Set a flag to indicate this is the first game after profile creation
+        window.isFirstGameAfterProfileCreation = true;
+        
+        // Create a small delay to ensure all profile creation processes are complete
+        setTimeout(() => {
+            // Initialize the game
+            if (window.GameLogic && window.GameLogic.initGame) {
+                window.GameLogic.initGame();
+            }
+        }, 300);
     }
 }
 

@@ -79,11 +79,10 @@
       sizes="512x512"
       href="assets/icons/icon-512.png"
     />
-
-    <!-- Styles - Updated order for better cascade -->
     <link rel="stylesheet" href="css/styles.min.css" />
     <link rel="stylesheet" href="css/modal-fix.css" />
     <link rel="stylesheet" href="css/server-sync.css" />
+    <!-- Remove the start-prompt.css reference as we'll use SCSS instead -->
     <!-- Remove the button-fix.css reference as styling is now in SCSS -->
     <!-- <link rel="stylesheet" href="css/button-fix.css" /> -->
     <!-- Remove the temporary fallback after verifying the compiled CSS works properly -->
@@ -501,6 +500,8 @@
     <script type="module" src="js/initialProfileSetup.js"></script>
     <!-- Add our new SyncManager to ensure data is synced with the server -->
     <script type="module" src="js/syncManager.js"></script>
+    <!-- Add controller to prevent duplicate start modals -->
+    <script src="js/start-modal-controller.js"></script>
     <!-- Add debugging for profile setup -->
     <script>
       // Debug initial profile setup

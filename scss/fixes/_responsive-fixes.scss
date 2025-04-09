@@ -1,0 +1,92 @@
+// Responsive fixes for layout issues across different screen sizes
+
+// Fix game container vertical centering on smaller screens
+.game-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center; // Ensures vertical centering
+  min-height: calc(100vh - 70px); // Account for footer
+}
+
+// Fix for header elements alignment and spacing
+#game-indicators-container {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  height: 100% !important;
+  width: 100% !important;
+  
+  // Remove bottom padding/margin from attempts indicator
+  #attempts, #previous-guess {
+    padding-bottom: 0 !important;
+    margin-bottom: 0 !important;
+    line-height: 1.2 !important;
+    align-self: center !important;
+  }
+}
+
+// Fix header center alignment issues
+.header-center {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 100% !important;
+}
+
+// Improve height-based responsive layout
+@media (max-height: 700px) {
+  #game-container {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+  
+  .game-layout {
+    height: auto !important;
+    min-height: 380px !important;
+    max-height: calc(100vh - 120px) !important;
+  }
+}
+
+// Specific fix for very small height screens
+@media (max-height: 600px) {
+  #game-container {
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+  }
+  
+  .game-header {
+    padding: 4px 10px !important;
+  }
+  
+  .header-item {
+    height: 28px !important;
+  }
+}
+
+// Fix for phones and smaller screens
+@media (max-width: 576px) {
+  #game-indicators-container {
+    gap: 10px !important;
+    
+    #attempts, #previous-guess {
+      font-size: 0.75rem !important;
+    }
+  }
+  
+  #level-indicator {
+    font-size: 0.75rem !important;
+  }
+}
+
+// Fix for very small phones
+@media (max-width: 360px) {
+  #game-indicators-container {
+    gap: 8px !important;
+    
+    #attempts, #previous-guess {
+      font-size: 0.7rem !important;
+    }
+  }
+}

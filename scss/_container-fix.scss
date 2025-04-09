@@ -22,9 +22,30 @@
   max-width: 580px; // Further reduced
   width: 90%; // Slightly reduced for better appearance
   padding: 0.5rem;
+  margin: auto; /* Changed from 0 auto to auto to center both horizontally and vertically */
+  position: relative; /* Ensure proper positioning context */
   
   @media (max-width: 768px) {
     width: 100%;
+  }
+}
+
+/* Fix vertical positioning on various screen heights */
+@media (max-height: 800px) {
+  #game-container {
+    margin: auto; /* Center vertically */
+    padding: 0 0.5rem; /* Remove vertical padding */
+  }
+}
+
+/* Ensure consistent vertical position on small height screens */
+@media (max-height: 600px) {
+  #game-container {
+    padding: 0; /* Remove all padding */
+  }
+  
+  .game-wrapper {
+    padding: 5px 15px; /* Reduced vertical padding */
   }
 }
 

@@ -214,6 +214,52 @@
             };
         }
         
+        // Fix theme toggle button sizing to match delete account
+        const styleFixForSettings = document.createElement('style');
+        styleFixForSettings.textContent = `
+            #theme-toggle {
+                width: 100% !important;
+                box-sizing: border-box !important;
+                padding: 8px 12px !important;
+                display: flex !important;
+            }
+            
+            #theme-toggle .theme-option-content {
+                display: flex !important;
+                align-items: center !important;
+                width: 100% !important;
+            }
+            
+            #theme-toggle .icon-container,
+            #delete-account-btn .icon-container {
+                position: relative !important;
+                width: 16px !important;
+                height: 16px !important;
+                min-width: 16px !important;
+                margin-right: 12px !important;
+                flex-shrink: 0 !important;
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+            }
+            
+            #theme-toggle span,
+            #delete-account-btn span {
+                font-size: 0.9rem !important;
+                white-space: nowrap !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+            }
+            
+            @media (max-width: 480px) {
+                #theme-toggle,
+                #delete-account-btn {
+                    padding: 6px 10px !important;
+                }
+            }
+        `;
+        document.head.appendChild(styleFixForSettings);
+        
         console.log("All side menu event handlers fixed and attached");
     }
     

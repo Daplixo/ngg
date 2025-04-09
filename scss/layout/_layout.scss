@@ -20,9 +20,10 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: center; /* Added to ensure vertical centering */
   padding: 10px 15px 20px; /* Reduced top padding because we now have a header */
   position: relative;
+  min-height: calc(100vh - 130px); /* Fixed height calculation accounting for header + footer */
 }
 
 .content-wrapper {

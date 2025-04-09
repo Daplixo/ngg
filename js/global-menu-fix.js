@@ -104,6 +104,11 @@
                     sunIcon.style.opacity = '0';
                 }
             }
+            
+            // Also fix the settings buttons after theme change
+            if (typeof window.fixSettingsButtons === 'function') {
+                setTimeout(window.fixSettingsButtons, 100);
+            }
         });
         
         // Fix settings button to toggle dropdown
@@ -145,6 +150,38 @@
     
     // Make fix function available globally for manual execution
     window.fixAllMenuButtons = runFix;
+    
+    // Run fix now
+    runFix();
+    
+    // Run fix after DOM loaded
+    document.addEventListener('DOMContentLoaded', runFix);
+    
+    // Run fix after a delay to catch all elements
+    setTimeout(runFix, 500);
+    setTimeout(runFix, 1000);
+    
+    // Make sure theme toggle and delete account have consistent sizes
+    function ensureConsistentButtonSizes() {
+        const themeToggle = document.getElementById('theme-toggle');
+        const deleteAccountBtn = document.getElementById('delete-account-btn');
+        
+        if (themeToggle && deleteAccountBtn) {
+            const deleteStyle = window.getComputedStyle(deleteAccountBtn);
+            
+            // Force consistent styling
+            themeToggle.style.width = '100%';
+            themeToggle.style.boxSizing = 'border-box';
+            themeToggle.style.padding = deleteStyle.padding;
+        }
+    }
+    
+    // Run this additional check for consistent button sizes
+    setTimeout(ensureConsistentButtonSizes, 300);
+    setTimeout(ensureConsistentButtonSizes, 800);
+    
+    // Make function available globally
+    window.ensureConsistentButtonSizes = ensureConsistentButtonSizes;
     
     console.log("🔄 Global menu fix complete");
 })();

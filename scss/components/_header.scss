@@ -10,65 +10,96 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   width: 100%;
   z-index: 10;
+  height: auto; /* Allow natural height */
+  min-height: 50px; /* Ensure minimum height */
   
   .header-item {
     flex: 1;
+    display: flex;
+    align-items: center;
+    height: auto; /* Allow natural height */
     
     &.header-left {
-      display: flex;
       justify-content: flex-start;
-      align-items: center;
     }
     
     &.header-center {
-      // IMPROVED: Enforce single row with nowrap
+      // IMPROVED: Enforce single row with nowrap and fixed height
       display: flex !important;
       flex-direction: row !important;
       align-items: center !important;
       justify-content: center !important;
       flex-wrap: nowrap !important; // Prevent wrapping to new line
-      min-height: 60px !important;
-      padding: 10px 0 !important;
-      gap: 25px !important; // Reduce default gap for better spacing
+      height: auto !important; /* Allow natural height */
+      padding: 0 !important; /* Remove padding that might shift alignment */
     }
     
     &.header-right {
-      display: flex;
       justify-content: flex-end;
-      align-items: center;
-      
-      #level-indicator {
-        font-size: 0.9rem;
-        font-weight: 500;
-        color: var(--text-color);
-      }
     }
   }
 }
 
 /* Direct styling for header elements to guarantee they're applied */
-.header-center #attempts {
+.header-center #attempts, 
+#attempts {
   font-size: 0.9rem !important;
   font-weight: 500 !important;
   color: var(--text-color) !important;
-  display: inline-block !important; // Changed from block to inline-block
-  margin: 0 !important; // Reset any existing margins
-  white-space: nowrap !important; // Prevent text wrapping
+  display: inline-block !important;
+  margin: 0 !important;
+  padding: 0 !important; /* Ensure no padding */
+  white-space: nowrap !important;
   overflow: visible !important;
+  line-height: 1.2 !important; /* Ensure consistent line height */
+  vertical-align: middle !important; /* Ensure vertical alignment */
+  min-height: 24px !important; /* Set fixed minimum height */
 }
 
-.header-center #previous-guess {
+.header-center #previous-guess,
+#previous-guess {
   font-size: 0.9rem !important;
   font-weight: 500 !important;
   color: var(--text-color) !important;
-  display: inline-block !important; // Changed from block to inline-block
-  margin: 0 !important; // Reset any existing margins
-  white-space: nowrap !important; // Prevent text wrapping
+  display: inline-block !important;
+  margin: 0 !important;
+  padding: 0 !important; /* Ensure no padding */
+  white-space: nowrap !important;
   overflow: visible !important;
+  line-height: 1.2 !important; /* Ensure consistent line height */
+  vertical-align: middle !important; /* Ensure vertical alignment */
+  min-height: 24px !important; /* Set fixed minimum height */
   
   &.highlight {
     animation: pulse 1s ease !important;
     color: var(--primary-color) !important;
+  }
+}
+
+/* Game indicators container - critical fix for consistent alignment */
+#game-indicators-container {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 15px !important; /* Consistent gap */
+  width: 100% !important;
+  height: auto !important; /* Allow natural height */
+  padding: 0 !important;
+  margin: 0 !important;
+  position: relative !important; /* Ensure positioning context */
+  
+  /* Indicators common styling */
+  & > * {
+    margin: 0 !important;
+    padding: 0 !important;
+    display: inline-block !important;
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
+    line-height: 1.2 !important;
+    white-space: nowrap !important;
+    vertical-align: middle !important; /* Ensure vertical alignment */
+    min-height: 24px !important; /* Set fixed minimum height */
   }
 }
 
@@ -98,12 +129,12 @@
   
   .header-center #attempts,
   #attempts {
-    font-size: 0.8rem !important;
+    font-size: 0.85rem !important; /* Consistent minimum size */
   }
   
   .header-center #previous-guess,
   #previous-guess {
-    font-size: 0.8rem !important;
+    font-size: 0.85rem !important; /* Consistent minimum size */
   }
   
   #level-indicator {
@@ -187,5 +218,46 @@
       min-height: 40px !important;
       padding: 4px 0 !important;
     }
+  }
+}
+
+/* Media queries to ensure consistent height */
+@media (max-height: 800px) {
+  .game-header {
+    padding: 8px 20px; /* Slightly reduced padding */
+    min-height: 46px; /* Consistent min-height */
+  }
+  
+  #game-indicators-container > * {
+    min-height: 24px !important; /* Maintain consistent height */
+    font-size: 0.85rem !important; /* CONSISTENT minimum font size */
+  }
+}
+
+@media (max-height: 600px) {
+  .game-header {
+    padding: 6px 20px; /* Further reduced padding */
+    min-height: 42px; /* Smaller but consistent min-height */
+  }
+  
+  #game-indicators-container > * {
+    min-height: 24px !important; /* Same height as above */
+    font-size: 0.85rem !important; /* CONSISTENT font size - not reduced further */
+  }
+}
+
+/* Override smaller font sizes on small height screens - MODIFIED */
+@media (max-height: 550px) {
+  .game-header {
+    padding: 3px 8px;
+  }
+  
+  .header-item {
+    height: 24px;
+  }
+  
+  /* Force consistent font size */
+  #attempts, #previous-guess {
+    font-size: 0.85rem !important; /* Maintain consistent size */
   }
 }

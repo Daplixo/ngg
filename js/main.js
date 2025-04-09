@@ -113,6 +113,9 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Initialize feedback modal
     initFeedbackModal();
 
+    // Setup game initialization counter reset
+    setupGameInitialization();
+
     // Function to create header elements dynamically
     function createHeaderElements() {
         console.log("Creating header elements dynamically");
@@ -126,30 +129,74 @@ document.addEventListener('DOMContentLoaded', async function() {
         // Clear any existing elements (to ensure clean state)
         headerCenter.innerHTML = '';
         
-        // CRITICAL FIX: Create attempts counter with optimized styling for one line
+        // Critical fix: Ensure proper styling for header center element
+        headerCenter.style.display = 'flex';
+        headerCenter.style.justifyContent = 'center';
+        headerCenter.style.alignItems = 'center';
+        headerCenter.style.height = 'auto';
+        headerCenter.style.padding = '0';
+        headerCenter.style.margin = '0';
+        
+        // Create game indicators container with proper styling
+        const gameIndicatorsContainer = document.createElement('div');
+        gameIndicatorsContainer.id = 'game-indicators-container';
+        // Critical styles to ensure alignment
+        gameIndicatorsContainer.style.display = 'flex';
+        gameIndicatorsContainer.style.flexDirection = 'row';
+        gameIndicatorsContainer.style.alignItems = 'center';
+        gameIndicatorsContainer.style.justifyContent = 'center';
+        gameIndicatorsContainer.style.gap = '15px';
+        gameIndicatorsContainer.style.width = '100%';
+        gameIndicatorsContainer.style.height = 'auto';
+        gameIndicatorsContainer.style.padding = '0';
+        gameIndicatorsContainer.style.margin = '0';
+        
+        headerCenter.appendChild(gameIndicatorsContainer);
+        
+        // Create attempts counter with proper styling
         const attemptsElement = document.createElement('div');
         attemptsElement.id = 'attempts';
         attemptsElement.textContent = 'Attempts: 0/3';
-        attemptsElement.setAttribute('data-count', '0/3'); // For simplified display on very small screens
-        attemptsElement.style.cssText = 'display: inline-block; margin: 0; white-space: nowrap;';
-        headerCenter.appendChild(attemptsElement);
+        attemptsElement.setAttribute('data-count', '0/3');
+        // Critical styles to ensure consistent height and vertical alignment - FIXED font size
+        attemptsElement.style.display = 'inline-block';
+        attemptsElement.style.margin = '0';
+        attemptsElement.style.padding = '0';
+        attemptsElement.style.lineHeight = '1.2';
+        attemptsElement.style.verticalAlign = 'middle';
+        attemptsElement.style.whiteSpace = 'nowrap';
+        attemptsElement.style.minHeight = '24px'; // Fixed minimum height
+        attemptsElement.style.fontSize = '0.85rem'; // FIXED: Set consistent font size
         
-        // Create previous guess element - optimized for one line
+        gameIndicatorsContainer.appendChild(attemptsElement);
+        
+        // Create previous guess element with proper styling
         const previousGuessElement = document.createElement('div');
         previousGuessElement.id = 'previous-guess';
         previousGuessElement.textContent = 'Last Guess: --';
-        previousGuessElement.style.cssText = 'display: inline-block; margin: 0; white-space: nowrap;';
-        headerCenter.appendChild(previousGuessElement);
+        // Critical styles to ensure consistent height and vertical alignment - FIXED font size
+        previousGuessElement.style.display = 'inline-block';
+        previousGuessElement.style.margin = '0';
+        previousGuessElement.style.padding = '0';
+        previousGuessElement.style.lineHeight = '1.2';
+        previousGuessElement.style.verticalAlign = 'middle';
+        previousGuessElement.style.whiteSpace = 'nowrap';
+        previousGuessElement.style.minHeight = '24px'; // Fixed minimum height
+        previousGuessElement.style.fontSize = '0.85rem'; // FIXED: Set consistent font size
         
-        // Ensure header center forces items to stay on one line
-        headerCenter.style.cssText = 'display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 25px; flex-wrap: nowrap; white-space: nowrap;';
+        gameIndicatorsContainer.appendChild(previousGuessElement);
         
-        // ADDED: Make sure UIManager has references to these elements
+        // Make sure UIManager has references to these elements
         UIManager.elements.attempts = attemptsElement;
         UIManager.elements.previousGuess = previousGuessElement;
         
-        console.log("Header elements created dynamically with horizontal spacing");
+        console.log("Header elements created dynamically with consistent font size");
     }
+
+    // Clear the game initialization flag when the page is unloaded
+    window.addEventListener('beforeunload', function() {
+        localStorage.removeItem('gameAlreadyInitialized');
+    });
 });
 
 // Handle delete account
@@ -200,6 +247,14 @@ function initializeGame() {
     
     // Reset or load game state
     const hasSavedGame = gameState.loadState();
+    
+    // Check if this is the first game after profile creation
+    if (window.isFirstGameAfterProfileCreation) {
+        console.log("This is the first game after profile creation");
+        window.isFirstGameAfterProfileCreation = false;
+        window.gameCounterIncrementedThisSession = true; // Set flag to prevent double counting
+    }
+    
     if (!hasSavedGame) {
         // Start a new game if no saved game
         GameLogic.initGame();
@@ -335,7 +390,8 @@ function setupEventListeners() {
 
     if (resetGameBtn) {
         resetGameBtn.addEventListener('click', () => {
-            GameLogic.restoreGame();
+            // Call the new explicit method instead of restoreGame
+            GameLogic.startNewGame();
             
             // Close dropdown menu after reset
             const dropdownContainer = document.querySelector('.dropdown-container');
@@ -635,3 +691,25 @@ function initBackgroundSync() {
 
 // Initialize after a delay to ensure other components are loaded
 setTimeout(initBackgroundSync, 5000);
+
+// Function to clear game initialization count on window close or tab close
+// This ensures a fresh initialization count when the user returns
+function setupGameInitialization() {
+    // Clear the init count when the user deliberately closes the page
+    window.addEventListener('beforeunload', function() {
+        localStorage.setItem('gameInitializationCount', '0');
+    });
+    
+    // Also reset the counter if this is a fresh page load (not a refresh)
+    if (performance.navigation && performance.navigation.type === 0) {
+        localStorage.setItem('gameInitializationCount', '0');
+    }
+}
+
+// Function to clear game initialization count on window close or tab close
+window.addEventListener('beforeunload', function() {
+    // Clear session flags when the page is unloaded
+    window.gameCounterIncrementedThisSession = false;
+    window.isFirstGameAfterProfileCreation = false;
+    localStorage.removeItem('gameAlreadyInitialized');
+});

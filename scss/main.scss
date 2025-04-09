@@ -53,5 +53,8 @@
 // Import the container fix
 @import 'container-fix';
 
+// Import the new responsive fixes
+@import 'fixes/responsive-fixes';
+
 // 9. Vendor & Browser Specifics
 @import 'utils/vendor';

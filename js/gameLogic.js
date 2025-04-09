@@ -3,12 +3,116 @@ import { UIManager } from './uiManager.js';
 import { AudioManager } from './audioManager.js';
 import { UserProfile } from './userProfile.js';
 
-// CRITICAL FIX: Completely replace existing file with this single implementation
 export const GameLogic = {
     // Initialize the game
     initGame() {
         console.log("Initializing game logic...");
         
+        // Check if we should show the start game prompt
+        if (this.shouldShowStartPrompt()) {
+            this.showStartGamePrompt();
+            return; // Exit early to wait for user action
+        }
+        
+        // Continue with normal game initialization
+        this.actualGameInit();
+    },
+    
+    // Method to determine if we should show the start prompt
+    shouldShowStartPrompt() {
+        // Show at the beginning of level 1 or after full game reset
+        return gameState.level === 1 && gameState.attempts === 0 && 
+               !gameState.gameStarted && !gameState.hasWon && !gameState.gameOver;
+    },
+    
+    // Show the "Start Playing" prompt
+    showStartGamePrompt() {
+        console.log("Showing Start Game prompt");
+        
+        // Check if there's already a start prompt showing to prevent duplicates
+        if (document.getElementById('startGamePrompt')) {
+            console.log("Start prompt already showing, not creating another");
+            return;
+        }
+        
+        // Create and show the start game modal
+        const modalWrapper = document.createElement('div');
+        modalWrapper.id = 'startGamePrompt';
+        modalWrapper.className = 'start-game-prompt';
+        
+        const modalContent = document.createElement('div');
+        modalContent.className = 'modal-content';
+        
+        const title = document.createElement('h2');
+        title.textContent = 'Ready to Play?';
+        
+        const message = document.createElement('p');
+        message.textContent = 'Click the button below to start a new game!';
+        
+        const startButton = document.createElement('button');
+        startButton.textContent = 'Start Playing';
+        startButton.className = 'start-game-button';
+        
+        // Add event listener to start the game and increment counter
+        startButton.addEventListener('click', () => {
+            // Set a flag to indicate we're processing the click to prevent double execution
+            if (modalWrapper.dataset.processing === 'true') {
+                return;
+            }
+            modalWrapper.dataset.processing = 'true';
+            
+            console.log("Start Playing button clicked - starting game");
+            
+            // Remove the modal
+            document.body.removeChild(modalWrapper);
+            
+            // Set game as started
+            gameState.gameStarted = true;
+            
+            // Update user profile statistics with newGame=true to increment counter
+            try {
+                const userProfile = new UserProfile();
+                if (userProfile.hasProfile()) {
+                    // Check if this is the first time we're incrementing for this session
+                    if (!window.gameCounterIncrementedThisSession) {
+                        userProfile.updateStatistics({ 
+                            level: 1, 
+                            newGame: true, // This is a new game, count it
+                            attempts: 0
+                        });
+                        console.log("Game counter incremented after Start Playing button click");
+                        
+                        // Set the flag to prevent duplicate increments
+                        window.gameCounterIncrementedThisSession = true;
+                    } else {
+                        console.log("Game counter already incremented this session, skipping");
+                        userProfile.updateStatistics({ 
+                            level: 1, 
+                            newGame: false, // Don't count it again
+                            attempts: 0
+                        });
+                    }
+                }
+            } catch(e) {
+                console.error("Error updating profile stats for new game:", e);
+            }
+            
+            // Start the actual game
+            this.actualGameInit();
+        });
+        
+        // Assemble the modal
+        modalContent.appendChild(title);
+        modalContent.appendChild(message);
+        modalContent.appendChild(startButton);
+        modalWrapper.appendChild(modalContent);
+        
+        // Add to document
+        document.body.appendChild(modalWrapper);
+    },
+    
+    // Actual game initialization logic
+    actualGameInit() {
         // Generate the first random number
         gameState.randomNumber = Math.floor(Math.random() * gameState.maxNumber) + 1;
         console.log(`Target number generated: ${gameState.randomNumber}`);
@@ -89,7 +193,12 @@ export const GameLogic = {
         try {
             const userProfile = new UserProfile();
             if (userProfile.hasProfile()) {
-                userProfile.updateStatistics({ level: gameState.level });
+                userProfile.updateStatistics({ 
+                    level: gameState.level,
+                    hasWon: true,
+                    attempts: gameState.attempts,
+                    newGame: false // Not a new game, just updating stats
+                });
                 
                 // Additional sync with server after statistics update
                 const profile = userProfile.getProfile();
@@ -152,26 +261,6 @@ export const GameLogic = {
         
         // Save game state
         gameState.saveState();
-        
-        // Ensure local game state is saved
-        gameState.saveState();
-        
-        // Update user profile with game statistics
-        try {
-            // Use global UserProfile instance if available, otherwise create a new one
-            const userProfileInstance = window.UserProfile || new UserProfile();
-            
-            const statsUpdate = {
-                level: gameState.level,
-                hasWon: true,
-                attempts: gameState.attempts
-            };
-            
-            console.log("🏆 Updating stats for level completion:", statsUpdate);
-            userProfileInstance.updateStatistics(statsUpdate);
-        } catch(e) {
-            console.error("❌ Error updating profile stats:", e);
-        }
     },
     
     // Add new method to show congratulations modal
@@ -384,9 +473,6 @@ export const GameLogic = {
         // Save game state
         gameState.saveState();
         
-        // Ensure local game state is saved
-        gameState.saveState();
-        
         // Update user profile with game statistics for loss
         try {
             // Use global UserProfile instance if available, otherwise create a new one
@@ -395,7 +481,8 @@ export const GameLogic = {
             const statsUpdate = {
                 level: gameState.level,
                 hasWon: false,
-                attempts: gameState.maxAttempts // Used all attempts
+                attempts: gameState.maxAttempts, // Used all attempts
+                newGame: false // Not a new game, just updating stats
             };
             
             console.log("❌ Updating stats for game over:", statsUpdate);
@@ -531,8 +618,17 @@ export const GameLogic = {
         UIManager.updatePastGuesses();
         UIManager.showCustomKeyboard();
         
-        // ADDED: Reset previous guess display
+        // Reset previous guess display
         UIManager.resetPreviousGuess();
+        
+        // Set gameStarted to false to trigger prompt on next start
+        gameState.gameStarted = false;
+        
+        // Save state to persist the gameStarted flag
+        gameState.saveState();
+        
+        // Initialize game which will show the prompt
+        this.initGame();
     },
     
     restoreGame() {
@@ -540,6 +636,9 @@ export const GameLogic = {
         
         // Full reset
         gameState.reset(true);
+        
+        // Set gameStarted to false to trigger prompt on next start
+        gameState.gameStarted = false;
         
         // Reset UI
         UIManager.clearFeedback();
@@ -564,6 +663,9 @@ export const GameLogic = {
         
         // Show notification
         this.showResetNotification();
+        
+        // Initialize game which will show the prompt
+        this.initGame();
     },
     
     resetUI() {
@@ -698,5 +800,20 @@ export const GameLogic = {
             errorContainer.className = 'error-message';
             errorContainer.textContent = '';
         }
+    },
+    
+    // Add a new method to explicitly start a new game 
+    // This will be called when user intentionally starts a new game
+    startNewGame() {
+        console.log("Starting a new game (explicit user action)");
+        
+        // Reset the game initialization flag to ensure this counts as a new game
+        localStorage.removeItem('gameAlreadyInitialized');
+        
+        // Call the regular restart with full reset
+        this.restartGame(true);
+        
+        // Show a notification
+        this.showGameRestartNotification();
     }
 };

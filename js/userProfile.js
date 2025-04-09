@@ -57,7 +57,21 @@ export class UserProfile {
         if (profile) {
             console.log('📊 Updating statistics for level', gameData.level, 'win:', gameData.hasWon);
             
-            profile.gamesPlayed = (profile.gamesPlayed || 0) + 1;
+            // Only increment gamesPlayed when explicitly specified with newGame flag
+            // AND we haven't already incremented it this session
+            if (gameData.newGame === true) {
+                // Check if this is a duplicate increment in the same session
+                if (this._lastIncrementTime && 
+                    (Date.now() - this._lastIncrementTime) < 5000) { // 5 seconds threshold
+                    console.log('🎮 Preventing duplicate increment (too soon after last increment)');
+                } else {
+                    profile.gamesPlayed = (profile.gamesPlayed || 0) + 1;
+                    this._lastIncrementTime = Date.now();
+                    console.log('🎮 Incrementing games played count to:', profile.gamesPlayed);
+                }
+            } else {
+                console.log('🎮 Not incrementing games played (not a new game)');
+            }
             
             // Only update best level if the current level is higher
             if (gameData.level > (profile.bestLevel || 1)) {

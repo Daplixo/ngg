@@ -89,11 +89,11 @@
             try {
                 import('./userProfile.js').then(module => {
                     const userProfile = new module.UserProfile();
-                    
                     userProfile.updateStatistics({
                         level: level,
                         hasWon: win,
-                        attempts: 5
+                        attempts: 5,
+                        newGame: true // Add proper flag for game counting
                     });
                     
                     console.log("✅ Game simulation complete");
