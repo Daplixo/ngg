@@ -21,6 +21,12 @@
       
       // Parse the profile data
       const profile = JSON.parse(profileData);
+
+      // Skip fixing guest accounts
+      if (profile.type === 'guest') {
+        console.log("✓ Guest profile detected, skipping username fix");
+        return false;
+      }
       
       // Check if the username contains an underscore followed by numbers (like daplixo_5996)
       const wrongUsernamePattern = /^(.+)_\d+$/;
@@ -35,30 +41,6 @@
           // Update the username
           profile.username = correctUsername;
           
-          // Also update the name field if it exists and has the wrong format
-          if (profile.name && wrongUsernamePattern.test(profile.name)) {
-            profile.name = correctUsername;
-          }
-          
-          // Save the updated profile back to localStorage
-          localStorage.setItem('userProfileData', JSON.stringify(profile));
-          
-          console.log("✅ Username fixed successfully!");
-          return true;
-        }
-      } else if (profile.name && wrongUsernamePattern.test(profile.name) && (!profile.username || profile.username === '')) {
-        // If username is missing but name has the pattern
-        const match = profile.name.match(wrongUsernamePattern);
-        if (match && match[1]) {
-          const correctUsername = match[1];
-          console.log(`🔧 Fixing name: changing "${profile.name}" to "${correctUsername}"`);
-          
-          // Update the name
-          profile.name = correctUsername;
-          
-          // Also set the username field
-          profile.username = correctUsername;
-          
           // Save the updated profile back to localStorage
           localStorage.setItem('userProfileData', JSON.stringify(profile));
           
@@ -66,27 +48,35 @@
           return true;
         }
       } else {
-        // Check if the username and actual username are already set correctly
-        if (profile.username === "daplixo" || profile.name === "daplixo") {
+        // Don't force set the username to "daplixo" for all accounts
+        // Only check regular accounts (not guests) that specifically need fixing
+        if (!profile.type === 'guest' && (profile.username === "daplixo" || profile.name === "daplixo")) {
           console.log("✓ Username is already correct: daplixo");
           return false;
         }
         
-        // Force set the username to "daplixo"
-        console.log(`🔧 Setting username to "daplixo" (was "${profile.username || profile.name || 'not set'}")`);
-        profile.username = "daplixo";
-        profile.name = "daplixo";
-        
-        // Save the updated profile back to localStorage
-        localStorage.setItem('userProfileData', JSON.stringify(profile));
-        
-        console.log("✅ Username set to daplixo!");
-        return true;
+        // Only fix accounts that need to be specifically set to daplixo
+        // This might be a hardcoded case for the developer's account
+        if (!profile.type === 'guest' && 
+            (profile.username === "Daplixo" || profile.name === "Daplixo" || 
+             profile.username === "DAPLIXO" || profile.name === "DAPLIXO")) {
+          console.log(`🔧 Normalizing username case to "daplixo" (was "${profile.username || profile.name}")`);
+          profile.username = "daplixo";
+          profile.name = "daplixo";
+          
+          // Save the updated profile back to localStorage
+          localStorage.setItem('userProfileData', JSON.stringify(profile));
+          
+          console.log("✅ Username normalized!");
+          return true;
+        }
+
+        return false;
       }
       
       return false;
     } catch (error) {
-      console.error("❌ Error fixing username:", error);
+      console.error("Error fixing username:", error);
       return false;
     }
   }

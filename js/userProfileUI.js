@@ -418,73 +418,146 @@ export class UserProfileUI {
 
     showEditProfile() {
         const profile = this.userProfile.getProfile();
+        const isGuestAccount = profile.type === 'guest';
+        
         const editModal = document.createElement('div');
         editModal.className = 'modal-wrapper';
         editModal.id = 'editProfileModal';
+        editModal.style.zIndex = "100000";
+        editModal.style.display = "flex";
+        editModal.style.visibility = "visible";
+        editModal.style.opacity = "1";
+        
         editModal.innerHTML = `
             <div class="modal-content profile-setup">
                 <h2>Edit Profile</h2>
+                
                 <form id="editProfileForm">
-                    <div class="form-group">
-                        <label for="editNickname">Nickname</label>
-                        <input type="text" id="editNickname" name="nickname" value="${profile?.nickname || ''}" required>
+                    <div class="input-fields">
+                        <div class="form-group">
+                            <label for="editNickname">Nickname</label>
+                            <input type="text" id="editNickname" name="nickname" value="${profile?.nickname || ''}" required 
+                                   placeholder="How others will see you">
+                        </div>
+                        
+                        ${!isGuestAccount ? `
+                        <div class="form-group">
+                            <label for="editUsername">Username</label>
+                            <input type="text" id="editUsername" name="name" value="${profile?.name || ''}" required 
+                                   placeholder="Your unique username">
+                        </div>
+                        ` : ''}
                     </div>
-                    <div class="form-group">
-                        <label for="editName">Username</label>
-                        <input type="text" id="editName" name="name" value="${profile?.name || ''}" required>
+                    
+                    <div class="avatar-section">
+                        <label>Avatar</label>
+                        <div class="avatar-grid" id="editAvatarGrid">
+                            <!-- Avatars will be added here by JavaScript -->
+                        </div>
+                        <input type="hidden" id="editSelectedAvatar" name="avatar" value="${profile?.picture || ''}">
+                        <input type="hidden" id="editSelectedAvatarId" name="avatarId" value="${profile?.avatarId || 'avatar_01'}">
                     </div>
-                    <div class="form-group">
-                        <label for="editPicture">Change Picture</label>
-                        <input type="file" id="editPicture" name="picture" accept="image/*">
-                        <div id="editPicturePreview" class="picture-preview"></div>
+                    
+                    <div class="form-actions compact-buttons">
+                        <button type="button" id="editCancelBtn" style="color: #333;">Cancel</button>
+                        <button type="submit" style="color: white;">Save Changes</button>
                     </div>
-                    <button type="submit" class="submit-btn">Save Changes</button>
                 </form>
-            </div>`;
+            </div>
+        `;
 
         document.body.appendChild(editModal);
-        editModal.classList.add('active');
-
+        
+        // Setup avatar grid
+        this.setupEditAvatarGrid(profile?.avatarId);
+        
+        // Setup event listeners
         this.setupEditProfileEvents(editModal);
+    }
+    
+    setupEditAvatarGrid(currentAvatarId = 'avatar_01') {
+        import('./config/avatarConfig.js').then(module => {
+            const AVATARS = module.default;
+            const avatarGrid = document.getElementById('editAvatarGrid');
+            
+            if (!avatarGrid) {
+                console.error("Avatar grid element not found");
+                return;
+            }
+            
+            console.log("Setting up avatar grid for edit profile");
+            AVATARS.forEach((avatar) => {
+                const avatarElement = document.createElement('div');
+                avatarElement.className = 'avatar-option';
+                avatarElement.innerHTML = `<img src="${avatar.path}" alt="${avatar.alt}">`;
+                
+                // Select the current avatar
+                if (avatar.id === currentAvatarId) {
+                    avatarElement.classList.add('selected');
+                }
+                
+                avatarElement.onclick = () => {
+                    // Remove selected class from all avatars
+                    document.querySelectorAll('#editAvatarGrid .avatar-option').forEach(av => {
+                        av.classList.remove('selected');
+                    });
+                    
+                    // Add selected class to clicked avatar
+                    avatarElement.classList.add('selected');
+                    
+                    // Store both the path and avatarId
+                    document.getElementById('editSelectedAvatar').value = avatar.path;
+                    document.getElementById('editSelectedAvatarId').value = avatar.id;
+                };
+                
+                avatarGrid.appendChild(avatarElement);
+            });
+        }).catch(error => {
+            console.error("Failed to load avatar configuration:", error);
+        });
     }
 
     setupEditProfileEvents(modal) {
         const form = modal.querySelector('#editProfileForm');
-        const pictureInput = modal.querySelector('#editPicture');
+        
+        // Handle Cancel button
+        const cancelBtn = document.getElementById('editCancelBtn');
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', () => {
+                modal.remove();
+            });
+        }
 
-        pictureInput.addEventListener('change', (e) => this.handlePictureUpload(e));
+        // Handle form submission
+        if (form) {
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.handleProfileEdit(form);
+                modal.remove();
+            });
+        }
 
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
-            this.handleProfileEdit(form);
-            modal.remove();
-        });
-
+        // Close modal when clicking outside
         modal.addEventListener('click', (e) => {
             if (e.target === modal) modal.remove();
         });
     }
-
+    
     handleProfileEdit(form) {
         const formData = new FormData(form);
         const currentProfile = this.userProfile.getProfile();
-        const preview = document.getElementById('editPicturePreview');
-        
-        let avatarId = formData.get('avatarId') || currentProfile?.avatarId || 'avatar_01';
-        const picturePath = preview?.dataset?.image || currentProfile?.picture;
-        
-        // If picture has changed, update avatarId
-        if (picturePath && picturePath !== currentProfile?.picture) {
-            avatarId = getAvatarIdByPath(picturePath);
-        }
         
         const updatedProfile = {
             ...currentProfile,
             nickname: formData.get('nickname'),
-            name: formData.get('name'),
-            picture: picturePath,
-            avatarId: avatarId
+            picture: formData.get('avatar'),
+            avatarId: formData.get('avatarId')
         };
+        
+        // Only update username for non-guest profiles
+        if (currentProfile.type !== 'guest') {
+            updatedProfile.name = formData.get('name');
+        }
 
         try {
             this.userProfile.validateProfile(updatedProfile);
