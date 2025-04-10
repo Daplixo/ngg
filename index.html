@@ -573,60 +573,13 @@
       })();
     </script>
 
+    <!-- Header alignment fix - ensures consistent element positioning -->
+    <script src="js/header-alignment-fix.js"></script>
+
     <!-- Auto-fix for MongoDB connectivity issues -->
     <script type="module" src="js/autofix.js"></script>
     <!-- Username fix script - runs before debug helper -->
     <script src="js/username-fix.js"></script>
-    <!-- Debug helper for MongoDB connectivity issues -->
-    <script type="module" src="js/debug.js"></script>
-
-    <!-- Stats Sync Debug Tools -->
-    <script type="module" src="js/statsSyncDebug.js"></script>
-
-    <!-- Fix for game notifications -->
-    <script src="js/game-notification-fix.js"></script>
-
-    <!-- Form refresh handler - Must be loaded before form submission script -->
-    <script src="js/form-refresh.js"></script>
-
-    <!-- Form submission script - Modified to automatically refresh after submission -->
-    <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        const feedbackForm = document.getElementById("feedbackForm");
-
-        if (feedbackForm) {
-          // Add hidden field for page redirection after form submission
-          const redirectInput = document.createElement("input");
-          redirectInput.type = "hidden";
-          redirectInput.name = "_next";
-          // Set to current URL to redirect back to this page
-          redirectInput.value = window.location.href;
-          feedbackForm.appendChild(redirectInput);
-
-          // Add a listener to store user name for thank you message
-          feedbackForm.addEventListener("submit", function (event) {
-            // Get the user's name for the confirmation message
-            const name = document.getElementById("name").value;
-
-            // Store in sessionStorage so we can show confirmation after redirect
-            sessionStorage.setItem("feedbackSent", "true");
-            sessionStorage.setItem("feedbackName", name);
-
-            console.log("Form submitted, page will refresh automatically");
-          });
-
-          // Check if returning from submission
-          if (sessionStorage.getItem("feedbackSent") === "true") {
-            const name = sessionStorage.getItem("feedbackName") || "friend";
-            alert("Thank you for your feedback, " + name + "!");
-
-            // Clear the session flag
-            sessionStorage.removeItem("feedbackSent");
-            sessionStorage.removeItem("feedbackName");
-          }
-        }
-      });
-    </script>
 
     <!-- Debugging script -->
     <script>
