@@ -17,13 +17,14 @@
   width: 100%;
 }
 
+/* Calculator-style button effect with subtle bevel */
 .key-btn {
   flex: 1;
   min-width: 0; /* Allow buttons to shrink if needed */
   height: $key-btn-size;
   font-size: 1.2rem;
   font-weight: 600;
-  border-radius: $border-radius-medium;
+  border-radius: 4px;
   background-color: var(--key-btn-bg);
   color: var(--key-btn-color);
   display: flex;
@@ -32,64 +33,84 @@
   cursor: pointer;
   position: relative;
   padding: 0;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: transform 0.1s ease, box-shadow 0.1s ease, background-color 0.2s ease, color 0.2s ease;
-  -webkit-user-select: none;
-  user-select: none;
-  outline: none;
+  margin: 0;
+  box-sizing: border-box;
+  overflow: hidden; /* Contain all effects within button boundaries */
   border: none;
+  box-shadow: 
+    0 1px 3px rgba(0, 0, 0, 0.12), /* Outer shadow for depth */
+    0 1px 2px rgba(0, 0, 0, 0.24), /* Additional subtle shadow */
+    inset 0 -2px 0 rgba(0, 0, 0, 0.1); /* Bottom inner shadow for subtle depth */
+  transition: all 0.1s ease;
   -webkit-tap-highlight-color: transparent;
   
-  &:active {
-    transform: translateY(2px);
-    box-shadow: 0 0px 1px rgba(0, 0, 0, 0.2);
-    
-    /* Add inner shadow when pressed to enhance 3D effect */
-    &::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      border-radius: 5px;
-      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
-      pointer-events: none;
-    }
-  }
-  
-  &:hover {
-    background-color: var(--key-btn-hover);
-  }
-  
-  /* Add subtle top highlight to buttons for 3D effect */
-  &::before {
+  /* Add bevel highlight on top */
+  &::after {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     height: 1px;
-    border-top-left-radius: $border-radius-medium;
-    border-top-right-radius: $border-radius-medium;
-    background: linear-gradient(
-      to right,
-      rgba(255, 255, 255, 0.5),
+    background: linear-gradient(to right,
       rgba(255, 255, 255, 0.7),
-      rgba(255, 255, 255, 0.5)
-    );
-    opacity: 0.8;
+      rgba(255, 255, 255, 0.9),
+      rgba(255, 255, 255, 0.7));
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+  }
+  
+  /* Press effect */
+  &:active {
+    transform: translateY(1px);
+    box-shadow: 
+      0 1px 1px rgba(0, 0, 0, 0.16),
+      inset 0 1px 3px rgba(0, 0, 0, 0.1); /* Inner shadow when pressed */
+    background-color: darken(#e0e0e0, 5%);
+    
+    /* Hide the highlight when pressed */
+    &::after {
+      opacity: 0;
+    }
+  }
+  
+  &:hover {
+    background-color: var(--key-btn-hover);
   }
 }
 
-/* Function keys with distinct colors */
+/* Function keys with distinct colors - calculator style */
 .key-clear {
   background-color: var(--key-clear-bg) !important;
   color: white !important;
   font-size: 0.9rem;
+  box-shadow: 
+    0 1px 3px rgba(0, 0, 0, 0.12),
+    0 1px 2px rgba(0, 0, 0, 0.24),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.2); /* Slightly stronger bottom shadow */
+  
+  /* Add custom highlight color for red button */
+  &::after {
+    background: linear-gradient(to right,
+      rgba(255, 255, 255, 0.4),
+      rgba(255, 255, 255, 0.6),
+      rgba(255, 255, 255, 0.4));
+  }
   
   &:hover {
     background-color: var(--key-clear-hover) !important;
+  }
+  
+  &:active {
+    transform: translateY(1px);
+    box-shadow: 
+      0 1px 1px rgba(0, 0, 0, 0.16),
+      inset 0 1px 3px rgba(0, 0, 0, 0.2); /* Inner shadow when pressed */
+    background-color: darken(#c0392b, 5%) !important;
+    
+    &::after {
+      opacity: 0;
+    }
   }
 }
 
@@ -97,9 +118,33 @@
   background-color: var(--key-enter-bg) !important;
   color: white !important;
   font-size: 0.9rem;
+  box-shadow: 
+    0 1px 3px rgba(0, 0, 0, 0.12),
+    0 1px 2px rgba(0, 0, 0, 0.24),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.2); /* Slightly stronger bottom shadow */
+  
+  /* Add custom highlight color for green button */
+  &::after {
+    background: linear-gradient(to right,
+      rgba(255, 255, 255, 0.4),
+      rgba(255, 255, 255, 0.6),
+      rgba(255, 255, 255, 0.4));
+  }
   
   &:hover {
     background-color: var(--key-enter-hover) !important;
+  }
+  
+  &:active {
+    transform: translateY(1px);
+    box-shadow: 
+      0 1px 1px rgba(0, 0, 0, 0.16),
+      inset 0 1px 3px rgba(0, 0, 0, 0.2); /* Inner shadow when pressed */
+    background-color: darken(#27ae60, 5%) !important;
+    
+    &::after {
+      opacity: 0;
+    }
   }
 }
 
@@ -108,41 +153,130 @@
   .key-btn {
     background-color: var(--key-btn-bg);
     color: var(--key-btn-color);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+    box-shadow: 
+      0 1px 3px rgba(0, 0, 0, 0.3),
+      0 1px 2px rgba(0, 0, 0, 0.36),
+      inset 0 -2px 0 rgba(0, 0, 0, 0.2);
+    
+    /* Adjust the bevel highlight for dark mode */
+    &::after {
+      background: linear-gradient(to right,
+        rgba(255, 255, 255, 0.2),
+        rgba(255, 255, 255, 0.3),
+        rgba(255, 255, 255, 0.2));
+    }
     
     &:hover {
       background-color: var(--key-btn-hover);
     }
     
-    &::before {
-      opacity: 0.2;
-    }
-    
-    &:active::after {
-      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4);
+    &:active {
+      box-shadow: 
+        0 1px 1px rgba(0, 0, 0, 0.3),
+        inset 0 1px 3px rgba(0, 0, 0, 0.25);
+      background-color: darken(#3a3a3a, 8%);
+      
+      &::after {
+        opacity: 0;
+      }
     }
   }
   
-  .key-clear, .key-enter {
-    /* Keep their original colors */
+  /* Function keys keep their colors in dark mode */
+  .key-clear:active {
+    background-color: darken(#c0392b, 10%) !important;
+  }
+  
+  .key-enter:active {
+    background-color: darken(#27ae60, 10%) !important;
   }
 }
 
-/* Responsive adjustments */
+/* Enhanced responsive adjustments for multiple screen sizes */
+/* Large screens */
+@media (min-width: $breakpoint-lg) {
+  .key-btn {
+    height: $key-btn-size + 4px; /* Slightly larger on big screens */
+    font-size: 1.25rem;
+  }
+}
+
+/* Medium screens */
+@media (max-width: $breakpoint-md) {
+  #custom-keyboard {
+    max-width: 320px;
+    margin: 0.5rem auto;
+  }
+  
+  .keyboard-row {
+    gap: 6px;
+    margin-bottom: 6px;
+  }
+  
+  .key-btn {
+    height: $key-btn-size - 2px; /* Slightly smaller on medium screens */
+    font-size: 1.1rem;
+  }
+}
+
+/* Small screens */
+@media (max-width: $breakpoint-sm) {
+  #custom-keyboard {
+    max-width: 280px;
+  }
+  
+  .keyboard-row {
+    gap: 5px;
+    margin-bottom: 5px;
+  }
+}
+
+/* Very small screens */
 @media (max-width: $breakpoint-xs) {
+  #custom-keyboard {
+    max-width: 240px; /* This value is referenced in other components */
+  }
+  
+  .keyboard-row {
+    gap: 4px;
+    margin-bottom: 4px;
+  }
+  
   .key-btn {
     width: $key-btn-size-small;
     height: $key-btn-size-small;
-    font-size: 1.1rem;
-    border-radius: 5px;
+    font-size: 1rem;
+    border-radius: 4px;
+    box-shadow: 
+      0 1px 2px rgba(0, 0, 0, 0.12),
+      0 1px 1px rgba(0, 0, 0, 0.24),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.1);
   }
   
   .key-clear, .key-enter {
-    font-size: 0.8rem;
+    font-size: 0.7rem;
+  }
+}
+
+/* Landscape mode on small devices */
+@media (max-height: 500px) and (orientation: landscape) {
+  #custom-keyboard {
+    max-width: 360px;
+    margin: 0.25rem auto;
   }
   
-  #custom-keyboard {
-    max-width: 240px; /* This value is referenced in other components */
+  .keyboard-row {
+    gap: 4px;
+    margin-bottom: 4px;
+  }
+  
+  .key-btn {
+    height: $key-btn-size-small;
+    font-size: 1rem;
+  }
+  
+  .key-clear, .key-enter {
+    font-size: 0.7rem;
   }
 }
 
@@ -155,5 +289,11 @@
   
   &:focus {
     outline: none;
+  }
+  
+  /* Add focus ring for accessibility, only when navigating with keyboard */
+  &:focus-visible {
+    outline: 2px solid var(--btn-primary);
+    outline-offset: 2px;
   }
 }

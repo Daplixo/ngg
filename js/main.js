@@ -531,40 +531,39 @@ function initFeedbackModal() {
         if (menuToggle) menuToggle.classList.remove('active');
         document.body.classList.remove('menu-open');
         
-        // Open feedback modal
-        modal.style.display = "flex";
-        modal.style.visibility = "visible";
-        modal.style.opacity = "1";
-        modal.style.pointerEvents = "auto";
-        modal.classList.add('active');
-        window.isModalOpen = true;
-    });
-    
-    // Close modal when clicking the close button
-    if (closeBtn) {
-        closeBtn.addEventListener('click', () => {
-            closeModal(modal);
-        });
-    }
-    
-    // Close modal when clicking outside the modal content
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            closeModal(modal);
+        // Open feedback modal using modal manager if available
+        if (window.modalManager) {
+            window.modalManager.showModal('feedbackModal');
+        } else {
+            // Fallback to original behavior
+            modal.style.display = "flex";
+            modal.style.visibility = "visible";
+            modal.style.opacity = "1";
+            modal.style.pointerEvents = "auto";
+            modal.classList.add('active');
+            window.isModalOpen = true;
         }
     });
+    
+    // Close button handling is now managed by the modalManager
 }
 
 // Close modal helper
 function closeModal(modal) {
     if (!modal) return;
     
-    modal.style.display = "none";
-    modal.style.visibility = "hidden";
-    modal.style.opacity = "0";
-    modal.style.pointerEvents = "none";
-    modal.classList.remove('active');
-    window.isModalOpen = false;
+    // Use modal manager if available
+    if (window.modalManager) {
+        window.modalManager.hideModal(modal);
+    } else {
+        // Fallback to original behavior
+        modal.style.display = "none";
+        modal.style.visibility = "hidden";
+        modal.style.opacity = "0";
+        modal.style.pointerEvents = "none";
+        modal.classList.remove('active');
+        window.isModalOpen = false;
+    }
 }
 
 // Setup side menu functionality

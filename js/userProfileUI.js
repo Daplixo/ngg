@@ -63,6 +63,22 @@ export class UserProfileUI {
                     </div>
                 </div>
             </div>`;
+        
+        // Listen for modal closed events to refresh profile display
+        document.addEventListener('modalClosed', (event) => {
+            // Check if it was an edit profile modal
+            if (event.detail.id && 
+                (event.detail.id.includes('editProfileModal') || 
+                 event.detail.classes.includes('edit-profile-modal'))) {
+                console.log('Edit profile modal closed, refreshing profile display');
+                this.updateProfileDisplay();
+                
+                // Also update any stats that might be displayed in game UI
+                if (window.profileUpdateManager) {
+                    window.profileUpdateManager.refreshProfileStats();
+                }
+            }
+        });
     }
 
     async init() {
@@ -420,30 +436,35 @@ export class UserProfileUI {
         const profile = this.userProfile.getProfile();
         const isGuestAccount = profile.type === 'guest';
         
+        // Clean up any existing edit modals first to prevent duplicates
+        if (window.modalManager) {
+            window.modalManager.cleanupModals('edit-profile-modal');
+        }
+        
+        // Generate a unique ID for this modal instance
+        const modalId = 'editProfileModal_' + Date.now();
+        
         const editModal = document.createElement('div');
-        editModal.className = 'modal-wrapper';
-        editModal.id = 'editProfileModal';
+        editModal.className = 'modal-wrapper edit-profile-modal';
+        editModal.id = modalId;
         editModal.style.zIndex = "100000";
-        editModal.style.display = "flex";
-        editModal.style.visibility = "visible";
-        editModal.style.opacity = "1";
         
         editModal.innerHTML = `
             <div class="modal-content profile-setup">
                 <h2>Edit Profile</h2>
                 
-                <form id="editProfileForm">
+                <form id="editProfileForm_${modalId}" class="edit-profile-form">
                     <div class="input-fields">
                         <div class="form-group">
-                            <label for="editNickname">Nickname</label>
-                            <input type="text" id="editNickname" name="nickname" value="${profile?.nickname || ''}" required 
+                            <label for="editNickname_${modalId}">Nickname</label>
+                            <input type="text" id="editNickname_${modalId}" name="nickname" value="${profile?.nickname || ''}" required 
                                    placeholder="How others will see you">
                         </div>
                         
                         ${!isGuestAccount ? `
                         <div class="form-group">
-                            <label for="editUsername">Username</label>
-                            <input type="text" id="editUsername" name="name" value="${profile?.name || ''}" required 
+                            <label for="editUsername_${modalId}">Username</label>
+                            <input type="text" id="editUsername_${modalId}" name="name" value="${profile?.name || ''}" required 
                                    placeholder="Your unique username">
                         </div>
                         ` : ''}
@@ -451,16 +472,16 @@ export class UserProfileUI {
                     
                     <div class="avatar-section">
                         <label>Avatar</label>
-                        <div class="avatar-grid" id="editAvatarGrid">
+                        <div class="avatar-grid" id="editAvatarGrid_${modalId}">
                             <!-- Avatars will be added here by JavaScript -->
                         </div>
-                        <input type="hidden" id="editSelectedAvatar" name="avatar" value="${profile?.picture || ''}">
-                        <input type="hidden" id="editSelectedAvatarId" name="avatarId" value="${profile?.avatarId || 'avatar_01'}">
+                        <input type="hidden" id="editSelectedAvatar_${modalId}" name="avatar" value="${profile?.picture || ''}">
+                        <input type="hidden" id="editSelectedAvatarId_${modalId}" name="avatarId" value="${profile?.avatarId || 'avatar_01'}">
                     </div>
                     
                     <div class="form-actions compact-buttons">
-                        <button type="button" id="editCancelBtn" style="color: #333;">Cancel</button>
-                        <button type="submit" style="color: white;">Save Changes</button>
+                        <button type="button" id="editCancelBtn_${modalId}" class="cancel-btn" style="color: #333;">Cancel</button>
+                        <button type="submit" class="submit-btn" style="color: white;">Save Changes</button>
                     </div>
                 </form>
             </div>
@@ -468,24 +489,43 @@ export class UserProfileUI {
 
         document.body.appendChild(editModal);
         
-        // Setup avatar grid
-        this.setupEditAvatarGrid(profile?.avatarId);
+        // Setup avatar grid with the unique ID
+        this.setupEditAvatarGrid(profile?.avatarId, modalId);
         
-        // Setup event listeners
-        this.setupEditProfileEvents(editModal);
+        // Setup event listeners with reference to this modal instance
+        this.setupEditProfileEvents(editModal, modalId);
+        
+        // Show the modal using the modal manager
+        if (window.modalManager) {
+            window.modalManager.showModal(editModal);
+        } else {
+            // Fallback if modal manager is not available
+            editModal.style.display = "flex";
+            editModal.style.visibility = "visible";
+            editModal.style.opacity = "1";
+            editModal.classList.add('active');
+            window.isModalOpen = true;
+        }
     }
-    
-    setupEditAvatarGrid(currentAvatarId = 'avatar_01') {
+
+    setupEditAvatarGrid(currentAvatarId = 'avatar_01', modalId) {
+        const uniqueId = modalId || '';
+        const gridId = uniqueId ? `editAvatarGrid_${uniqueId}` : 'editAvatarGrid';
+        
         import('./config/avatarConfig.js').then(module => {
             const AVATARS = module.default;
-            const avatarGrid = document.getElementById('editAvatarGrid');
+            const avatarGrid = document.getElementById(gridId);
             
             if (!avatarGrid) {
-                console.error("Avatar grid element not found");
+                console.error("Avatar grid element not found:", gridId);
                 return;
             }
             
-            console.log("Setting up avatar grid for edit profile");
+            console.log(`Setting up avatar grid for edit profile: ${gridId}`);
+            
+            // Clear any existing content first
+            avatarGrid.innerHTML = '';
+            
             AVATARS.forEach((avatar) => {
                 const avatarElement = document.createElement('div');
                 avatarElement.className = 'avatar-option';
@@ -497,17 +537,22 @@ export class UserProfileUI {
                 }
                 
                 avatarElement.onclick = () => {
-                    // Remove selected class from all avatars
-                    document.querySelectorAll('#editAvatarGrid .avatar-option').forEach(av => {
+                    // Remove selected class from all avatars in this specific grid
+                    document.querySelectorAll(`#${gridId} .avatar-option`).forEach(av => {
                         av.classList.remove('selected');
                     });
                     
                     // Add selected class to clicked avatar
                     avatarElement.classList.add('selected');
                     
-                    // Store both the path and avatarId
-                    document.getElementById('editSelectedAvatar').value = avatar.path;
-                    document.getElementById('editSelectedAvatarId').value = avatar.id;
+                    // Store both the path and avatarId in the correct form fields with unique IDs
+                    const avatarInput = document.getElementById(`editSelectedAvatar_${uniqueId}`) || 
+                                       document.getElementById('editSelectedAvatar');
+                    const avatarIdInput = document.getElementById(`editSelectedAvatarId_${uniqueId}`) || 
+                                         document.getElementById('editSelectedAvatarId');
+                    
+                    if (avatarInput) avatarInput.value = avatar.path;
+                    if (avatarIdInput) avatarIdInput.value = avatar.id;
                 };
                 
                 avatarGrid.appendChild(avatarElement);
@@ -517,30 +562,58 @@ export class UserProfileUI {
         });
     }
 
-    setupEditProfileEvents(modal) {
-        const form = modal.querySelector('#editProfileForm');
+    setupEditProfileEvents(modal, modalId) {
+        const uniqueId = modalId || modal.id || '';
+        const formId = uniqueId ? `editProfileForm_${uniqueId}` : 'editProfileForm';
+        const cancelBtnId = uniqueId ? `editCancelBtn_${uniqueId}` : 'editCancelBtn';
+        
+        const form = modal.querySelector(`#${formId}`) || modal.querySelector('.edit-profile-form');
         
         // Handle Cancel button
-        const cancelBtn = document.getElementById('editCancelBtn');
+        const cancelBtn = document.getElementById(cancelBtnId) || 
+                          modal.querySelector('.cancel-btn');
+                          
         if (cancelBtn) {
-            cancelBtn.addEventListener('click', () => {
-                modal.remove();
-            });
+            // Remove any existing event listeners first
+            cancelBtn.removeEventListener('click', cancelBtn._clickHandler);
+            
+            // Create a new click handler
+            cancelBtn._clickHandler = () => {
+                if (window.modalManager) {
+                    window.modalManager.closeAndRemoveModal(modal);
+                } else {
+                    if (modal && modal.parentNode) {
+                        modal.parentNode.removeChild(modal);
+                    }
+                }
+            };
+            
+            // Add the new event listener
+            cancelBtn.addEventListener('click', cancelBtn._clickHandler);
         }
 
         // Handle form submission
         if (form) {
-            form.addEventListener('submit', (e) => {
+            // Remove any existing event listeners first
+            form.removeEventListener('submit', form._submitHandler);
+            
+            // Create a new submit handler
+            form._submitHandler = (e) => {
                 e.preventDefault();
                 this.handleProfileEdit(form);
-                modal.remove();
-            });
+                
+                if (window.modalManager) {
+                    window.modalManager.closeAndRemoveModal(modal);
+                } else {
+                    if (modal && modal.parentNode) {
+                        modal.parentNode.removeChild(modal);
+                    }
+                }
+            };
+            
+            // Add the new event listener
+            form.addEventListener('submit', form._submitHandler);
         }
-
-        // Close modal when clicking outside
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) modal.remove();
-        });
     }
     
     handleProfileEdit(form) {
@@ -568,9 +641,13 @@ export class UserProfileUI {
                 this.syncProfileWithServer(updatedProfile);
             }
             
+            // This triggers an immediate update but we'll also refresh when the modal closes
             this.updateProfileDisplay();
+            
+            console.log("Profile updated successfully:", updatedProfile.nickname);
         } catch (error) {
-            alert(error.message);
+            console.error("Error updating profile:", error);
+            alert(error.message || 'Failed to update profile');
         }
     }
 
