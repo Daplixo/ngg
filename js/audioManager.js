@@ -138,6 +138,31 @@ export const AudioManager = {
     // Play victory sound
     playVictorySound() {
         try {
+            // Use preloaded sound if available
+            if (window.preloadedVictorySound) {
+                console.log('Using preloaded victory sound');
+                // Reset volume to normal level
+                window.preloadedVictorySound.volume = 0.7;
+                // Play the preloaded sound
+                window.preloadedVictorySound.play().catch(err => {
+                    console.warn('Could not play preloaded victory sound:', err);
+                    // Fallback to creating a new audio object
+                    this.playFallbackVictorySound();
+                });
+            } else {
+                // Fallback if preloaded sound is not available
+                this.playFallbackVictorySound();
+            }
+        } catch (error) {
+            console.warn('Error playing victory sound:', error);
+            // Try one more time with the fallback
+            this.playFallbackVictorySound();
+        }
+    },
+    
+    // Fallback method to play victory sound if preloaded one fails
+    playFallbackVictorySound() {
+        try {
             // Create a new audio object for victory sound
             const victorySound = new Audio('assets/sounds/victory.mp3');
             
@@ -149,7 +174,7 @@ export const AudioManager = {
                 console.warn('Could not play victory sound:', err);
             });
         } catch (error) {
-            console.warn('Error playing victory sound:', error);
+            console.warn('Error in fallback victory sound:', error);
         }
     },
     
