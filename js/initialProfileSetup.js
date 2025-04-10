@@ -182,6 +182,9 @@ export class InitialProfileSetup {
         
         document.body.appendChild(modal);
         
+        // Add avatars to the grid - THIS LINE WAS MISSING
+        this.setupAvatarGrid();
+        
         // Add event listeners
         document.getElementById('guestBackBtn').onclick = () => {
             console.log("Guest back button clicked");
