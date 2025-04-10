@@ -1,0 +1,192 @@
+/* Side Menu Responsiveness - Maintains consistent design across all screen sizes */
+
+/* Ensure consistent spacing and appearance */
+.side-menu {
+  width: 280px !important;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+}
+
+.side-menu.active {
+  transform: translateX(0) !important;
+}
+
+/* Consistent header styling */
+.side-menu-header {
+  padding: 15px !important;
+  height: 50px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.side-menu-close {
+  background: transparent !important;
+  border: none !important;
+  cursor: pointer !important;
+  padding: 5px !important;
+  width: 30px !important;
+  height: 30px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.side-menu-close svg {
+  width: 20px !important;
+  height: 20px !important;
+  stroke: var(--text-color) !important;
+}
+
+/* Consistent content styling */
+.side-menu-content {
+  display: flex !important;
+  flex-direction: column !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* Item styling consistency */
+.side-menu-item {
+  padding: 1rem 1rem 1rem 16px !important;
+  border-bottom: 1px solid var(--border-color) !important;
+}
+
+.side-menu-item:last-child {
+  border-bottom: none !important;
+}
+
+/* Button styling consistency */
+.side-menu-button {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  background: transparent !important;
+  border: none !important;
+  color: var(--text-color) !important;
+  font-size: 16px !important;
+  width: 100% !important;
+  text-align: left !important;
+  padding: 8px 0 8px 8px !important;
+  cursor: pointer !important;
+  line-height: 1 !important;
+}
+
+.side-menu-button svg {
+  margin-right: 22px !important;
+  width: 16px !important;
+  height: 16px !important;
+  flex-shrink: 0 !important;
+  display: block !important;
+}
+
+.side-menu-button span {
+  font-size: 0.95rem !important;
+  font-weight: 400 !important;
+  line-height: 1.2 !important;
+  padding-left: 0 !important;
+  margin-left: 0 !important;
+  display: block !important;
+  white-space: nowrap !important;
+}
+
+/* Settings dropdown consistency */
+.settings-dropdown {
+  margin-top: 4px !important;
+  margin-left: 28px !important;
+}
+
+.settings-option {
+  padding: 8px 12px !important;
+}
+
+#theme-toggle .theme-option-content,
+#delete-account-btn .theme-option-content {
+  display: flex !important;
+  align-items: center !important;
+  width: 100% !important;
+}
+
+.icon-container {
+  position: relative !important;
+  width: 16px !important;
+  height: 16px !important;
+  min-width: 16px !important;
+  margin-right: 12px !important;
+  flex-shrink: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* BuyMeACoffee button consistency */
+.side-menu-button[href*="buymeacoffee"] span {
+  margin-left: 8px !important;
+  color: var(--text-color) !important;
+}
+
+/* Prevent any media queries from overriding these styles */
+@media screen and (max-width: 1200px) {
+  .side-menu,
+  .side-menu-header,
+  .side-menu-content,
+  .side-menu-item,
+  .side-menu-button {
+    /* Reinforce the same styles to prevent overrides */
+    width: 280px !important;
+  }
+  
+  .side-menu-button svg {
+    margin-right: 22px !important;
+    width: 16px !important;
+    height: 16px !important;
+  }
+}
+
+/* Small devices and mobile consistency */
+@media screen and (max-width: 480px) {
+  .side-menu {
+    width: 280px !important;
+  }
+  
+  .side-menu-item {
+    padding: 1rem 1rem 1rem 16px !important;
+  }
+  
+  .side-menu-button {
+    padding: 8px 0 8px 8px !important;
+  }
+  
+  .side-menu-button svg {
+    margin-right: 22px !important;
+  }
+  
+  .side-menu-button span {
+    font-size: 0.95rem !important;
+  }
+}
+
+/* Very small screens consistency */
+@media screen and (max-width: 320px) {
+  /* Keep the exact same styling */
+  .side-menu {
+    width: 280px !important;
+  }
+  
+  .side-menu-item {
+    padding: 1rem 1rem 1rem 16px !important;
+  }
+}
+
+/* Handle different height screens */
+@media screen and (max-height: 600px) {
+  .side-menu-item {
+    padding: 0.75rem 1rem 0.75rem 16px !important;
+  }
+}
+
+/* Extremely small height screens */
+@media screen and (max-height: 480px) {
+  .side-menu-item {
+    padding: 0.6rem 1rem 0.6rem 16px !important;
+  }
+}

@@ -83,6 +83,7 @@
     <link rel="stylesheet" href="css/modal-fix.css" />
     <link rel="stylesheet" href="css/server-sync.css" />
     <link rel="stylesheet" href="css/modal-overlay.css" />
+    <link rel="stylesheet" href="css/side-menu-responsive.css" />
     <!-- Remove the start-prompt.css reference as we'll use SCSS instead -->
     <!-- Remove the button-fix.css reference as styling is now in SCSS -->
     <!-- <link rel="stylesheet" href="css/button-fix.css" /> -->
@@ -496,6 +497,75 @@
       </div>
     </div>
 
+    <!-- Fix for horizontal scrollbar in side menu -->
+    <style>
+      .side-menu {
+        overflow-x: hidden !important; /* Prevent horizontal scrolling */
+        max-width: 100%; /* Ensure menu doesn't exceed its container */
+      }
+
+      .side-menu-content,
+      .side-menu-item,
+      .settings-container,
+      .settings-dropdown {
+        max-width: 100%; /* Ensure content doesn't overflow */
+        box-sizing: border-box; /* Include padding in width calculation */
+      }
+
+      /* Fix for any potential nested elements causing overflow */
+      .side-menu-button {
+        word-break: break-word; /* Allow text to break if too long */
+        white-space: normal; /* Allow text to wrap */
+      }
+
+      /* Enhanced profile section styling for smaller screens */
+      @media (max-width: 480px) {
+        /* Increase text size and add left padding */
+        .profile-info h3 {
+          font-size: 1.1rem !important;
+          padding-left: 4px !important;
+        }
+
+        .profile-info p {
+          font-size: 0.85rem !important;
+          padding-left: 4px !important;
+        }
+
+        /* Make stats containers smaller and more compact */
+        .profile-stats {
+          max-width: 90% !important;
+          margin-top: 0.5rem !important;
+        }
+
+        .profile-stats .stat {
+          padding: 0.4rem 0.25rem !important;
+        }
+
+        /* Better spacing between elements */
+        .profile-picture-container {
+          margin-bottom: 0.5rem !important;
+        }
+      }
+
+      /* Very small screens additional optimization */
+      @media (max-width: 360px) {
+        .profile-info h3 {
+          font-size: 1rem !important;
+        }
+
+        .profile-stats .stat-label {
+          font-size: 0.75rem !important;
+        }
+
+        .profile-stats .stat-value {
+          font-size: 0.9rem !important;
+        }
+      }
+    </style>
+
+    <!-- Remove this line since we're fixing in SCSS -->
+    <!-- <link rel="stylesheet" href="css/menu-arrow-fix.css" /> -->
+    <script src="fix-settings-spacing.js"></script>
     <!-- Game Scripts -->
     <!-- Add Initial Profile Setup FIRST to ensure it runs before UserProfileUI -->
     <script type="module" src="js/initialProfileSetup.js"></script>

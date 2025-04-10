@@ -1,0 +1,29 @@
+/* 
+ * Menu Arrow Position Fix
+ * Improves dropdown arrow positioning in side menu for better appearance on small screens
+ */
+
+/* Make the settings button position relative for proper arrow positioning */
+#settings-button {
+  position: relative;
+  padding-right: 24px !important; /* Add space for the arrow */
+}
+
+/* Position the dropdown arrow closer to the text */
+.dropdown-chevron {
+  position: absolute !important;
+  right: 6px !important; /* Reduced from default positioning */
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+}
+
+/* Ensure consistent behavior on small screens */
+@media (max-width: 480px) {
+  #settings-button {
+    padding-right: 20px !important; /* Slightly less padding on mobile */
+  }
+  
+  .dropdown-chevron {
+    right: 4px !important; /* Even closer on very small screens */
+  }
+}

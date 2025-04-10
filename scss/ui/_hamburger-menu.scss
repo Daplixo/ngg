@@ -784,10 +784,16 @@ body.menu-open {
 
 .settings-toggle {
   position: relative;
+  padding-right: 20px !important; /* Reduced padding */
+  
+  span {
+    margin-right: 0; /* Remove any default right margin from the text */
+    padding-right: 0; /* Remove padding after the text */
+  }
   
   .dropdown-chevron {
     position: absolute;
-    right: 0;
+    right: 0; /* Position directly at the edge */
     top: 50%;
     transform: translateY(-50%);
     transition: transform 0.3s ease;
@@ -908,6 +914,14 @@ body.menu-open {
           }
         }
       }
+    }
+  }
+  
+  .settings-toggle {
+    padding-right: 0px !important; /* Slightly less padding on mobile */
+    
+    .dropdown-chevron {
+      right: 28px; /* Even closer on very small screens */
     }
   }
 }

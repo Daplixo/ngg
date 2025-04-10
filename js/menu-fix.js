@@ -77,4 +77,47 @@
     
     // Make fix function available globally for manual execution
     window.fixMenuToggle = fixMenuToggle;
+    
+    // Add a function to enforce consistent side menu styling
+    function enforceSideMenuConsistency() {
+        console.log("Enforcing consistent side menu styling");
+        
+        // Force consistent button styling
+        const sideMenuButtons = document.querySelectorAll('.side-menu-button');
+        sideMenuButtons.forEach(button => {
+            button.style.display = 'flex';
+            button.style.alignItems = 'center';
+            button.style.justifyContent = 'flex-start';
+            button.style.padding = '8px 0 8px 8px';
+            
+            // Ensure icon spacing is consistent
+            const svg = button.querySelector('svg');
+            if (svg) {
+                svg.style.marginRight = '22px';
+                svg.style.width = '16px';
+                svg.style.height = '16px';
+                svg.style.flexShrink = '0';
+            }
+            
+            // Ensure text styling is consistent
+            const span = button.querySelector('span');
+            if (span) {
+                span.style.fontSize = '0.95rem';
+                span.style.fontWeight = '400';
+                span.style.lineHeight = '1.2';
+            }
+        });
+        
+        // Force consistent side menu item spacing
+        const sideMenuItems = document.querySelectorAll('.side-menu-item');
+        sideMenuItems.forEach(item => {
+            item.style.padding = '1rem 1rem 1rem 16px';
+        });
+    }
+    
+    // Run the function after DOM content loaded
+    document.addEventListener('DOMContentLoaded', enforceSideMenuConsistency);
+    
+    // Also run after a short delay to catch any dynamic changes
+    setTimeout(enforceSideMenuConsistency, 500);
 })();
