@@ -91,20 +91,40 @@
 
 /* Settings dropdown consistency */
 .settings-dropdown {
-  position: relative !important; /* Changed from absolute */
+  position: relative !important;
   left: auto !important;
   width: 100% !important;
-  box-shadow: none !important; /* Remove box shadow completely */
-  /* Remove border on settings dropdown */
+  box-shadow: none !important;
   border: none !important;
   margin-left: 0 !important;
   margin-top: 0 !important;
 }
 
-.settings-option {
-  padding: 8px 12px !important;
-  /* Remove individual borders */
+/* Add indentation to dropdown options - consistent across all screen sizes */
+#theme-toggle.settings-option,
+#delete-account-btn.settings-option,
+.settings-dropdown .settings-option {
+  padding-left: 45px !important; /* Nearly doubled from 24px */
+  padding-right: 12px !important;
   border: none !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+/* Force indentation on theme toggle specifically */
+.settings-dropdown #theme-toggle {
+  padding-left: 45px !important; /* Nearly doubled from 24px */
+}
+
+/* Force consistent icon spacing with indentation */
+#theme-toggle .theme-option-content .icon-container,
+#delete-account-btn .theme-option-content .icon-container {
+  flex-shrink: 0 !important;
+  min-width: 16px !important;
+  margin-right: 12px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 
 /* Add border only between options */
@@ -176,6 +196,21 @@
   .side-menu-button span {
     font-size: 0.95rem !important;
   }
+
+  /* Increase indentation for dropdown options on mobile */
+  .settings-dropdown .settings-option,
+  #theme-toggle.settings-option,
+  #delete-account-btn.settings-option,
+  .settings-dropdown #theme-toggle {
+    padding-left: 60px !important; /* Significantly increased indentation for small screens */
+    padding-right: 10px !important;
+  }
+  
+  /* Adjust icon spacing for better visibility */
+  #theme-toggle .theme-option-content .icon-container,
+  #delete-account-btn .theme-option-content .icon-container {
+    margin-right: 14px !important;
+  }
 }
 
 /* Very small screens consistency */
@@ -187,6 +222,27 @@
   
   .side-menu-item {
     padding: 1rem 1rem 1rem 16px !important;
+  }
+}
+
+/* Very small screens - maintain indentation */
+@media (max-width: 360px) {
+  /* Remove conflicting rules and set even larger indentation for very small screens */
+  .settings-dropdown .settings-option,
+  #theme-toggle.settings-option,
+  #delete-account-btn.settings-option,
+  .settings-dropdown #theme-toggle {
+    padding-left: 65px !important; /* Even greater indentation for tiny screens */
+    padding-right: 8px !important;
+  }
+  
+  /* Add subtle visual indicators for clearer hierarchy */
+  .settings-dropdown {
+    background-color: rgba(0, 0, 0, 0.03) !important; /* Subtle background difference */
+  }
+  
+  [data-theme="dark"] .settings-dropdown {
+    background-color: rgba(255, 255, 255, 0.03) !important; /* Dark mode version */
   }
 }
 
