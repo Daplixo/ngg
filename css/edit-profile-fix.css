@@ -1,0 +1,79 @@
+/* Edit Profile Modal Size Fix */
+.edit-profile-modal .modal-content,
+.edit-profile-modal.modal-wrapper .modal-content {
+  max-width: 420px;
+  max-height: 520px;
+  width: 90%;
+  padding: 1.5rem;
+}
+
+/* Make avatar grid more compact */
+.edit-profile-modal .avatar-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 0.5rem 0;
+}
+
+/* Make avatar options smaller */
+.edit-profile-modal .avatar-option {
+  aspect-ratio: 1;
+  min-height: auto;
+  height: 70px;
+}
+
+/* Make form elements more compact */
+.edit-profile-modal .form-group {
+  margin-bottom: 0.75rem;
+}
+
+.edit-profile-modal .form-group label {
+  margin-bottom: 0.25rem;
+  font-size: 0.9rem;
+}
+
+.edit-profile-modal .form-group input {
+  padding: 0.5rem;
+}
+
+/* Make section headings smaller */
+.edit-profile-modal h2 {
+  font-size: 1.25rem;
+  margin-bottom: 0.75rem;
+}
+
+/* Make buttons more compact */
+.edit-profile-modal .form-actions {
+  margin-top: 0.75rem;
+}
+
+.edit-profile-modal .form-actions button {
+  padding: 0.5rem;
+  font-size: 0.9rem;
+}
+
+/* Vertical spacing adjustments */
+.edit-profile-modal .avatar-section label {
+  margin-bottom: 0.25rem;
+  font-size: 0.9rem;
+}
+
+/* Additional compact styles for small screens */
+@media (max-height: 600px) {
+  .edit-profile-modal .modal-content {
+    padding: 1.25rem;
+    max-height: 480px;
+  }
+  
+  .edit-profile-modal .avatar-option {
+    height: 60px;
+  }
+  
+  .edit-profile-modal .avatar-grid {
+    gap: 6px;
+  }
+  
+  .edit-profile-modal .form-group {
+    margin-bottom: 0.5rem;
+  }
+}
