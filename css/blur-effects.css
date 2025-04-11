@@ -1,0 +1,121 @@
+/* 
+ * Blur Effects for Modals and Side Menu
+ * Applies a gaussian blur to background elements when modals or side menu are active
+ */
+
+/* When any modal is active, apply blur to background content */
+body.modal-open #game-container,
+body.modal-open .game-header,
+body.modal-open .footer,
+body.modal-open .game-layout {
+    filter: blur(3px);
+    transition: filter 0.3s ease;
+    pointer-events: none;
+}
+
+/* When side menu is active, also apply blur to background content */
+body.menu-open #game-container,
+body.menu-open .game-header,
+body.menu-open .footer,
+body.menu-open .game-layout {
+    filter: blur(3px);
+    transition: filter 0.3s ease;
+    pointer-events: none;
+}
+
+/* Special handling for initial profile setup modals */
+#accountSetupModal,
+#guestSetupModal,
+#profileChoiceModal,
+#profileSetupModal,
+.modal-wrapper[id*="editProfileModal"],
+.modal-wrapper.edit-profile-modal,
+.modal-wrapper.profile-setup {
+    z-index: 100000 !important;
+}
+
+/* Apply the blur when these specific modals exist in the DOM */
+body:has(#accountSetupModal) #game-container,
+body:has(#accountSetupModal) .game-header,
+body:has(#accountSetupModal) .footer,
+body:has(#guestSetupModal) #game-container,
+body:has(#guestSetupModal) .game-header,
+body:has(#guestSetupModal) .footer,
+body:has(#profileChoiceModal) #game-container,
+body:has(#profileChoiceModal) .game-header,
+body:has(#profileChoiceModal) .footer,
+body:has(#profileSetupModal) #game-container,
+body:has(#profileSetupModal) .game-header,
+body:has(#profileSetupModal) .footer {
+    filter: blur(3px);
+    transition: filter 0.3s ease;
+    pointer-events: none;
+}
+
+/* Alternative approach for older browsers that don't support :has() */
+.initial-setup-active #game-container,
+.initial-setup-active .game-header,
+.initial-setup-active .footer,
+.initial-setup-active .game-layout {
+    filter: blur(3px);
+    transition: filter 0.3s ease;
+    pointer-events: none;
+}
+
+/* Ensure the modal and side menu themselves are not blurred */
+.modal-wrapper,
+.side-menu.active {
+    filter: none !important;
+}
+
+/* Make the modal overlay slightly more visible for better separation */
+.global-modal-overlay {
+    background-color: rgba(0, 0, 0, 0.2) !important;
+    backdrop-filter: blur(2px);
+    transition: all 0.3s ease;
+}
+
+/* Make sure side menu overlay has consistent appearance */
+.side-menu-overlay.active {
+    background-color: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(2px);
+    transition: all 0.3s ease;
+}
+
+/* Enhanced transitions for smoother blur effects */
+#game-container, .game-header, .footer {
+    transition: filter 0.3s ease;
+}
+
+/* Ensure modals appear above the blurred content */
+.modal-wrapper {
+    z-index: 10000;
+}
+
+/* Ensure side menu appears above the blurred content */
+.side-menu.active {
+    z-index: 9999;
+}
+
+/* Fix for devices that don't support backdrop-filter */
+@supports not (backdrop-filter: blur(2px)) {
+    .global-modal-overlay {
+        background-color: rgba(0, 0, 0, 0.5) !important;
+    }
+    
+    .side-menu-overlay.active {
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+}
+
+/* Improve appearance on high contrast displays */
+@media (prefers-contrast: more) {
+    body.modal-open #game-container,
+    body.modal-open .game-header,
+    body.modal-open .footer,
+    body.menu-open #game-container,
+    body.menu-open .game-header,
+    body.menu-open .footer {
+        filter: blur(2px) grayscale(30%);
+    }
+}

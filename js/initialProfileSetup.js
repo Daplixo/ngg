@@ -45,6 +45,9 @@ export class InitialProfileSetup {
         modal.style.visibility = "visible";
         modal.style.opacity = "1";
         
+        // Add class to body for blur effect
+        document.body.classList.add('initial-setup-active');
+        
         modal.innerHTML = `
             <div class="modal-content profile-choice">
                 <h2>Welcome to Number Guessing Game!</h2>
@@ -83,6 +86,9 @@ export class InitialProfileSetup {
         modal.style.display = "flex";
         modal.style.visibility = "visible";
         modal.style.opacity = "1";
+        
+        // Add class to body for blur effect
+        document.body.classList.add('initial-setup-active');
         
         modal.innerHTML = `
             <div class="modal-content profile-setup">
@@ -136,6 +142,8 @@ export class InitialProfileSetup {
             e.preventDefault();
             console.log("Account form submitted");
             this.handleAccountSetup(e.target);
+            // Remove the blur class after submission
+            document.body.classList.remove('initial-setup-active');
         };
     }
     
@@ -149,6 +157,9 @@ export class InitialProfileSetup {
         modal.style.display = "flex";
         modal.style.visibility = "visible";
         modal.style.opacity = "1";
+        
+        // Add class to body for blur effect
+        document.body.classList.add('initial-setup-active');
         
         modal.innerHTML = `
             <div class="modal-content profile-setup">
@@ -196,6 +207,8 @@ export class InitialProfileSetup {
             e.preventDefault();
             console.log("Guest form submitted");
             this.handleGuestSetup(e.target);
+            // Remove the blur class after submission
+            document.body.classList.remove('initial-setup-active');
         };
     }
     
