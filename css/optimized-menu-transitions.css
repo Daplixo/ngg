@@ -1,0 +1,94 @@
+/**
+ * Optimized Menu Transitions
+ * Improves side menu animation performance across devices
+ * v2.0 - Further optimized for minimal lag
+ */
+
+/* Use transform with lower blur intensity for better performance */
+body.menu-open #game-container,
+body.menu-open .game-header,
+body.menu-open .footer,
+body.menu-open .game-layout {
+  /* Replace blur with opacity for better performance */
+  filter: none;
+  opacity: 0.9;
+  /* Use hardware acceleration */
+  transform: translateZ(0);
+  will-change: opacity;
+  transition: opacity 0.25s ease;
+}
+
+/* Optimize side menu animations */
+.side-menu {
+  /* Use transform instead of left/right positioning */
+  transform: translateX(-100%);
+  will-change: transform;
+  transition: transform 0.25s cubic-bezier(0.17, 0.67, 0.23, 0.99);
+  /* Prevent subpixel rendering issues */
+  backface-visibility: hidden;
+  /* Ensure hardware acceleration */
+  -webkit-transform: translateX(-100%) translateZ(0);
+  /* Set fixed width to prevent layout calculations */
+  width: 280px !important;
+  max-width: 85vw;
+}
+
+.side-menu.active {
+  transform: translateX(0);
+  -webkit-transform: translateX(0) translateZ(0);
+}
+
+/* Optimize overlay transitions */
+.side-menu-overlay {
+  opacity: 0;
+  visibility: hidden;
+  will-change: opacity;
+  /* Simpler transition for better performance */
+  transition: opacity 0.25s ease;
+  /* Simpler background for better performance */
+  background-color: rgba(0, 0, 0, 0.5);
+  /* Remove backdrop-filter completely for performance */
+  backdrop-filter: none;
+}
+
+.side-menu-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Remove all transitions for devices that request reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .side-menu, 
+  .side-menu-overlay, 
+  body.menu-open #game-container,
+  body.menu-open .game-header,
+  body.menu-open .footer,
+  body.menu-open .game-layout {
+    transition: none !important;
+  }
+  
+  body.menu-open #game-container,
+  body.menu-open .game-header,
+  body.menu-open .footer,
+  body.menu-open .game-layout {
+    filter: none;
+    opacity: 0.95;
+  }
+}
+
+/* Special light version for slower devices */
+body.low-performance-device .side-menu {
+  transition: transform 0.2s ease;
+}
+
+body.low-performance-device .side-menu-overlay {
+  transition: opacity 0.2s ease;
+}
+
+body.low-performance-device.menu-open #game-container,
+body.low-performance-device.menu-open .game-header,
+body.low-performance-device.menu-open .footer,
+body.low-performance-device.menu-open .game-layout {
+  transition: none;
+  opacity: 0.95;
+}

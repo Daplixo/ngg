@@ -1,0 +1,84 @@
+/**
+ * Theme Transition Synchronizer
+ * Makes all elements transition between themes at exactly the same rate
+ */
+
+/* Apply same transition to all elements that change with theme */
+html,
+body,
+#game-container,
+.game-header,
+.footer,
+.game-content,
+.game-layout,
+#proximity-container,
+#proximity-fill,
+#proximity-labels,
+#range-info,
+#userGuess,
+button,
+.dropdown-menu,
+.dropdown-option,
+.modal-content,
+.form-group input,
+.form-group textarea,
+.close-modal,
+#feedback,
+#attempts,
+#past-guesses-title,
+#past-guesses,
+.guess-chip,
+.side-menu,
+.side-menu-content,
+.side-menu-header,
+.side-menu-item,
+svg,
+path,
+line,
+circle,
+polyline {
+  transition: background-color 0.3s ease, 
+              color 0.3s ease, 
+              border-color 0.3s ease, 
+              fill 0.3s ease, 
+              stroke 0.3s ease,
+              box-shadow 0.3s ease !important;
+  /* Use hardware acceleration for smoother transitions */
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Fix for SVG elements that may transition differently */
+svg,
+svg *,
+#moon-icon,
+#sun-icon,
+#moon-icon *,
+#sun-icon * {
+  transition: opacity 0.3s ease, stroke 0.3s ease !important;
+}
+
+/* Ensure moon and sun icons transition smoothly */
+#moon-icon,
+#sun-icon {
+  transition: opacity 0.3s ease !important;
+}
+
+/* Optimize transition performance */
+.theme-transitioning {
+  will-change: transform, opacity, background-color, color;
+}
+
+/* Preload both theme colors to prevent flickering */
+:root::after {
+  content: '';
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  background-color: var(--bg-color);
+  box-shadow: 
+    9999px 0 0 0 var(--card-bg),
+    9998px 0 0 0 var(--text-color),
+    9997px 0 0 0 var(--border-color);
+}
