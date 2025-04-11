@@ -514,6 +514,40 @@
         box-sizing: border-box; /* Include padding in width calculation */
       }
 
+      /* Settings dropdown styling - Make it push content below */
+      .settings-container {
+        position: relative;
+      }
+
+      .settings-dropdown {
+        border: none !important;
+        position: relative !important; /* Change from absolute to relative */
+        left: auto !important;
+        margin-left: 0 !important;
+        margin-top: 0 !important;
+        width: 100% !important;
+        display: none;
+        box-shadow: none !important; /* Remove drop shadow completely */
+      }
+
+      /* Show dropdown when expanded */
+      .settings-toggle[aria-expanded="true"] + .settings-dropdown {
+        display: block;
+      }
+
+      .settings-option {
+        border: none !important;
+      }
+
+      /* Only add separator between theme and delete account */
+      #theme-toggle {
+        border-bottom: 1px solid var(--border-color) !important;
+      }
+
+      #delete-account-btn {
+        border: none !important;
+      }
+
       /* Fix for any potential nested elements causing overflow */
       .side-menu-button {
         word-break: break-word; /* Allow text to break if too long */

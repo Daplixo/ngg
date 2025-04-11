@@ -91,12 +91,25 @@
 
 /* Settings dropdown consistency */
 .settings-dropdown {
-  margin-top: 4px !important;
-  margin-left: 28px !important;
+  position: relative !important; /* Changed from absolute */
+  left: auto !important;
+  width: 100% !important;
+  box-shadow: none !important; /* Remove box shadow completely */
+  /* Remove border on settings dropdown */
+  border: none !important;
+  margin-left: 0 !important;
+  margin-top: 0 !important;
 }
 
 .settings-option {
   padding: 8px 12px !important;
+  /* Remove individual borders */
+  border: none !important;
+}
+
+/* Add border only between options */
+.settings-option:first-child {
+  border-bottom: 1px solid var(--border-color) !important;
 }
 
 #theme-toggle .theme-option-content,

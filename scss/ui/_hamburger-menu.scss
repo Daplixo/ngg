@@ -807,12 +807,12 @@ body.menu-open {
 .settings-dropdown {
   display: none;
   background-color: var(--card-bg);
-  border: 1px solid var(--border-color);
   border-radius: 4px;
   overflow: hidden;
-  margin-top: 4px;
-  margin-left: 28px; /* Align with the text of the button */
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: relative; /* Changed from absolute */
+  width: 100%;
+  box-shadow: none; /* Remove box shadow completely */
+  border: none; /* Remove border */
   
   /* Ensure all settings options have the same width */
   .settings-option {
@@ -824,13 +824,21 @@ body.menu-open {
     width: 100%; /* Force full width */
     box-sizing: border-box; /* Include padding in width calculation */
     display: flex; /* Ensure flex display */
+    /* Remove individual borders completely */
+    border: none;
     
     &:hover {
       background-color: var(--dropdown-option-hover-bg, rgba(0, 0, 0, 0.05));
     }
     
-    &:not(:last-child) {
+    /* Only add border to the first option */
+    &:first-child {
       border-bottom: 1px solid var(--border-color);
+    }
+    
+    /* Remove any other borders */
+    &:not(:first-child) {
+      border: none;
     }
     
     /* Consistent styling for all option contents */
@@ -838,41 +846,26 @@ body.menu-open {
       display: flex;
       align-items: center;
       width: 100%;
-    }
-    
-    /* Ensure both theme toggle and delete account have identical spacing */
-    .icon-container {
-      position: relative;
-      width: 16px;
-      height: 16px;
-      min-width: 16px;
-      margin-right: 12px;
-      flex-shrink: 0;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-    }
-    
-    /* Ensure text is styled identically */
-    span {
-      font-size: 0.9rem;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-  }
-  
-  /* Dark mode specific styles */
-  [data-theme="dark"] & {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-    
-    .settings-option:hover {
-      background-color: var(--dropdown-option-hover-bg, rgba(255, 255, 255, 0.05));
+      
+      .icon-container {
+        position: relative;
+        width: 16px;
+        height: 16px;
+        min-width: 16px;
+        margin-right: 12px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+      
+      span {
+        font-size: inherit;
+      }
     }
   }
 }
 
-/* Show dropdown when settings-toggle has aria-expanded="true" */
+// Add rule to display dropdown when expanded
 .settings-toggle[aria-expanded="true"] + .settings-dropdown {
   display: block;
 }
