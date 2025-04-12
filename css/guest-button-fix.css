@@ -1,0 +1,52 @@
+/* 
+ * Guest Button Styling Fix
+ * Makes the "Play as Guest" button match the "Back" button style 
+ * in both light and dark modes
+ */
+
+/* Target the guest mode button specifically */
+#guestModeBtn {
+  background-color: var(--btn-secondary, #e0e0e0) !important;
+  color: #333 !important; /* Dark text for contrast in light mode */
+  border: none !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24) !important;
+  transition: all 0.2s ease !important;
+}
+
+#guestModeBtn:hover {
+  background-color: var(--btn-secondary-hover, #d0d0d0) !important;
+  transform: none !important; /* Prevent any transform effects */
+}
+
+/* Dark theme adjustments */
+[data-theme="dark"] #guestModeBtn {
+  background-color: var(--btn-secondary-dark, #444) !important;
+  color: #e0e0e0 !important; /* Light text for contrast in dark mode */
+}
+
+[data-theme="dark"] #guestModeBtn:hover {
+  background-color: var(--btn-secondary-hover-dark, #555) !important;
+}
+
+/* Match the Account button with Guest button height and sizing */
+#createAccountBtn, #guestModeBtn {
+  padding: 0.75rem 1.5rem !important;
+  min-height: 42px !important;
+  height: 42px !important;
+  font-size: 0.95rem !important;
+  font-weight: 500 !important;
+  border-radius: 6px !important;
+}
+
+/* Ensure consistent button spacing */
+.choice-buttons {
+  gap: 1rem !important;
+}
+
+/* Make choice buttons responsive */
+@media (max-width: 480px) {
+  #createAccountBtn, #guestModeBtn {
+    padding: 0.6rem 1.2rem !important; 
+    font-size: 0.9rem !important;
+  }
+}
