@@ -26,12 +26,6 @@ window.addShake = (element) => {
   }, 500);
 }
 
-// Function to play wrong sound with volume control - make it global
-window.playWrongSound = (isGameOver = false) => {
-    // Use the improved AudioManager method instead of the old implementation
-    AudioManager.playBeep(isGameOver);
-};
-
 // Add a check to prevent premature profile initialization if our initialProfileSetup is active
 
 document.addEventListener('DOMContentLoaded', async function() {

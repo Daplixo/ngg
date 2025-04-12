@@ -452,10 +452,10 @@ export const GameLogic = {
         // ADDED: Update previous guess display
         UIManager.updatePreviousGuess(guess);
         
-        // Play sound effect
-        if (window.playWrongSound) {
-            window.playWrongSound(false);
-        }
+        // REMOVED: Wrong sound effect code
+        // if (window.playWrongSound) {
+        //     window.playWrongSound(false);
+        // }
         
         // Add shake effect
         if (window.addShake) {
@@ -475,7 +475,7 @@ export const GameLogic = {
         // Clear feedback message
         UIManager.clearFeedback();
         
-        // Play proper game over sound instead of a beep
+        // Restore the game over sound
         AudioManager.play("gameOver");
         
         // First ensure any existing game over notification is hidden immediately

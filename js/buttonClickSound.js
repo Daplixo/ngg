@@ -13,9 +13,9 @@
     initButtonClickSound();
 
     function initButtonClickSound() {
-        // Select all 3D-styled buttons based on the selectors in 3d-buttons.scss
+        // Select all 3D-styled buttons EXCEPT keyboard buttons based on the selectors in 3d-buttons.scss
         const buttons = document.querySelectorAll(`
-            button:not(.side-menu-button):not(.side-menu-close):not(.settings-toggle):not(#menu-toggle):not(.hamburger-menu):not(.edit-profile-btn),
+            button:not(.side-menu-button):not(.side-menu-close):not(.settings-toggle):not(#menu-toggle):not(.hamburger-menu):not(.edit-profile-btn):not(.key-btn),
             .submit-btn,
             #submitGuessBtn,
             #playAgainBtn,
@@ -23,8 +23,7 @@
             #resetGameBtn,
             #restartBtn,
             .dropdown-option,
-            .modal-button,
-            .key-btn
+            .modal-button
         `);
 
         // Add click event listener to each button
@@ -32,10 +31,11 @@
             button.addEventListener('click', playButtonClickSound);
         });
 
-        // Also add event delegation for dynamically created buttons
+        // Also add event delegation for dynamically created buttons, excluding keyboard buttons
         document.addEventListener('click', function(e) {
+            // Exclude key-btn class from the selection
             const button = e.target.closest(`
-                button:not(.side-menu-button):not(.side-menu-close):not(.settings-toggle):not(#menu-toggle):not(.hamburger-menu):not(.edit-profile-btn),
+                button:not(.side-menu-button):not(.side-menu-close):not(.settings-toggle):not(#menu-toggle):not(.hamburger-menu):not(.edit-profile-btn):not(.key-btn),
                 .submit-btn,
                 #submitGuessBtn,
                 #playAgainBtn,
@@ -43,8 +43,7 @@
                 #resetGameBtn,
                 #restartBtn,
                 .dropdown-option,
-                .modal-button,
-                .key-btn
+                .modal-button
             `);
             
             if (button && e.target === button) {

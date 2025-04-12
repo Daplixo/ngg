@@ -26,15 +26,24 @@ export function initKeyboard() {
         // CRITICAL FIX: Force clear any existing event handlers using a cleaner approach
         keyboardButtons.forEach(button => {
             const clone = button.cloneNode(true);
-            button.parentNode.replaceChild(clone, button);
+            if (button.parentNode) {
+                button.parentNode.replaceChild(clone, button);
+            }
         });
         
         // Get fresh references after replacement
         const freshKeyboardButtons = document.querySelectorAll('.key-btn');
         
-        // Add click handlers for each button
+        // Add click handlers for each button with keyboard functionality preserved
         freshKeyboardButtons.forEach(button => {
             button.addEventListener('click', function() {
+                // Play sound effect if available
+                if (window.keyboardSoundSystem && typeof window.keyboardSoundSystem.play === 'function') {
+                    window.keyboardSoundSystem.play(0.4);
+                } else if (typeof window.playKeyboardButtonSound === 'function') {
+                    window.playKeyboardButtonSound();
+                }
+                
                 // Get the key value from data attribute
                 const key = this.getAttribute('data-key');
                 
