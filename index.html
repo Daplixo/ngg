@@ -87,6 +87,8 @@
     <link rel="stylesheet" href="css/edit-profile-fix.css" />
     <link rel="stylesheet" href="css/blur-effects.css" />
     <link rel="stylesheet" href="css/optimized-menu-transitions.css" />
+    <!-- Add global button hover animation disabler -->
+    <link rel="stylesheet" href="css/disable-hover-animations.css" />
     <!-- Remove the start-prompt.css reference as we'll use SCSS instead -->
     <!-- Remove the button-fix.css reference as styling is now in SCSS -->
     <!-- <link rel="stylesheet" href="css/button-fix.css" /> -->
@@ -603,6 +605,8 @@
     <!-- Remove this line since we're fixing in SCSS -->
     <!-- <link rel="stylesheet" href="css/menu-arrow-fix.css" /> -->
     <script src="fix-settings-spacing.js"></script>
+    <!-- Fix for reset button hover effect -->
+    <link rel="stylesheet" href="css/reset-button-fix.css" />
     <!-- Game Scripts -->
     <!-- Add Initial Profile Setup FIRST to ensure it runs before UserProfileUI -->
     <script type="module" src="js/initialProfileSetup.js"></script>
@@ -691,6 +695,9 @@
 
     <!-- Add our new modal manager script -->
     <script src="js/modalManager.js"></script>
+
+    <!-- Add button click sound script -->
+    <script src="js/buttonClickSound.js"></script>
 
     <!-- Auto-fix for MongoDB connectivity issues -->
     <script type="module" src="js/autofix.js"></script>

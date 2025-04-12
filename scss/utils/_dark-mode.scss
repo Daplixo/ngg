@@ -170,4 +170,21 @@ button,
   .dropdown-menu {
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
   }
+  
+  /* Adjust button highlight opacity for dark mode */
+  button::after,
+  .key-btn::after,
+  .submit-btn::after,
+  #submitGuessBtn::after,
+  #playAgainBtn::after,
+  #continueBtn::after,
+  #resetGameBtn::after,
+  #restartBtn::after,
+  .dropdown-option::after,
+  .modal-button::after {
+    background: linear-gradient(to right,
+      rgba(255, 255, 255, 0.35),
+      rgba(255, 255, 255, 0.35),
+      rgba(255, 255, 255, 0.35));
+  }
 }

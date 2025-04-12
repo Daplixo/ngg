@@ -1,0 +1,174 @@
+/* 3D Button Styling - Applied globally except for side menu and specific buttons */
+
+// Apply 3D styling to all buttons except those in side menu, hamburger menu, and edit profile
+button:not(.side-menu-button):not(.side-menu-close):not(.settings-toggle):not(#menu-toggle):not(.hamburger-menu):not(.edit-profile-btn),
+.submit-btn,
+#submitGuessBtn,
+#playAgainBtn,
+#continueBtn,
+#resetGameBtn,
+#restartBtn,
+.dropdown-option,
+.modal-button {
+  // Calculator-style button effect with subtle bevel
+  position: relative;
+  overflow: hidden; /* Contain all effects within button boundaries */
+  border: none;
+  box-shadow: 
+    0 1px 3px rgba(0, 0, 0, 0.12), /* Outer shadow for depth */
+    0 1px 2px rgba(0, 0, 0, 0.24), /* Additional subtle shadow */
+    inset 0 -2px 0 rgba(0, 0, 0, 0.1); /* Bottom inner shadow for subtle depth */
+  transition: all 0.1s ease;
+  -webkit-tap-highlight-color: transparent;
+  
+  /* Add bevel highlight on top with 35% opacity */
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(to right,
+      rgba(255, 255, 255, 0.35),
+      rgba(255, 255, 255, 0.35),
+      rgba(255, 255, 255, 0.35));
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+  }
+  
+  /* Press effect - Apply to ALL 3D buttons */
+  &:active {
+    transform: translateY(2px) !important; /* Force this transform on ALL buttons */
+    box-shadow: 
+      0 1px 1px rgba(0, 0, 0, 0.16),
+      inset 0 1px 3px rgba(0, 0, 0, 0.1); /* Inner shadow when pressed */
+    
+    /* Hide the highlight when pressed */
+    &::after {
+      opacity: 0;
+    }
+  }
+}
+
+// Preserve specific button colors but keep the 3D effect
+#submitGuessBtn {
+  background-color: var(--btn-primary, #4d6fed) !important;
+  color: white !important;
+  
+  &:hover {
+    background-color: var(--btn-hover, #3a5bd9) !important;
+  }
+  
+  &:active {
+    background-color: darken(#4d6fed, 5%) !important;
+  }
+}
+
+// Play Again button (Restart Level) - Gray
+#playAgainBtn:not(.continue-mode):not(.game-over) {
+  background-color: var(--btn-play-again-bg, #6c757d) !important;
+  color: white !important;
+  overflow: hidden !important; /* Critical - ensure effects stay contained */
+  
+  &:hover {
+    background-color: var(--btn-play-again-hover, #7e8890) !important; /* Use the new variable */
+    transform: none !important; /* Prevent any transform effects */
+  }
+}
+
+// Continue button (green)
+#playAgainBtn.continue-mode {
+  background-color: var(--btn-continue-bg, #2eb82e) !important;
+  color: white !important;
+  overflow: hidden !important; /* Ensure effects stay contained */
+  
+  &:hover {
+    background-color: var(--btn-continue-hover, #27ae60) !important;
+    /* Keep hover animation for continue mode */
+    transform: translateY(-2px);
+  }
+}
+
+// Game Over button (red)
+#playAgainBtn.game-over {
+  background-color: var(--btn-reset-bg, #e74c3c) !important;
+  color: white !important;
+  overflow: hidden !important; /* Ensure effects stay contained */
+  
+  &:hover {
+    background-color: var(--btn-reset-hover, #d43c2b) !important;
+  }
+}
+
+// Reset Game button
+#resetGameBtn {
+  background-color: var(--btn-restart-bg, #444) !important;
+  color: white !important;
+  
+  &:hover {
+    background-color: var(--btn-restart-hover, #222) !important;
+  }
+}
+
+// Submit button in forms
+.submit-btn {
+  background-color: var(--btn-primary, #4d6fed) !important;
+  color: white !important;
+  
+  &:hover {
+    background-color: var(--btn-hover, #3a5bd9) !important;
+  }
+}
+
+// Congratulations modal button
+.play-again-btn {
+  background-color: var(--btn-continue-bg, #2eb82e) !important;
+  color: white !important;
+  
+  &:hover {
+    background-color: var(--btn-continue-hover, #27ae60) !important;
+  }
+}
+
+// Keyboard buttons with specific colors
+.key-btn {
+  background-color: var(--key-btn-bg, #e0e0e0) !important;
+  color: var(--key-btn-color, #333) !important;
+  
+  &:hover {
+    background-color: var(--key-btn-hover, #d0d0d0) !important;
+  }
+  
+  &.key-clear {
+    background-color: var(--key-clear-bg, #e74c3c) !important;
+    color: white !important;
+    
+    &:hover {
+      background-color: var(--key-clear-hover, #c0392b) !important;
+    }
+  }
+  
+  &.key-enter {
+    background-color: var(--key-enter-bg, #2ecc71) !important;
+    color: white !important;
+    
+    &:hover {
+      background-color: var(--key-enter-hover, #27ae60) !important;
+    }
+  }
+}
+
+// Make sure modal buttons have consistent style
+.modal-button {
+  width: auto;
+  min-height: 42px;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  background-color: var(--btn-primary, #4d6fed) !important;
+  color: white !important;
+  
+  &:hover {
+    background-color: var(--btn-hover, #3a5bd9) !important;
+  }
+}

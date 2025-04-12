@@ -1,0 +1,71 @@
+/* Reset Button Fix - Remove hover color change but keep press animation and shadow */
+
+/* Target the Restart Level button */
+#playAgainBtn:not(.continue-mode):not(.game-over):hover {
+  /* Force the hover state to use the same background color as the normal state */
+  background-color: var(--btn-play-again-bg, #6c757d) !important;
+  /* Remove the "box-shadow: none" rule to preserve the shadow */
+  /* Keep existing drop shadow */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24) !important;
+}
+
+/* Ensure this rule has highest specificity for all possible selectors */
+.dropdown-container #playAgainBtn:not(.continue-mode):not(.game-over):hover,
+.game-controls #playAgainBtn:not(.continue-mode):not(.game-over):hover,
+button#playAgainBtn:not(.continue-mode):not(.game-over):hover {
+  background-color: var(--btn-play-again-bg, #6c757d) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24) !important;
+}
+
+/* Target the Reset Game button */
+#resetGameBtn {
+  /* Add red text color */
+  color: #ff3333 !important;
+}
+
+#resetGameBtn:hover {
+  /* Force the hover state to use the same background color as the normal state */
+  background-color: var(--btn-restart-bg, #444) !important;
+  /* Maintain the red text color on hover */
+  color: #ff3333 !important;
+}
+
+/* Ensure this rule has highest specificity for all possible selectors */
+.dropdown-menu #resetGameBtn:hover,
+.dropdown-option#resetGameBtn:hover,
+div#resetGameBtn:hover {
+  background-color: var(--btn-restart-bg, #444) !important;
+  color: #ff3333 !important;
+}
+
+/* Explicitly preserve the active state for press animation for Restart Level button */
+#playAgainBtn:not(.continue-mode):not(.game-over):active {
+  transform: scale(0.98) !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Explicitly preserve the active state for press animation for Reset Game button */
+#resetGameBtn:active {
+  transform: scale(0.98) !important; 
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Fix for the Play Again button in the congratulations modal */
+.play-again-btn {
+  min-width: 180px !important;
+  width: auto !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  text-align: center !important;
+  padding: 12px 24px !important;
+}
+
+/* Ensure the button has proper hover effects */
+.play-again-btn:hover {
+  background-color: #27a327 !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+}

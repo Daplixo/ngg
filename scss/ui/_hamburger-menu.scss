@@ -1358,3 +1358,27 @@ body.menu-open {
     }
   }
 }
+
+// Ensure side menu buttons don't get the 3D effect
+.side-menu-button,
+.side-menu-close,
+.settings-toggle,
+#settings-button,
+.settings-option {
+  box-shadow: none !important;
+  transform: none !important;
+  
+  &::after {
+    display: none !important;
+  }
+  
+  &:active {
+    transform: none !important;
+    box-shadow: none !important;
+  }
+  
+  &:hover {
+    transform: none !important;
+    box-shadow: none !important;
+  }
+}

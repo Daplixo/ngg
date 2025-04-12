@@ -53,6 +53,11 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  overflow: hidden !important; /* CRITICAL: contain the highlight effect */
+  
+  &:hover {
+    background-color: var(--btn-play-again-hover, #7e8890) !important; /* Use the new variable */
+  }
 }
 
 /* Game UI container */

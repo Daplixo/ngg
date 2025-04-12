@@ -4,7 +4,7 @@ button {
   padding: 0 16px;
   border: none;
   border-radius: $border-radius-medium;
-  background-color: var(--btn-primary);
+  background-color: var(--btn-primary, #4d6fed);
   color: #fff;
   font-size: 0.9375rem;
   font-weight: 600;
@@ -22,7 +22,7 @@ button {
   }
   
   &:hover {
-    background-color: var(--btn-hover);
+    background-color: var(--btn-hover, #3a5bd9);
   }
 }
 
@@ -65,48 +65,52 @@ button {
   }
 }
 
-/* Specific button types */
+/* Specific button types - override with !important to avoid specificity issues */
 #restartBtn {
-  background-color: var(--btn-restart-bg);
+  background-color: var(--btn-restart-bg, #444) !important;
   margin-top: 20px;
   margin-left: auto;
   margin-right: auto;
   max-width: 300px;
+  color: white !important;
   
   &:hover {
-    background-color: var(--btn-restart-hover);
+    background-color: var(--btn-restart-hover, #222) !important;
   }
 }
 
+/* Base button styles for the Restart Level button - ensure hover stays inside */
 #playAgainBtn {
-  background-color: var(--btn-play-again-bg);
+  background-color: var(--btn-play-again-bg, #6c757d) !important;
   margin-top: 0.5rem;
   margin-left: auto;
   margin-right: auto;
   max-width: 300px;
+  color: white !important;
   position: relative;
   padding-right: 36px; /* Space for arrow */
   padding-left: 36px; /* Match right padding for visual centering */
-  overflow: visible;
+  overflow: hidden !important; /* Critical - ensure highlight stays inside */
+  border-radius: 6px; /* Explicitly set border radius */
   text-align: center;
   justify-content: center;
   
   &:hover {
-    background-color: var(--btn-play-again-hover);
+    background-color: var(--btn-play-again-hover, #7e8890) !important; /* Use the new variable */
   }
   
   /* Continue mode styling */
   &.continue-mode {
-    background-color: var(--btn-continue-bg);
+    background-color: var(--btn-continue-bg, #2eb82e) !important;
     padding-right: 16px;
-    color: white;
+    color: white !important;
     font-weight: bold;
     border: none;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     transition: all 0.2s ease;
     
     &:hover {
-      background-color: var(--btn-continue-hover);
+      background-color: var(--btn-continue-hover, #27ae60) !important;
       transform: translateY(-2px);
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
@@ -114,26 +118,24 @@ button {
   
   /* Game over styling */
   &.game-over {
-    background-color: #e74c3c;
-    color: white !important; /* Added !important to ensure text is white */
+    background-color: var(--btn-reset-bg, #e74c3c) !important;
+    color: white !important;
     
     &:hover {
-      background-color: #c0392b;
+      background-color: var(--btn-reset-hover, #d43c2b) !important;
     }
   }
   
   /* Default Restart Level button styling - Gray color */
   &:not(.continue-mode):not(.game-over) {
-    background-color: #6c757d;
-    color: white;
+    background-color: var(--btn-play-again-bg, #6c757d) !important;
+    color: white !important;
     border: none;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    transition: all 0.2s ease;
+    transition: background-color 0.2s ease;
     
     &:hover {
-      background-color: #5a6268;
-      transform: translateY(-1px);
-      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+      background-color: var(--btn-play-again-hover, #7e8890) !important;
     }
   }
   
@@ -142,45 +144,48 @@ button {
   justify-content: center !important;
   align-items: center !important;
   width: 100% !important;
-  overflow: visible !important;
+  overflow: hidden !important; /* Ensure hover effect stays contained */
 }
 
 #continueBtn {
   display: none;
   margin-top: 20px;
-  background-color: var(--btn-continue-bg);
+  background-color: var(--btn-continue-bg, #2eb82e) !important;
+  color: white !important;
   margin-left: auto;
   margin-right: auto;
   max-width: 300px;
   
   &:hover {
-    background-color: var(--btn-continue-hover);
+    background-color: var(--btn-continue-hover, #27ae60) !important;
   }
 }
 
 /* Restore Game button styling */
 #restoreBtn {
-  background-color: var(--btn-restore-bg);
+  background-color: var(--btn-restore-bg, #8e44ad) !important;
+  color: white !important;
   margin-top: 0;
   margin-left: auto;
   margin-right: auto;
   max-width: 300px;
   
   &:hover {
-    background-color: var(--btn-restore-hover);
+    background-color: var(--btn-restore-hover, #7d3c98) !important;
   }
 }
 
 /* Reset Game button styling */
-#restoreBtn {
-  background-color: var(--btn-reset-bg);
+#resetGameBtn {
+  background-color: var(--btn-reset-bg, #e74c3c) !important;
+  color: white !important;
   margin-top: 0;
   margin-left: auto;
   margin-right: auto;
   max-width: 300px;
   
   &:hover {
-    background-color: var(--btn-reset-hover);
+    background-color: var(--btn-reset-hover, #c0392b) !important;
   }
 }
 
@@ -203,7 +208,7 @@ button {
   position: absolute;
   right: 10px;
   top: 50%;
-  transform: translateY(-25%); /* Changed from -40% to -25% to move it further down */
+  transform: translateY(-50%);
   display: flex;
   align-items: center;
   justify-content: center;

@@ -1,0 +1,45 @@
+/* 
+ * Global button hover animation disabler
+ * This file overrides all transform effects on hover for buttons
+ * across the entire application
+ */
+
+/* Target all buttons with !important to ensure override */
+button:hover,
+.btn:hover,
+.start-game-button:hover,
+.play-again-btn:hover,
+#playAgainBtn:hover,
+#playAgainBtn.continue-mode:hover,
+.choice-btn:hover,
+.side-menu-button:hover,
+.dropdown-option:hover,
+.submit-btn:hover,
+.primary-btn:hover,
+.secondary-btn:hover,
+.form-actions button:hover,
+.avatar-option:hover {
+  transform: none !important;
+}
+
+/* Override any hover animations defined in SCSS files */
+[class*="btn"]:hover,
+[class*="button"]:hover,
+[id*="btn"]:hover,
+[id*="button"]:hover {
+  transform: none !important;
+}
+
+/* Specific modal button fix with super high specificity to override reset-button-fix.css */
+html body .modal-content .play-again-btn:hover,
+html body .modal-wrapper .play-again-btn:hover,
+html body .congratulations-modal .play-again-btn:hover,
+body .modal-content button.play-again-btn:hover,
+body button.modal-button.play-again-btn:hover,
+.modal-content .play-again-btn:hover,
+.congratulations-modal .play-again-btn:hover,
+button.play-again-btn:hover {
+  transform: none !important;
+}
+
+/* Preserve other hover effects like color changes */

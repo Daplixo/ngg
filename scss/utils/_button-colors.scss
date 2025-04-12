@@ -1,0 +1,99 @@
+/**
+ * Button Colors Override
+ * This file ensures all buttons have their specific colors 
+ * regardless of any conflicting styles
+ */
+
+/* Submit button */
+#submitGuessBtn {
+  background-color: var(--btn-primary, #4d6fed) !important;
+  color: white !important;
+  
+  &:hover {
+    background-color: var(--btn-hover, #3a5bd9) !important;
+  }
+}
+
+/* Play Again/Restart button */
+#playAgainBtn:not(.continue-mode):not(.game-over) {
+  background-color: var(--btn-play-again-bg, #6c757d) !important;
+  color: white !important;
+  overflow: hidden !important; /* Critical: ensure highlight stays inside */
+  
+  &:hover {
+    background-color: var(--btn-play-again-hover, #7e8890) !important; /* Use the new variable */
+    box-shadow: none !important; /* No extra shadow on hover */
+    transform: none !important; /* No transform on hover */
+  }
+}
+
+/* Continue button */
+#playAgainBtn.continue-mode {
+  background-color: var(--btn-continue-bg, #2eb82e) !important;
+  color: white !important;
+  
+  &:hover {
+    background-color: var(--btn-continue-hover, #27ae60) !important;
+    /* Keep hover animation for continue button */
+  }
+}
+
+/* Game Over button */
+#playAgainBtn.game-over {
+  background-color: var(--btn-reset-bg, #e74c3c) !important;
+  color: white !important;
+  
+  &:hover {
+    background-color: var(--btn-reset-hover, #d43c2b) !important;
+  }
+}
+
+/* Reset Game button */
+#resetGameBtn {
+  background-color: var(--btn-restart-bg, #444) !important;
+  color: white !important;
+  
+  &:hover {
+    background-color: var(--btn-restart-hover, #222) !important;
+  }
+}
+
+/* Continue button */
+#continueBtn {
+  background-color: var(--btn-continue-bg, #2eb82e) !important;
+  color: white !important;
+  
+  &:hover {
+    background-color: var(--btn-continue-hover, #27ae60) !important;
+  }
+}
+
+/* Form submit buttons */
+.submit-btn {
+  background-color: var(--btn-primary, #4d6fed) !important;
+  color: white !important;
+  
+  &:hover {
+    background-color: var(--btn-hover, #3a5bd9) !important;
+  }
+}
+
+/* Keyboard buttons */
+.key-btn {
+  background-color: var(--key-btn-bg, #e0e0e0) !important;
+  color: var(--key-btn-color, #333) !important;
+  
+  &:hover {
+    background-color: var(--key-btn-hover, #d0d0d0) !important;
+  }
+  
+  &.key-clear {
+    background-color: var(--key-clear-bg, #e74c3c) !important;
+    color: white !important;
+  }
+  
+  &.key-enter {
+    background-color: var(--key-enter-bg, #2ecc71) !important;
+    color: white !important;
+  }
+}

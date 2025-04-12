@@ -178,6 +178,82 @@ export const AudioManager = {
         }
     },
     
+    // Play button click sound with optimal performance
+    playButtonClick() {
+        this.init();
+        if (!audioContext) return;
+        
+        try {
+            // If sound is already cached, use it
+            if (soundCache['buttonClick']) {
+                // Create a new source from the buffer
+                const source = audioContext.createBufferSource();
+                source.buffer = soundCache['buttonClick'];
+                
+                // Create a gain node for volume control
+                const gainNode = audioContext.createGain();
+                gainNode.gain.value = 0.5; // 50% volume
+                
+                // Connect nodes
+                source.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                // Play the sound
+                source.start(0);
+                return;
+            }
+            
+            // If not cached, load the sound - now using WAV file
+            fetch('assets/sounds/button-click.wav')
+                .then(response => response.arrayBuffer())
+                .then(arrayBuffer => audioContext.decodeAudioData(arrayBuffer))
+                .then(audioBuffer => {
+                    // Cache for future use
+                    soundCache['buttonClick'] = audioBuffer;
+                    
+                    // Play the sound
+                    const source = audioContext.createBufferSource();
+                    source.buffer = audioBuffer;
+                    
+                    // Create a gain node for volume control
+                    const gainNode = audioContext.createGain();
+                    gainNode.gain.value = 0.5; // 50% volume
+                    
+                    // Connect nodes
+                    source.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    // Play the sound
+                    source.start(0);
+                })
+                .catch(error => {
+                    console.warn('Failed to play button click sound:', error);
+                    this.playFallbackButtonClick();
+                });
+        } catch (error) {
+            console.warn('Error in button click sound:', error);
+            this.playFallbackButtonClick();
+        }
+    },
+    
+    // Fallback method to play button click sound if AudioContext fails
+    playFallbackButtonClick() {
+        try {
+            // Create a new audio object - now using WAV file
+            const buttonSound = new Audio('assets/sounds/button-click.wav');
+            
+            // Set volume
+            buttonSound.volume = 0.5;
+            
+            // Play the sound
+            buttonSound.play().catch(err => {
+                console.debug('Could not play button click sound:', err);
+            });
+        } catch (error) {
+            console.debug('Error in fallback button click sound:', error);
+        }
+    },
+    
     // Resume audio context on user interaction
     resumeAudio() {
         if (audioContext && audioContext.state === 'suspended') {

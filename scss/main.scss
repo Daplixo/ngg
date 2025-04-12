@@ -22,6 +22,7 @@
 @import 'components/attempts';
 @import 'components/notifications';
 @import 'components/error-messages'; // Add the new error messages component
+@import 'components/3d-buttons'; // Add this new import for 3D buttons
 
 // 4. Game Features
 @import 'features/proximity-meter';
@@ -49,6 +50,7 @@
 @import 'utils/media-queries';
 @import 'utils/vertical-space';
 @import 'utils/theme-variables'; // Correct path for theme variables
+@import 'utils/button-colors'; // Add the new button colors file
 
 // Import the container fix
 @import 'container-fix';

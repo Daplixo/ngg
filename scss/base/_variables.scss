@@ -26,13 +26,13 @@
   
   /* Explicit color codes for buttons and UI elements */
   --btn-restart-bg: #444;
-  --btn-restart-hover: #222;
+  --btn-restart-hover: #555555; /* Lighter hover effect */
   --btn-play-again-bg: #6c757d; /* Gray for Restart Level */
-  --btn-play-again-hover: #5a6268; /* Hover state for Restart Level */
+  --btn-play-again-hover: #7e8890; /* Much lighter hover state - easier to see */
   --btn-restore-bg: #8e44ad;
-  --btn-restore-hover: #7d3c98;
+  --btn-restore-hover: #7e3b99; /* More subtle hover */
   --btn-reset-bg: #e74c3c;
-  --btn-reset-hover: #c0392b;
+  --btn-reset-hover: #d43c2b; /* More subtle hover */
   --btn-continue-bg: #2ecc71;
   --btn-continue-hover: #27ae60;
   --feedback-error-color: red;
