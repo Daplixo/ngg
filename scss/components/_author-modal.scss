@@ -1,0 +1,165 @@
+.author-modal-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  
+  &.active {
+    opacity: 1;
+    visibility: visible;
+  }
+  
+  .author-modal-content {
+    background-color: var(--card-bg);
+    border-radius: 10px;
+    padding: 1.5rem;
+    max-width: 90%;
+    width: 400px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    position: relative;
+    transform: translateY(-20px);
+    transition: transform 0.3s ease;
+    text-align: center;
+    
+    .author-modal-wrapper.active & {
+      transform: translateY(0);
+    }
+    
+    .author-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 1rem;
+      
+      .author-avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid var(--btn-primary);
+        margin-bottom: 0.75rem;
+      }
+      
+      .author-name {
+        margin: 0;
+        font-size: 1.3rem;
+        color: var(--text-color);
+      }
+    }
+    
+    .author-bio {
+      margin-bottom: 1.5rem;
+      color: var(--text-color);
+      font-size: 0.95rem;
+      line-height: 1.5;
+      text-align: center;
+    }
+    
+    .author-links {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1rem;
+      
+      .author-link {
+        width: 110px;
+        height: 36px;
+        padding: 0 0.6rem;
+        background-color: var(--btn-primary);
+        color: white; /* Ensuring text is white for better contrast */
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background-color 0.2s ease, transform 0.2s ease;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        
+        svg {
+          margin-right: 6px;
+          width: 14px;
+          height: 14px;
+          flex-shrink: 0;
+          fill: none;
+          stroke: white; /* Ensuring icon stroke is white */
+        }
+        
+        &:hover {
+          background-color: var(--btn-hover);
+          transform: translateY(-2px);
+          color: white; /* Maintain white text on hover */
+        }
+        
+        &:active {
+          transform: translateY(0);
+        }
+      }
+    }
+  }
+}
+
+// Adjust footer styling to indicate it's clickable
+.footer .author-info h3 {
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+  position: relative;
+  
+  &:hover {
+    opacity: 0.8;
+  }
+  
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 1px;
+    background-color: var(--text-color);
+    transition: width 0.3s ease;
+  }
+  
+  &:hover::after {
+    width: 100%;
+  }
+}
+
+// Media queries for responsive design
+@media (max-width: 480px) {
+  .author-modal-wrapper .author-modal-content {
+    padding: 1.25rem;
+    
+    .author-header .author-avatar {
+      width: 80px;
+      height: 80px;
+    }
+    
+    .author-links {
+      gap: 0.5rem;
+      
+      .author-link {
+        width: 100px;
+        height: 32px;
+        font-size: 0.8rem;
+        
+        svg {
+          width: 12px;
+          height: 12px;
+          margin-right: 4px;
+        }
+      }
+    }
+  }
+}

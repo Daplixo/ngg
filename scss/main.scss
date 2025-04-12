@@ -23,6 +23,7 @@
 @import 'components/notifications';
 @import 'components/error-messages'; // Add the new error messages component
 @import 'components/3d-buttons'; // Add this new import for 3D buttons
+@import 'components/author-modal'; // Import author modal styling
 
 // 4. Game Features
 @import 'features/proximity-meter';
