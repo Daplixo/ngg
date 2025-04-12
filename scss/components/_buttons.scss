@@ -276,20 +276,11 @@ button {
   }
 }
 
-.donate-btn {
-  background-color: var(--donate-btn-bg) !important;
-  border-color: var(--donate-btn-bg) !important;
-  color: white !important; /* Force white text color with !important to override any conflicting styles */
-  
-  &:hover {
-    background-color: var(--donate-btn-hover) !important;
-    border-color: var(--donate-btn-hover) !important;
-  }
-}
+/* Remove donate-btn class styles */
 
 /* Mobile optimizations */
 @media (max-width: $breakpoint-md) {
-  .footer-btn, .donate-btn {
+  .footer-btn {
     height: 26px !important;
     padding: 0 10px !important;
     font-size: 0.75rem !important;

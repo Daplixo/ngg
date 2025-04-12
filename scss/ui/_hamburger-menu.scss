@@ -196,12 +196,6 @@ body.menu-open {
     margin-right: 12px; /* Ensure exactly the same margin for both */
   }
   
-  /* Add slight extra space for Buy Me a Coffee text */
-  a.side-menu-button[href*="buymeacoffee"] span {
-    margin-left: 8px; /* Increased from 4px to 8px to move it further right */
-    color: var(--text-color); /* Set the text color to match other buttons */
-  }
-
   /* Ensure consistent styling for social media buttons */
   a.side-menu-button[href*="linkedin"] svg,
   a.side-menu-button[href*="github"] svg,

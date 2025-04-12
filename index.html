@@ -273,14 +273,14 @@
           </button>
         </div>
 
-        <!-- Added Buy Me a Coffee Button -->
+        <!-- Leaderboard Button -->
         <div class="side-menu-item">
-          <a
-            href="https://www.buymeacoffee.com/Daplixo"
-            target="_blank"
-            rel="noopener"
+          <button
+            id="leaderboard-btn"
             class="side-menu-button"
-            ><svg
+            aria-label="View leaderboards"
+          >
+            <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"
               height="16"
@@ -291,13 +291,20 @@
               stroke-linecap="round"
               stroke-linejoin="round"
             >
-              <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
-              <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
-              <line x1="6" y1="1" x2="6" y2="4"></line>
-              <line x1="10" y1="1" x2="10" y2="4"></line>
-              <line x1="14" y1="1" x2="14" y2="4"></line></svg
-            ><span>Buy Me a Coffee</span>
-          </a>
+              <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
+              <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
+              <path d="M4 22h16"></path>
+              <path
+                d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"
+              ></path>
+              <path
+                d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"
+              ></path>
+              <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path>
+            </svg>
+            <span>Leaderboards</span>
+          </button>
+          <!-- Removed the coming-soon-notification div here -->
         </div>
 
         <!-- LinkedIn Button, GitHub Button, and Instagram Button sections removed -->
@@ -599,6 +606,26 @@
         .profile-stats .stat-value {
           font-size: 0.9rem !important;
         }
+      }
+
+      /* Remove the blue outline from the dropdown arrow when clicked */
+      .dropdown-arrow:focus {
+        outline: none !important;
+        box-shadow: none !important;
+      }
+
+      /* Also apply to the arrow when it has a focus-visible state */
+      .dropdown-arrow:focus-visible {
+        outline: none !important;
+        box-shadow: none !important;
+      }
+
+      /* Ensure we don't show focus styles on any state of the dropdown arrow */
+      .dropdown-arrow:active,
+      .dropdown-arrow:hover,
+      .dropdown-arrow:focus-within {
+        outline: none !important;
+        box-shadow: none !important;
       }
     </style>
 

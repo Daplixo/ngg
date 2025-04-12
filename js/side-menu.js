@@ -140,6 +140,55 @@
                 }
             };
         }
+
+        // Handle the leaderboard button
+        const leaderboardBtn = document.getElementById('leaderboard-btn');
+        
+        if (leaderboardBtn) {
+            const newLeaderboardBtn = leaderboardBtn.cloneNode(true);
+            leaderboardBtn.parentNode.replaceChild(newLeaderboardBtn, leaderboardBtn);
+            
+            newLeaderboardBtn.onclick = function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log("Leaderboard button clicked");
+                
+                // Get the parent element (side-menu-item) to append the notification to
+                const leaderboardItem = this.closest('.side-menu-item');
+                
+                // Remove any existing notification first
+                const existingNotification = leaderboardItem.querySelector('.orange-notification');
+                if (existingNotification) {
+                    existingNotification.remove();
+                }
+                
+                // Create the orange notification
+                const notification = document.createElement('div');
+                notification.className = 'orange-notification';
+                notification.textContent = 'Leaderboard coming soon!';
+                notification.style.color = '#ff8c00'; // Orange color
+                notification.style.fontSize = '0.85rem';
+                notification.style.padding = '5px 0 0 38px'; // Align with the menu text (matches the icon width + margin)
+                notification.style.fontWeight = '500';
+                notification.style.transition = 'opacity 0.3s ease';
+                
+                // Add the notification below the button
+                leaderboardItem.appendChild(notification);
+                
+                // Remove the notification after 3 seconds
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        // Fade out effect
+                        notification.style.opacity = '0';
+                        setTimeout(() => {
+                            if (notification.parentNode) {
+                                notification.remove();
+                            }
+                        }, 300); // Wait for fade out animation
+                    }
+                }, 3000);
+            };
+        }
         
         // Fix settings button and dropdown
         if (settingsButton && settingsDropdown) {
