@@ -87,8 +87,17 @@
     <link rel="stylesheet" href="css/edit-profile-fix.css" />
     <link rel="stylesheet" href="css/blur-effects.css" />
     <link rel="stylesheet" href="css/optimized-menu-transitions.css" />
+    <!-- Add Font Awesome for gender icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <!-- Add gender selection styles -->
+    <link rel="stylesheet" href="css/profile-setup.css" />
     <!-- Add global button hover animation disabler -->
     <link rel="stylesheet" href="css/disable-hover-animations.css" />
+    <!-- Add modal responsive fix for small screens -->
+    <link rel="stylesheet" href="css/modal-responsive-fix.css" />
     <!-- Remove the start-prompt.css reference as we'll use SCSS instead -->
     <!-- Remove the button-fix.css reference as styling is now in SCSS -->
     <!-- <link rel="stylesheet" href="css/button-fix.css" /> -->
@@ -608,6 +617,48 @@
         }
       }
 
+      /* Fix gender selection in edit profile modal */
+      .edit-profile-modal .gender-options {
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: center !important;
+        gap: 20px !important;
+        width: 100% !important;
+      }
+
+      .edit-profile-modal .gender-option {
+        flex: 0 0 auto !important;
+        width: 90px !important;
+        height: 90px !important;
+        max-width: 90px !important;
+      }
+
+      /* Adjust spacing for smaller screens */
+      @media (max-width: 480px) {
+        .edit-profile-modal .gender-options {
+          gap: 15px !important;
+        }
+
+        .edit-profile-modal .gender-option {
+          width: 80px !important;
+          height: 80px !important;
+          max-width: 80px !important;
+        }
+      }
+
+      /* Very small screens */
+      @media (max-width: 360px) {
+        .edit-profile-modal .gender-options {
+          gap: 10px !important;
+        }
+
+        .edit-profile-modal .gender-option {
+          width: 70px !important;
+          height: 70px !important;
+          max-width: 70px !important;
+        }
+      }
+
       /* Remove the blue outline from the dropdown arrow when clicked */
       .dropdown-arrow:focus {
         outline: none !important;
@@ -643,6 +694,10 @@
     <script src="js/lightweight-menu.js"></script>
     <!-- Add menu reinitialization helper -->
     <script src="js/menu-reinit.js"></script>
+
+    <!-- Move profile.js up higher in the load order -->
+    <script src="js/profile.js"></script>
+
     <!-- Add debugging for profile setup -->
     <script>
       // Debug initial profile setup
@@ -657,14 +712,39 @@
           localStorage.getItem("userProfileData") !== null
         );
         console.log("Local storage:", Object.keys(localStorage));
+
+        // Debug profile picture click handling
+        const profilePic = document.querySelector("#profilePicDisplay");
+        if (profilePic) {
+          console.log("Profile picture element exists");
+          // Check if it has click handlers
+          const events = getEventListeners
+            ? getEventListeners(profilePic)
+            : null;
+          console.log(
+            "Profile picture events:",
+            events || "Cannot inspect events"
+          );
+
+          // Add a test click handler
+          profilePic.setAttribute("data-has-debug", "true");
+          console.log("Added debug attribute to profile picture");
+        } else {
+          console.warn("Profile picture element not found");
+        }
       };
+
       // Run check after a delay
       setTimeout(window.checkProfileSetup, 2000);
+
+      // Add global error handler to catch any issues
+      window.addEventListener("error", function (event) {
+        console.error("GLOBAL ERROR:", event.error);
+      });
     </script>
     <script type="module" src="js/main.js"></script>
     <script src="js/fix-proximity.js"></script>
     <script src="js/side-menu.js"></script>
-    <script src="js/profile.js"></script>
     <!-- Direct menu fix scripts (non-module for immediate execution) -->
     <script src="js/menu-fix.js"></script>
     <script src="js/global-menu-fix.js"></script>
@@ -723,8 +803,8 @@
     <!-- Add keyboard sound preloader to eliminate delay -->
     <script src="js/keyboard-sound-preloader.js"></script>
 
-    <!-- Add guest button styling fix -->
-    <link rel="stylesheet" href="css/guest-button-fix.css" />
+    <!-- Remove guest button styling reference since we're removing guest mode -->
+    <!-- <link rel="stylesheet" href="css/guest-button-fix.css" /> -->
 
     <!-- Add keyboard sound effect script -->
     <script src="js/keyboardSoundEffect.js"></script>
@@ -737,6 +817,12 @@
 
     <!-- Add keyboard re-initialization script -->
     <script src="js/keyboard-reinit.js"></script>
+
+    <!-- Add gender selection fix script -->
+    <script src="js/gender-selection-fix.js"></script>
+
+    <!-- Add icon click fix script -->
+    <script src="js/icon-click-fix.js"></script>
 
     <!-- Auto-fix for MongoDB connectivity issues -->
     <script type="module" src="js/autofix.js"></script>

@@ -1,6 +1,6 @@
 /**
  * Initial Profile Setup
- * Handles the first-time user profile setup experience with Account and Guest options
+ * Handles the first-time user profile setup experience with Account option
  */
 
 import { UserProfile } from './userProfile.js';
@@ -13,69 +13,23 @@ window.initialProfileSetupActive = true;
 export class InitialProfileSetup {
     constructor() {
         this.userProfile = new UserProfile();
-        this.avatarOptions = AVATARS.map(avatar => avatar.path);
-        
-        // Store an instance reference for other modules to access
-        window.initialProfileSetupInstance = this;
+        this.avatarOptions = AVATARS;
+        this.tempProfileData = {}; // Store temporary profile data during the setup process
     }
 
     init() {
-        console.log("InitialProfileSetup init called");
-        // Check if user already has a profile
-        if (this.userProfile.hasProfile()) {
-            console.log("Profile already exists, skipping initial setup");
-            return false;
+        // Check if a profile already exists
+        if (!this.userProfile.hasProfile()) {
+            console.log("No profile exists, showing account setup screen");
+            // Show account setup directly instead of choice screen
+            this.showAccountSetup();
+        } else {
+            console.log("Profile already exists, skipping setup");
+            // Set flag to false since setup is not needed
+            window.initialProfileSetupActive = false;
         }
-
-        console.log("No profile found, showing initial choice screen");
-        // Show the initial choice screen
-        this.showChoiceScreen();
-        return true;
     }
 
-    showChoiceScreen() {
-        console.log("Showing choice screen");
-        
-        // Create the initial choice modal
-        const modal = document.createElement('div');
-        modal.className = 'modal-wrapper';
-        modal.id = 'initialChoiceModal';
-        modal.style.zIndex = "100000";
-        modal.style.display = "flex";
-        modal.style.visibility = "visible";
-        modal.style.opacity = "1";
-        
-        // Add class to body for blur effect
-        document.body.classList.add('initial-setup-active');
-        
-        modal.innerHTML = `
-            <div class="modal-content profile-choice">
-                <h2>Welcome to Number Guessing Game!</h2>
-                <p>Choose how you'd like to play:</p>
-                
-                <div class="choice-buttons">
-                    <button id="createAccountBtn" class="choice-btn account-btn">Create an Account</button>
-                    <button id="guestModeBtn" class="choice-btn guest-btn">Play as Guest</button>
-                </div>
-            </div>
-        `;
-        
-        document.body.appendChild(modal);
-        
-        // Add direct onclick handlers for better compatibility
-        document.getElementById('createAccountBtn').onclick = () => {
-            console.log("Create Account button clicked");
-            modal.remove();
-            this.showAccountSetup(); // Show account setup form
-        };
-        
-        document.getElementById('guestModeBtn').onclick = () => {
-            console.log("Guest button clicked");
-            modal.remove();
-            this.showGuestSetup(); // Show guest setup form
-        };
-    }
-    
     showAccountSetup() {
         console.log("Showing account setup form");
         
@@ -90,6 +44,7 @@ export class InitialProfileSetup {
         // Add class to body for blur effect
         document.body.classList.add('initial-setup-active');
         
+        // Simplified HTML structure for better mobile display
         modal.innerHTML = `
             <div class="modal-content profile-setup">
                 <h2>Create Your Account</h2>
@@ -102,24 +57,78 @@ export class InitialProfileSetup {
                                    placeholder="Choose a unique username">
                         </div>
                         
-                        <div class="form-group">
-                            <label for="nickname">Nickname</label>
-                            <input type="text" id="nickname" name="nickname" required 
-                                   placeholder="How others will see you">
+                        <div class="form-group gender-selection">
+                            <label>Gender</label>
+                            <div class="gender-options">
+                                <label class="gender-option" for="gender-male">
+                                    <input type="radio" id="gender-male" name="gender" value="male" checked>
+                                    <div class="gender-icon male">
+                                        <i class="fa-solid fa-mars"></i>
+                                    </div>
+                                </label>
+                                <label class="gender-option" for="gender-female">
+                                    <input type="radio" id="gender-female" name="gender" value="female">
+                                    <div class="gender-icon female">
+                                        <i class="fa-solid fa-venus"></i>
+                                    </div>
+                                </label>
+                            </div>
                         </div>
                     </div>
                     
+                    <div class="form-actions compact-buttons">
+                        <button type="submit" style="color: white;">Continue</button>
+                    </div>
+                </form>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        // Add event listener for form submission
+        document.getElementById('accountSetupForm').onsubmit = (e) => {
+            e.preventDefault();
+            console.log("Account info form submitted");
+            this.handleAccountInfoSubmit(e.target);
+        };
+    }
+    
+    showAvatarSetup() {
+        console.log("Showing avatar setup form");
+        
+        // First, let's remove the previous modal
+        const previousModal = document.getElementById('accountSetupModal');
+        if (previousModal) {
+            previousModal.remove();
+        }
+        
+        const modal = document.createElement('div');
+        modal.className = 'modal-wrapper';
+        modal.id = 'avatarSetupModal';
+        modal.style.zIndex = "100000";
+        modal.style.display = "flex";
+        modal.style.visibility = "visible";
+        modal.style.opacity = "1";
+        
+        // Keep the blur effect
+        document.body.classList.add('initial-setup-active');
+        
+        // Compact layout for avatar selection
+        modal.innerHTML = `
+            <div class="modal-content profile-setup">
+                <h2>Choose Your Avatar</h2>
+                
+                <form id="avatarSetupForm">
                     <div class="avatar-section">
-                        <label>Choose an Avatar</label>
                         <div class="avatar-grid" id="avatarGrid">
                             <!-- Avatars will be added here by JavaScript -->
                         </div>
-                        <input type="hidden" id="selectedAvatar" name="avatar" value="${this.avatarOptions[0]}">
+                        <input type="hidden" id="selectedAvatar" name="avatar" value="${this.avatarOptions[0].path}">
                         <input type="hidden" id="selectedAvatarId" name="avatarId" value="avatar_01">
                     </div>
                     
                     <div class="form-actions compact-buttons">
-                        <button type="button" id="backToChoiceBtn" style="color: #333;">Back</button>
+                        <button type="button" id="backBtn" style="color: #333; background-color: var(--btn-secondary);">Back</button>
                         <button type="submit" style="color: white;">Create</button>
                     </div>
                 </form>
@@ -128,87 +137,20 @@ export class InitialProfileSetup {
         
         document.body.appendChild(modal);
         
-        // Add avatars to the grid
+        // Setup avatar grid
         this.setupAvatarGrid();
         
-        // Add event listeners
-        document.getElementById('backToChoiceBtn').onclick = () => {
-            console.log("Back button clicked");
+        // Add event listener for back button
+        document.getElementById('backBtn').addEventListener('click', () => {
             modal.remove();
-            this.showChoiceScreen();
-        };
+            this.showAccountSetup();
+        });
         
-        document.getElementById('accountSetupForm').onsubmit = (e) => {
+        // Add event listener for form submission
+        document.getElementById('avatarSetupForm').onsubmit = (e) => {
             e.preventDefault();
-            console.log("Account form submitted");
-            this.handleAccountSetup(e.target);
-            // Remove the blur class after submission
-            document.body.classList.remove('initial-setup-active');
-        };
-    }
-    
-    showGuestSetup() {
-        console.log("Showing guest setup form");
-        
-        const modal = document.createElement('div');
-        modal.className = 'modal-wrapper';
-        modal.id = 'guestSetupModal';
-        modal.style.zIndex = "100000";
-        modal.style.display = "flex";
-        modal.style.visibility = "visible";
-        modal.style.opacity = "1";
-        
-        // Add class to body for blur effect
-        document.body.classList.add('initial-setup-active');
-        
-        modal.innerHTML = `
-            <div class="modal-content profile-setup">
-                <h2>Play as Guest</h2>
-                
-                <form id="guestSetupForm">
-                    <div class="input-fields">
-                        <div class="form-group">
-                            <label for="guestNickname">Nickname</label>
-                            <input type="text" id="guestNickname" name="nickname" required 
-                                   placeholder="What should we call you?">
-                        </div>
-                    </div>
-                    
-                    <div class="avatar-section">
-                        <label>Choose an Avatar</label>
-                        <div class="avatar-grid" id="avatarGrid">
-                            <!-- Avatars will be added here by JavaScript -->
-                        </div>
-                        <input type="hidden" id="selectedAvatar" name="avatar" value="${this.avatarOptions[0]}">
-                        <input type="hidden" id="selectedAvatarId" name="avatarId" value="avatar_01">
-                    </div>
-                    
-                    <div class="form-actions compact-buttons">
-                        <button type="button" id="guestBackBtn" style="color: #333;">Back</button>
-                        <button type="submit" style="color: white;">Start</button>
-                    </div>
-                </form>
-            </div>
-        `;
-        
-        document.body.appendChild(modal);
-        
-        // Add avatars to the grid - THIS LINE WAS MISSING
-        this.setupAvatarGrid();
-        
-        // Add event listeners
-        document.getElementById('guestBackBtn').onclick = () => {
-            console.log("Guest back button clicked");
-            modal.remove();
-            this.showChoiceScreen();
-        };
-        
-        document.getElementById('guestSetupForm').onsubmit = (e) => {
-            e.preventDefault();
-            console.log("Guest form submitted");
-            this.handleGuestSetup(e.target);
-            // Remove the blur class after submission
-            document.body.classList.remove('initial-setup-active');
+            console.log("Avatar setup form submitted");
+            this.handleAvatarSetupSubmit(e.target);
         };
     }
     
@@ -248,71 +190,75 @@ export class InitialProfileSetup {
         });
     }
     
-    // Modified handleAccountSetup method to ensure username is correctly set
-    async handleAccountSetup(form) {
+    // Step 1: Handle account info submission (username, gender)
+    handleAccountInfoSubmit(form) {
         try {
-            console.log("Handling account setup");
+            console.log("Handling account info submission");
             const formData = new FormData(form);
             
             // Validate form data
             const username = formData.get('username');
-            const nickname = formData.get('nickname');
-            const avatarPath = formData.get('avatar') || this.avatarOptions[0];
-            const avatarId = formData.get('avatarId') || getAvatarIdByPath(avatarPath);
+            const gender = formData.get('gender');
             
-            if (!username || username.length < 3) {
-                throw new Error('Username must be at least 3 characters long');
+            if (!username) {
+                throw new Error('Please enter a username');
             }
             
-            if (!nickname) {
-                throw new Error('Please enter a nickname');
-            }
-            
-            // Check if username exists on server
-            try {
-                const exists = await apiService.checkUsernameExists(username);
-                if (exists) {
-                    throw new Error('Username already taken. Please choose another.');
-                }
-            } catch (error) {
-                // If the API is not available, we'll continue with local account creation
-                console.warn('Could not check if username exists:', error);
-            }
-            
-            // Create profile data
-            const profileData = {
+            // Store the data temporarily
+            this.tempProfileData = {
                 type: 'account',
                 username: username,
-                name: username, // Backwards compatibility
-                nickname: nickname,
-                picture: avatarPath,
-                avatarId: avatarId,
+                gender: gender,
                 createdAt: new Date().toISOString(),
                 gamesPlayed: 0,
                 bestLevel: 1
+            };
+            
+            // Show avatar setup screen
+            this.showAvatarSetup();
+            
+        } catch (error) {
+            console.error("Account info submission error:", error);
+            alert(error.message || 'Error creating account. Please try again.');
+        }
+    }
+
+    // Step 2: Handle avatar setup submission
+    handleAvatarSetupSubmit(form) {
+        try {
+            console.log("Handling avatar setup submission");
+            const formData = new FormData(form);
+            
+            // Get avatar data
+            const avatarPath = formData.get('avatar') || this.avatarOptions[0].path;
+            const avatarId = formData.get('avatarId') || getAvatarIdByPath(avatarPath);
+            
+            // Complete the profile data
+            const profileData = {
+                ...this.tempProfileData,
+                picture: avatarPath,
+                avatarId: avatarId
             };
             
             // Save profile locally
             if (this.userProfile.saveProfile(profileData)) {
                 console.log("Account profile saved successfully:", profileData);
                 
-                // Try to register with server in the background
+                // Initialize the profile UI to update the side menu
+                const profileUI = new UserProfileUI();
+                profileUI.initProfileSection();
+                
+                // Close the modal
+                document.getElementById('avatarSetupModal').remove();
+                
+                // Remove the blur class
+                document.body.classList.remove('initial-setup-active');
+                
+                this.handleProfileCreationComplete();
+                
+                // Register with server without blocking UI
                 this.registerWithServer(profileData);
                 
-                // Initialize the profile UI to update the side menu
-                const profileUI = new UserProfileUI();
-                profileUI.initProfileSection();
-                
-                alert('Account created successfully! Welcome, ' + nickname + '!');
-                
-                // Close the modal
-                document.getElementById('accountSetupModal').remove();
-                
-                // REMOVED: Don't reload the page here
-                // location.reload();
-                
-                this.handleProfileCreationComplete();
-                
                 // Dispatch a custom event that our menu-reinit script can listen for
                 window.dispatchEvent(new CustomEvent('profileCreationComplete'));
                 
@@ -328,85 +274,13 @@ export class InitialProfileSetup {
                 
                 return true;
             } else {
-                console.error("Failed to save profile");
-                throw new Error('Failed to save profile. Please try again.');
+                console.error("Failed to save account profile");
+                throw new Error('Failed to save account profile. Please try again.');
             }
         } catch (error) {
-            console.error("Account setup error:", error);
+            console.error("Avatar setup error:", error);
             alert(error.message || 'Error creating account. Please try again.');
         }
-        this.handleProfileCreationComplete();
-    }
-    
-    // Modified handleGuestSetup method to ensure consistent username handling
-    handleGuestSetup(form) {
-        try {
-            console.log("Handling guest setup");
-            const formData = new FormData(form);
-            
-            // Validate form data
-            const nickname = formData.get('nickname');
-            const avatarPath = formData.get('avatar') || this.avatarOptions[0];
-            const avatarId = formData.get('avatarId') || getAvatarIdByPath(avatarPath);
-            
-            if (!nickname) {
-                throw new Error('Please enter a nickname');
-            }
-            
-            // Generate a unique guest username
-            const guestUsername = 'guest_' + Date.now();
-            
-            // Create profile data
-            const profileData = {
-                type: 'guest',
-                username: guestUsername, // Set username directly
-                nickname: nickname,
-                picture: avatarPath,
-                avatarId: avatarId,
-                createdAt: new Date().toISOString(),
-                gamesPlayed: 0,
-                bestLevel: 1
-            };
-            
-            // Save profile locally
-            if (this.userProfile.saveProfile(profileData)) {
-                console.log("Guest profile saved successfully:", profileData);
-                
-                // Initialize the profile UI to update the side menu
-                const profileUI = new UserProfileUI();
-                profileUI.initProfileSection();
-                
-                // Close the modal
-                document.getElementById('guestSetupModal').remove();
-                
-                // REMOVED: Don't reload the page here
-                // location.reload();
-                
-                this.handleProfileCreationComplete();
-                
-                // Dispatch a custom event that our menu-reinit script can listen for
-                window.dispatchEvent(new CustomEvent('profileCreationComplete'));
-                
-                // Start the game directly without reload
-                if (window.GameLogic) {
-                    setTimeout(() => {
-                        if (typeof window.reinitializeMenu === 'function') {
-                            window.reinitializeMenu();
-                        }
-                        window.GameLogic.showStartGamePrompt();
-                    }, 100);
-                }
-                
-                return true;
-            } else {
-                console.error("Failed to save guest profile");
-                throw new Error('Failed to save guest profile. Please try again.');
-            }
-        } catch (error) {
-            console.error("Guest setup error:", error);
-            alert(error.message || 'Error creating guest account. Please try again.');
-        }
-        this.handleProfileCreationComplete();
     }
     
     // New method to handle server registration without blocking UI
@@ -416,13 +290,12 @@ export class InitialProfileSetup {
             
             // Create a unique email-like identifier and password for backend auth
             // This avoids asking the user for an email/password but still works with the backend
-            const tempEmail = `user_${profileData.name}_${Date.now()}@numberguess.game`;
+            const tempEmail = `user_${profileData.username}_${Date.now()}@numberguess.game`;
             const tempPassword = `pwd_${Date.now()}_${Math.floor(Math.random() * 1000000)}`;
             
             // Register with server
             apiService.register({
-                username: profileData.name,
-                nickname: profileData.nickname,
+                username: profileData.username,
                 email: tempEmail,
                 password: tempPassword,
                 profilePicture: profileData.picture
@@ -471,9 +344,9 @@ export class InitialProfileSetup {
                     </div>
                     <div class="profile-header">
                         <div class="profile-info">
-                            <h3 id="profileName">${profileData.nickname || 'Player'}</h3>
+                            <h3 id="profileName">${profileData.username || 'Player'}</h3>
                             <p id="profileAge">
-                                <span>ID: ${profileData.name || 'Anonymous'}</span>
+                                <span>ID: ${profileData.username || 'Anonymous'}</span>
                             </p>
                         </div>
                     </div>

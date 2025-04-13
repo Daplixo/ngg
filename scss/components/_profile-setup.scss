@@ -346,3 +346,33 @@
         }
     }
 }
+
+// Remove any guest-mode related styles
+.choice-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  
+  // Remove guest button specific styling
+  .account-btn {
+    background-color: var(--primary-color);
+    color: white;
+  }
+  
+  // Remove guest button completely
+  // .guest-btn {
+  //   background-color: var(--secondary-color); 
+  //   color: var(--text-color);
+  // }
+}
+
+// Keep only account setup styles, remove guest setup styles
+.profile-setup form {
+  // ...existing code...
+}
+
+// Remove any guest-specific styling
+#guestSetupForm, #guestSetupModal {
+  // Remove completely
+}

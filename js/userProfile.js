@@ -176,15 +176,7 @@ export class UserProfile {
     }
 
     validateProfile(profileData) {
-        const { nickname, username } = profileData;
-        
-        if (!nickname || nickname.trim().length < 2) {
-            throw new Error('Nickname must be at least 2 characters long');
-        }
-        
-        if (nickname.trim().length > 20) {
-            throw new Error('Nickname must be at most 20 characters long');
-        }
+        const { username } = profileData;
         
         if (!username || username.trim().length < 2) {
             throw new Error('Username must be at least 2 characters long');
@@ -213,12 +205,6 @@ export class UserProfile {
             console.error('Error deleting profile:', error);
             return false;
         }
-    }
-    
-    // New method to check if profile is guest type
-    isGuestProfile() {
-        const profile = this.getProfile();
-        return profile && profile.type === 'guest';
     }
 }
 

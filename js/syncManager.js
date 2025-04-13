@@ -39,9 +39,9 @@ export class SyncManager {
                 return;
             }
             
-            // If profile isn't synced with server and it's a non-guest profile,
-            // try to register it first
-            if (!profile.syncedWithServer && profile.type === 'account') {
+            // If profile isn't synced with server, try to register it first
+            // No longer need to check profile type since all profiles are account type
+            if (!profile.syncedWithServer) {
                 await this.registerProfileWithServer(profile);
             }
             
@@ -97,7 +97,6 @@ export class SyncManager {
                 try {
                     const result = await apiService.register({
                         username: username,
-                        nickname: profile.nickname,
                         avatarId: profile.avatarId,
                         profilePicture: profile.picture
                     });
@@ -157,7 +156,6 @@ export class SyncManager {
                 try {
                     const result = await apiService.register({
                         username: username,
-                        nickname: profile.nickname,
                         avatarId: profile.avatarId,
                         profilePicture: profile.picture
                     });
@@ -216,8 +214,8 @@ export class SyncManager {
             
             // Update profile data
             await apiService.updateProfile({
-                nickname: profile.nickname,
                 username: profile.username,  // Only use profile.username
+                gender: profile.gender,
                 profilePicture: profile.picture,
                 avatarId: profile.avatarId
             }).then(() => {
@@ -277,8 +275,8 @@ export class SyncManager {
         
         // Update profile data
         apiService.updateProfile({
-            nickname: profile.nickname,
             username: username,
+            gender: profile.gender,
             profilePicture: profile.picture,
             avatarId: profile.avatarId
         }).catch(err => {

@@ -211,6 +211,44 @@
   #delete-account-btn .theme-option-content .icon-container {
     margin-right: 14px !important;
   }
+
+  /* Enhanced profile section styling for smaller screens */
+  /* Profile picture size needs to be larger than before */
+  .profile-section .profile-picture-container .profile-picture {
+    width: 100px !important; /* Increased size for smaller screens */
+    height: 100px !important; /* Increased size for smaller screens */
+    position: relative !important; /* Ensure positioning works */
+  }
+  /* Reduce the name text size further */
+  .profile-info h3 {
+    font-size: 0.85rem !important;
+    padding-left: 4px !important;
+  }
+
+  .profile-info p {
+    font-size: 0.7rem !important; /* Reduced from previous size */
+    padding-left: 4px !important;
+  }
+
+  /* Make stats containers smaller and more compact */
+  .profile-stats {
+    max-width: 90% !important;
+    margin-top: 0.4rem !important;
+  }
+
+  .profile-stats .stat {
+    padding: 0.35rem 0.2rem !important;
+  }
+
+  /* Better spacing between elements */
+  .profile-picture-container {
+    margin-bottom: 0.4rem !important;
+  }
+  /* Add a subtle animation on active/touch for mobile feedback */
+  .profile-section .profile-picture:active {
+    transform: scale(0.95) !important; /* Subtle press effect */
+    transition: transform 0.1s !important;
+  }
 }
 
 /* Very small screens consistency */
@@ -225,8 +263,25 @@
   }
 }
 
-/* Very small screens - maintain indentation */
+/* Very small screens additional optimization */
 @media (max-width: 360px) {
+  .profile-section .profile-picture-container .profile-picture {
+    width: 90px !important; /* Still larger than original, but scaled for tiny screens */
+    height: 90px !important;
+  }
+  
+  .profile-info h3 {
+    font-size: 0.8rem !important;
+  }
+
+  .profile-stats .stat-label {
+    font-size: 0.65rem !important;
+  }
+
+  .profile-stats .stat-value {
+    font-size: 0.8rem !important;
+  }
+
   /* Remove conflicting rules and set even larger indentation for very small screens */
   .settings-dropdown .settings-option,
   #theme-toggle.settings-option,
@@ -258,4 +313,13 @@
   .side-menu-item {
     padding: 0.6rem 1rem 0.6rem 16px !important;
   }
+}
+
+/* Make sure the profile picture is always clickable */
+.profile-section .profile-picture {
+  cursor: pointer !important;
+}
+
+.profile-section .profile-picture img {
+  cursor: pointer !important;
 }

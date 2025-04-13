@@ -1,0 +1,607 @@
+/**
+ * Modal Responsive Fixes
+ * Ensures proper display of modals on all device sizes
+ */
+
+/* Fix scrollbar issues by setting proper heights */
+.modal-content.profile-setup {
+  max-height: 85vh;
+  overflow-y: auto;
+  /* Add these properties to prevent horizontal scrollbar */
+  overflow-x: hidden;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Remove any potential inline margins causing overflow */
+.modal-content.profile-setup form,
+.modal-content.profile-setup .form-group,
+.modal-content.profile-setup .input-fields,
+.modal-content.profile-setup .gender-selection,
+.modal-content.profile-setup .gender-options,
+.modal-content.profile-setup .avatar-section,
+.modal-content.profile-setup .avatar-grid,
+.modal-content.profile-setup .form-actions {
+  max-width: 100%;
+  margin-left: 0;
+  margin-right: 0;
+  box-sizing: border-box;
+}
+
+/* Ensure gender options don't overflow */
+.modal-content.profile-setup .gender-options {
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+/* Ensure all form fields and elements fit properly */
+.modal-content.profile-setup input,
+.modal-content.profile-setup button {
+  width: 100%;
+  height: auto;
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+/* Fix spacing for smaller screens */
+@media (max-width: 480px), (max-height: 700px) {
+  .modal-content.profile-setup {
+    max-width: 90%;
+    padding: 1rem;
+  }
+  
+  .modal-content.profile-setup .gender-options {
+    gap: 50px; /* Increased from 5px */
+  }
+  
+  .modal-content.profile-setup .form-actions button {
+    padding: 0.5rem;
+  }
+}
+
+/* Enhanced gender icon responsiveness and visibility */
+@media (max-width: 480px) {
+  /* Ensure gender options are properly centered and spaced */
+  .modal-content.profile-setup .gender-options {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+    padding: 0.5rem 0;
+    gap: 50px; /* Ensure consistent with other rule */
+  }
+  
+  .modal-content.profile-setup .gender-option {
+    padding: 0.5rem 0.25rem;
+    flex: 0 0 30%; /* Reduced from 33% */
+    min-width: 0;
+    max-width: 90px; /* Reduced from previous value */
+  }
+  
+  /* Optimize gender icon visibility */
+  .modal-content.profile-setup .gender-icon {
+    margin: 0 auto 0.4rem auto;
+    width: 38px;
+    height: 38px;
+  }
+  
+  .modal-content.profile-setup .gender-icon i {
+    font-size: 18px;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 360px), (max-height: 600px) {
+  .modal-content.profile-setup {
+    padding: 0.75rem;
+  }
+  
+  .modal-content.profile-setup h2 {
+    font-size: 1.125rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .modal-content.profile-setup .form-group {
+    margin-bottom: 0.5rem;
+  }
+  
+  .modal-content.profile-setup .form-group label {
+    font-size: 0.8rem;
+    margin-bottom: 0.2rem;
+  }
+  
+  .modal-content.profile-setup .form-group input {
+    font-size: 0.85rem;
+    padding: 0.4rem;
+  }
+}
+
+/* Enhanced visibility for very small screens */
+@media (max-width: 360px) {
+  .modal-content.profile-setup .gender-option span {
+    font-size: 0.75rem;
+  }
+  
+  .modal-content.profile-setup .gender-icon {
+    width: 34px;
+    height: 34px;
+  }
+  
+  .modal-content.profile-setup .gender-icon i {
+    font-size: 16px;
+  }
+}
+
+/* Force proper sizing for iOS Safari */
+@supports (-webkit-touch-callout: none) {
+  .modal-content.profile-setup {
+    max-height: 80vh; /* Slightly smaller for iOS */
+  }
+  
+  .modal-content.profile-setup input {
+    font-size: 16px !important; /* Prevent iOS zoom on focus */
+  }
+}
+
+/* Ensure modals don't get hidden behind keyboard on mobile */
+@media (max-height: 450px) {
+  .modal-wrapper {
+    align-items: flex-start;
+    padding-top: 1rem;
+  }
+  
+  .modal-content.profile-setup {
+    max-height: 98vh;
+  }
+}
+
+/* Fix for specific modal elements that might be causing overflow */
+#accountSetupModal .gender-icon svg,
+#avatarSetupModal .gender-icon svg,
+.edit-profile-modal .gender-icon svg {
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Fix modal SVG display issues */
+.modal-content.profile-setup svg {
+  display: block;
+  max-width: 100%;
+}
+
+/* Enhance gender options for better spacing without labels */
+.modal-content.profile-setup .gender-options {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 0.5rem 0;
+  gap: 45px; /* Increased from 20px to match profile-setup.css */
+}
+
+.modal-content.profile-setup .gender-option {
+  padding: 0.75rem 0.5rem;
+  flex: 0 0 35%; /* Reduced from 40% to match profile-setup.css */
+  max-width: 100px; /* Reduced from 120px to match profile-setup.css */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Make icons more visible now that there's no text */
+.modal-content.profile-setup .gender-icon {
+  margin: 0 auto;
+  height: auto;
+  padding: 10px 0;
+}
+
+.modal-content.profile-setup .gender-icon i {
+  font-size: 32px; /* Larger icons since there's no text */
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 480px) {
+  .modal-content.profile-setup .gender-icon i {
+    font-size: 28px;
+  }
+}
+
+@media (max-width: 360px) {
+  .modal-content.profile-setup .gender-icon i {
+    font-size: 24px;
+  }
+}
+
+/* Fallback styling for browsers that don't support the :has selector */
+/* Make selected icon more visible while keeping the gender colors */
+.gender-option input[id*="gender-male"]:checked ~ .gender-icon i {
+  color: #4d6fed !important;
+  font-size: 32px;
+}
+
+.gender-option input[id*="gender-female"]:checked ~ .gender-icon i {
+  color: #e74c3c !important;
+  font-size: 32px;
+}
+
+/* Add gender-specific background and border colors */
+.gender-option input[id*="gender-male"]:checked ~ .gender-icon {
+  background-color: transparent;
+}
+
+.gender-option input[id*="gender-female"]:checked ~ .gender-icon {
+  background-color: transparent;
+}
+
+/* Apply color to parent container */
+.gender-option:has(input[id*="gender-male"]:checked) {
+  border-color: #4d6fed !important;
+  background-color: rgba(77, 111, 237, 0.1) !important;
+}
+
+.gender-option:has(input[id*="gender-female"]:checked) {
+  border-color: #e74c3c !important;
+  background-color: rgba(231, 76, 60, 0.1) !important;
+}
+
+/* Legacy selector fallbacks for older browsers */
+.gender-option input[id*="gender-male"]:checked {
+  border-color: #4d6fed !important;
+}
+
+.gender-option input[id*="gender-female"]:checked {
+  border-color: #e74c3c !important;
+}
+
+/* Force parent styling through JavaScript classes */
+.gender-option.male-selected {
+  border-color: #4d6fed !important;
+  background-color: rgba(77, 111, 237, 0.1) !important;
+}
+
+.gender-option.female-selected {
+  border-color: #e74c3c !important;
+  background-color: rgba(231, 76, 60, 0.1) !important;
+}
+
+/* Remove hover effects entirely for gender options */
+.modal-content.profile-setup .gender-option:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: var(--border-color, #e0e0e0);
+  background-color: var(--input-bg, #f5f5f5);
+}
+
+/* Dark mode adjustments for the fallback approach */
+[data-theme="dark"] .gender-option input[id*="gender-male"]:checked ~ .gender-icon i {
+  color: #4d6fed !important;
+}
+
+[data-theme="dark"] .gender-option input[id*="gender-female"]:checked ~ .gender-icon i {
+  color: #e74c3c !important;
+}
+
+[data-theme="dark"] .gender-option.male-selected {
+  border-color: #4d6fed !important;
+  background-color: rgba(77, 111, 237, 0.2) !important;
+}
+
+[data-theme="dark"] .gender-option.female-selected {
+  border-color: #e74c3c !important;
+  background-color: rgba(231, 76, 60, 0.2) !important;
+}
+
+/* Ensure modals don't get hidden behind keyboard on mobile */
+@media (max-height: 450px) {
+  .modal-wrapper {
+    align-items: flex-start;
+    padding-top: 1rem;
+  }
+  
+  .modal-content.profile-setup {
+    max-height: 98vh;
+  }
+}
+
+/* Fix for specific modal elements that might be causing overflow */
+#accountSetupModal .gender-icon svg,
+#avatarSetupModal .gender-icon svg,
+.edit-profile-modal .gender-icon svg {
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Fix modal SVG display issues */
+.modal-content.profile-setup svg {
+  display: block;
+  max-width: 100%;
+}
+
+/* Enhance gender options for better spacing without labels */
+.modal-content.profile-setup .gender-options {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 0.5rem 0;
+  gap: 40px; /* Increased gap between icons */
+}
+
+.modal-content.profile-setup .gender-option {
+  flex: 0 0 100px;
+  height: 100px;
+  max-width: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.modal-content.profile-setup .gender-icon {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+}
+
+.modal-content.profile-setup .gender-icon i {
+  font-size: 36px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 480px) {
+  .modal-content.profile-setup .gender-option {
+    flex: 0 0 90px;
+    height: 90px;
+    max-width: 90px;
+  }
+  
+  .modal-content.profile-setup .gender-icon i {
+    font-size: 32px;
+  }
+}
+
+@media (max-width: 360px) {
+  .modal-content.profile-setup .gender-option {
+    flex: 0 0 80px;
+    height: 80px;
+    max-width: 80px;
+  }
+  
+  .modal-content.profile-setup .gender-icon i {
+    font-size: 28px;
+  }
+}
+
+/* Add left/right margins to create more space between buttons */
+.modal-content.profile-setup .gender-option:first-child {
+  margin-right: 20px; /* Add right margin to first (male) option */
+}
+
+.modal-content.profile-setup .gender-option:last-child {
+  margin-left: 20px; /* Add left margin to last (female) option */
+}
+
+/* Make icons more visible now that there's no text */
+.modal-content.profile-setup .gender-icon {
+  margin: 0 auto;
+  height: auto;
+  padding: 10px 0;
+}
+
+.modal-content.profile-setup .gender-icon i {
+  font-size: 32px; /* Larger icons since there's no text */
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 480px) {
+  .modal-content.profile-setup .gender-icon i {
+    font-size: 28px;
+  }
+}
+
+@media (max-width: 360px) {
+  .modal-content.profile-setup .gender-icon i {
+    font-size: 24px;
+  }
+}
+
+/* Fallback styling for browsers that don't support the :has selector */
+.gender-option input[type="radio"]:checked + .gender-icon {
+  background-color: transparent; /* No background */
+  border: none; /* No border */
+  box-shadow: none; /* No shadow */
+}
+
+/* Make selected icon more visible while keeping the gender colors */
+.gender-option input[id*="gender-male"]:checked ~ .gender-icon i {
+  color: #4d6fed !important;
+  font-size: 32px;
+}
+
+.gender-option input[id*="gender-female"]:checked ~ .gender-icon i {
+  color: #e74c3c !important;
+  font-size: 32px;
+}
+
+/* Add gender-specific background and border colors */
+.gender-option input[id*="gender-male"]:checked {
+  border-color: #4d6fed !important;
+  background-color: rgba(77, 111, 237, 0.1);
+}
+
+.gender-option input[id*="gender-female"]:checked {
+  border-color: #e74c3c !important;
+  background-color: rgba(231, 76, 60, 0.1);
+}
+
+/* Add gender-specific background and border colors */
+.gender-option input[id*="gender-male"]:checked ~ .gender-icon {
+  background-color: transparent;
+}
+
+.gender-option input[id*="gender-female"]:checked ~ .gender-icon {
+  background-color: transparent;
+}
+
+/* Apply color to parent container */
+.gender-option:has(input[id*="gender-male"]:checked) {
+  border-color: #4d6fed !important;
+  background-color: rgba(77, 111, 237, 0.1) !important;
+}
+
+.gender-option:has(input[id*="gender-female"]:checked) {
+  border-color: #e74c3c !important;
+  background-color: rgba(231, 76, 60, 0.1) !important;
+}
+
+/* Legacy selector fallbacks for older browsers */
+.gender-option input[id*="gender-male"]:checked {
+  border-color: #4d6fed !important;
+}
+
+.gender-option input[id*="gender-female"]:checked {
+  border-color: #e74c3c !important;
+}
+
+/* Force parent styling through JavaScript classes */
+.gender-option.male-selected {
+  border-color: #4d6fed !important;
+  background-color: rgba(77, 111, 237, 0.1) !important;
+}
+
+.gender-option.female-selected {
+  border-color: #e74c3c !important;
+  background-color: rgba(231, 76, 60, 0.1) !important;
+}
+
+/* Remove hover effects entirely for gender options */
+.modal-content.profile-setup .gender-option:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: var(--border-color, #e0e0e0);
+  background-color: var(--input-bg, #f5f5f5);
+}
+
+/* Dark mode adjustments for the fallback approach */
+[data-theme="dark"] .gender-option input[id*="gender-male"]:checked ~ .gender-icon i {
+  color: #4d6fed !important;
+}
+
+[data-theme="dark"] .gender-option input[id*="gender-female"]:checked ~ .gender-icon i {
+  color: #e74c3c !important;
+}
+
+[data-theme="dark"] .gender-option.male-selected {
+  border-color: #4d6fed !important;
+  background-color: rgba(77, 111, 237, 0.2) !important;
+}
+
+[data-theme="dark"] .gender-option.female-selected {
+  border-color: #e74c3c !important;
+  background-color: rgba(231, 76, 60, 0.2) !important;
+}
+
+/* Ensure consistent square gender options in modals */
+.modal-content.profile-setup .gender-options {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 0.5rem 0;
+  gap: 40px;
+}
+
+.modal-content.profile-setup .gender-option {
+  flex: 0 0 100px;
+  height: 100px;
+  max-width: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.modal-content.profile-setup .gender-icon {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  position: relative;
+}
+
+.modal-content.profile-setup .gender-icon i {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 36px;
+  color: var(--text-color, #333);
+  transition: color 0.2s ease;
+}
+
+/* Fix icon positioning on selection */
+.modal-content.profile-setup .gender-option input[id*="gender-male"]:checked ~ .gender-icon i,
+.modal-content.profile-setup .gender-option input[id*="gender-female"]:checked ~ .gender-icon i {
+  transform: translate(-50%, -50%); /* Keep centered */
+  font-size: 36px; /* Keep same size */
+}
+
+/* OVERRIDE ALL PREVIOUS STYLES - Fix icon centering */
+.modal-content.profile-setup .gender-icon {
+  position: relative !important;
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.modal-content.profile-setup .gender-icon i {
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  font-size: 36px !important;
+}
+
+/* Override all other modal font size changes */
+.modal-content.profile-setup .gender-icon i,
+.gender-option input[id*="gender-male"]:checked ~ .gender-icon i,
+.gender-option input[id*="gender-female"]:checked ~ .gender-icon i {
+  font-size: 36px !important;
+  transform: translate(-50%, -50%) !important;
+}
+
+/* Only change colors, not position or size */
+.gender-option input[id*="gender-male"]:checked ~ .gender-icon i {
+  color: #4d6fed !important;
+}
+
+.gender-option input[id*="gender-female"]:checked ~ .gender-icon i {
+  color: #e74c3c !important;
+}

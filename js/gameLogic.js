@@ -250,14 +250,14 @@ export const GameLogic = {
         if (gameState.level >= 3) {
             gameState.finalWin = true;
             
-            // Get user profile to access nickname
+            // Get user profile to access username
             try {
                 const userProfile = new UserProfile();
                 const profile = userProfile.getProfile();
-                const nickname = profile?.nickname || "Player";
+                const username = profile?.username || "Player";
                 
                 // Create and show the congratulation modal
-                this.showCongratulationsModal(nickname);
+                this.showCongratulationsModal(username);
             } catch(e) {
                 console.error("Error showing congratulations:", e);
                 // Fallback to regular win notification if there's an error
@@ -290,7 +290,7 @@ export const GameLogic = {
     },
     
     // Add new method to show congratulations modal
-    showCongratulationsModal(nickname) {
+    showCongratulationsModal(username) {
         // Play victory sound
         AudioManager.playVictorySound();
         
@@ -328,7 +328,7 @@ export const GameLogic = {
         title.style.marginBottom = '10px';
         
         const message = document.createElement('p');
-        message.innerHTML = `Well done, <strong>${nickname}</strong>! You've completed all levels of the game!`;
+        message.innerHTML = `Well done, <strong>${username}</strong>! You've completed all levels of the game!`;
         message.style.fontSize = '1.2rem';
         message.style.marginBottom = '20px';
         

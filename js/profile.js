@@ -31,22 +31,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Run immediately for any images already in the DOM
     fixImages();
     
-    // Second approach: Override the UserProfileUI class methods
-    // This ensures that new images added later will also use the correct path
-    if (window.UserProfileUI) {
-      const originalUpdateProfileDisplay = window.UserProfileUI.prototype.updateProfileDisplay;
-      
-      window.UserProfileUI.prototype.updateProfileDisplay = function() {
-        // Call the original method
-        originalUpdateProfileDisplay.apply(this, arguments);
-        
-        // Then make sure our image is correct
-        const picElement = document.querySelector('#profilePicDisplay img');
-        if (picElement && (!picElement.src || picElement.src.includes('default-profile.png'))) {
-          picElement.src = 'assets/defaultIcon.jpg';
-        }
-      };
-    }
+    // Don't override UserProfileUI - this was causing conflicts
     
     // Third approach: Watch for DOM changes to catch dynamically added profile images
     const observer = new MutationObserver(function(mutations) {
@@ -83,10 +68,61 @@ document.addEventListener('DOMContentLoaded', function() {
   // Initialize the profile image handler
   updateProfileImages();
   
-  // Add script reference to the HTML to make sure profile.js is loaded
-  const scriptRef = document.createElement('script');
-  scriptRef.src = 'js/profile.js';
-  if (!document.querySelector('script[src="js/profile.js"]')) {
-    document.body.appendChild(scriptRef);
-  }
+  // Don't add the attachProfilePictureClick function - this was causing conflicts with userProfileUI
+  
+  // Wait a bit and then check if userProfileUI has initialized
+  setTimeout(function() {
+    // If userProfileUI is available, refresh the events
+    if (window.userProfileUI) {
+      console.log("Refreshing profile events from profile.js");
+      window.userProfileUI.refreshProfileEvents();
+    } else {
+      console.log("Creating userProfileUI instance");
+      // Try to create a userProfileUI instance
+      import('./userProfileUI.js').then(module => {
+        window.userProfileUI = new module.UserProfileUI();
+        window.userProfileUI.refreshProfileEvents();
+      }).catch(err => {
+        console.error("Could not import UserProfileUI:", err);
+      });
+    }
+  }, 1000);
+
+  // Wait a bit and then check if userProfileUI has initialized
+  setTimeout(function() {
+    try {
+        // Add a direct emergency click handler as a last resort
+        const profilePic = document.querySelector("#profilePicDisplay");
+        if (profilePic) {
+            console.log("Adding emergency click handler to profile pic");
+            profilePic.style.cursor = "pointer";
+            profilePic.onclick = function() {
+                console.log("Profile pic clicked (emergency handler)");
+                if (window.userProfileUI) {
+                    window.userProfileUI.simpleFallbackAvatarModal();
+                } else {
+                    // Create new instance if needed
+                    import('./userProfileUI.js').then(module => {
+                        window.userProfileUI = new module.UserProfileUI();
+                        window.userProfileUI.simpleFallbackAvatarModal();
+                    }).catch(err => {
+                        console.error("Could not load UserProfileUI:", err);
+                    });
+                }
+            };
+            
+            // Also add to image inside
+            const img = profilePic.querySelector("img");
+            if (img) {
+                img.style.cursor = "pointer";
+                img.onclick = function(e) {
+                    e.stopPropagation();
+                    if (profilePic.onclick) profilePic.onclick();
+                };
+            }
+        }
+    } catch (e) {
+        console.error("Emergency handler error:", e);
+    }
+  }, 1000);
 });
