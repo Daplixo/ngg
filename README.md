@@ -24,6 +24,8 @@ A simple and fun number guessing game with multiple levels of increasing difficu
 2. Level 2: Numbers 1-50 (4 attempts)
 3. Level 3: Numbers 1-100 (5 attempts)
 
+(Note: Although the game was originally envisioned to support 10 levels, only the first 3 levels are implemented in the current build.)
+
 ## Installation
 
 1. Clone this repository
@@ -42,6 +44,23 @@ Built with vanilla JavaScript, HTML, and CSS. Uses the following features:
 - Web Audio API for sound effects
 - Responsive design with CSS Grid/Flexbox
 
-## License
+## Dev Reflection
 
-MIT License - feel free to use and modify!
+This project began as a fun challenge — just me vibe-coding my way through a silly idea. I didn't plan every feature, I just let the project evolve. And that came with its own chaos.
+
+It works — yeah, the game plays fine. Open it in a browser, and you’ll get the full experience: smooth UI, fun sound effects, working feedback, and 3 playable levels. But under the surface? It’s a bloated mess.
+
+There are way too many files. More than half of the JavaScript is probably dead code. Lots of modules overlap, some are just leftover patches from bugs I tried to fix in the moment. It's not scalable, not clean, and definitely not professional. 
+
+But that’s okay. I learned a lot. Not just how to use service workers or local storage, but how easy it is to dig yourself into a rabbit hole when you don’t have structure. This is a living record of my trial, my errors, and my growth.
+
+## What’s Next
+
+I’ll be rebuilding this project from scratch. Proper folder structure. Clean, modular JS. No repeated code. Everything organized like it should’ve been from the beginning.
+
+Because this time — I’ll do it manually, like a pro.
+
+---
+
+MIT License — feel free to explore, use, and learn from this chaotic but honest project.
+
